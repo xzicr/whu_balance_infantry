@@ -1,0 +1,63 @@
+% 正确的雅可比矩阵计算（基于速度关系）
+function [J11, J12, J21, J22] = calculate_jacobian_elements(l, theta, phi1, phi2, l1, l2, l3, l4, l5)
+    % 计算足端坐标
+    
+%    x_e = l * sin(theta);
+%    y_e = l * cos(theta);
+%    
+%    % 髋关节位置
+%    x_hip_right = l5/2;
+%    x_hip_left = -l5/2;
+%    
+%    % 计算连杆端点位置
+%   x_1 = x_hip_right + l1 * sin(phi1);
+%   y_1 = l1 * cos(phi1);
+%   
+%   x_2 = x_hip_left + l3 * sin(phi2);
+%   y_2 = l3 * cos(phi2);
+%    %感觉解算有问题      
+%    x_1 =-x_hip_right+l1*cos(phi1);
+%    y_1 =l1*sin(phi1);
+%
+%    x_2 =-x_hip_left -l4*cos(phi2);
+%    y_2 =l4*sin(phi2);
+%    % 根据文档中的公式(4.4)-(4.7)计算雅可比矩阵元素
+%    % 分母项
+%    denom1 = -(x_e + x_1)*sin(phi1) + (y_e - y_1)*cos(phi1);
+%    denom2 = (x_e - x_2)*sin(phi2) + (y_e - y_2)*cos(phi2);
+%    
+%    % 避免除零
+%    if abs(denom1) < 1e-6, denom1 = 1e-6; end
+%    if abs(denom2) < 1e-6, denom2 = 1e-6; end
+%    
+%    % 雅可比矩阵元素（根据文档公式）
+%    J11 = ((x_e + x_1)*sin(theta) + (y_e - y_1)*cos(theta)) / (x_hip_right * denom1);  % ∂φ₁/∂l
+%    J12 = l*((x_e + x_1)*cos(theta) - (y_e - y_1)*sin(theta)) / (x_hip_right * denom1);  % ∂φ₁/∂θ
+%    
+%    J21 = ((x_e - x_2)*sin(theta) + (y_e - y_2)*cos(theta)) / ( -x_hip_left* denom2);  % ∂φ₂/∂l
+%    J22 = l*((x_e - x_2)*cos(theta) - (y_e - y_2)*sin(theta)) / (-x_hip_left * denom2);  % ∂φ₂/∂θ
+%end
+    x_e = l*sin(theta);
+    y_e = l*cos(theta);
+    
+    x1 = (1/2)*l5*theta-l1*cos(phi1);
+    y1 = l1*sin(phi1);
+    
+    x2 = -(1/2)*l5+l4*cos(phi2);
+    y2 = l4*sin(phi2);
+    denom1 = (x_e-x1)*sin(phi1)+(y_e-y1)*cos(phi1);
+    denom2 = -(x_e-x2)*sin(phi2)+(y_e-y2)*cos(phi2);
+    
+    if abs(denom1)<1e-10
+        denom1=sign(denom1)*1e-10;
+    end
+    if abs(denom1)<1e-10
+        denom1=sign(denom1)*1e-10;
+    end
+    
+    J11 =((x_e-x1)*sin(theta)+(y_e-y1)+cos(theta))/(l1*denom1);
+    J12 =l*((x_e-x1)*cos(theta)-(y_e-y1)*sin(theta))/(l1*denom1);
+
+    J21 =((x_e-x2)*sin(theta)+(y_e-y2)*cos(theta))/(l4*denom2);
+    J22 =l*((x_e-x2)*cos(theta)-(y_e-y2)*sin(theta))/(l4*denom2);
+end
