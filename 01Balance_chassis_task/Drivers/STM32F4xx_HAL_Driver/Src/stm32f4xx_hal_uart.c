@@ -3225,10 +3225,7 @@ static HAL_StatusTypeDef UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef *huart, 
 /**
   * @brief  Start Receive operation in interrupt mode.
   * @note   This function could be called by all HAL UART API providing reception in Interrupt mode.
-  * @note   When calling this function, parameters validity is considered as already checked,
-  *         i.e. Rx State, buffer address, ...
-  *         UART Handle is assumed as Locked.
-  * @param  huart UART handle.
+  * @note   When calling this function, parameters validity is considered as already checked, 
   * @param  pData Pointer to data buffer (u8 or u16 data elements).
   * @param  Size  Amount of data elements (u8 or u16) to be received.
   * @retval HAL status

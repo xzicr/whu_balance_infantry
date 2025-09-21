@@ -168,7 +168,7 @@
 // ------------- Transfer info ------------- 
 #define HALF_ECD_RANGE                14383
 #define HALF_POSITION_RANGE    178.0f
-#define TORQ_K                 200  //387.87878  // 494.483818182
+#define TORQ_K              90 //  153.23  //387.87878  // 494.483818182
 // ------------- Math info ------------- 
 #define PI2					  6.28318530717959f
 #define PI					  3.14159265358979f

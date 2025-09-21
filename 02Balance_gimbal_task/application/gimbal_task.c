@@ -684,13 +684,13 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   {
     return;
   }
-  // if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
-  // {
-  //   if ( fabs(gimbal_control_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR)
-  //   {
-  //     return;
-  //   }
-  // }
+  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
+  {
+    if ( fabs(gimbal_control_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR)
+    {
+      return;
+    }
+  }
 
   /* --------------遥控器 键鼠数据处理------------------ */
   int16_t vx_channel, vy_channel;
