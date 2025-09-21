@@ -32,6 +32,10 @@
 
 3. 01Balance_chassis_task文件夹：用Keil打开chassis_task.uvprojx文件，编译，下载，调试
 
+#### 调试建议（借鉴CADN上 星夜雨夜的调试建议...）
+
+![image-20250921185536221](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250921185536221.png)
+
 #### 参与贡献
 
 1.  Fork 本仓库
