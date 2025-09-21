@@ -649,7 +649,7 @@ void Target_Value_Set( chassis_move_t *target_value_set )
 	else if( target_value_set->mode.chassis_balancing_mode == FOOT_LAUNCHING )
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else if( target_value_set->mode.chassis_balancing_mode == JOINT_LAUNCHING )
-		target_value_set->mode.chassis_high_mode = SIT_MODE;
+		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 	else if( target_value_set->mode.chassis_balancing_mode == JOINT_REDUCING )
 		target_value_set->mode.chassis_high_mode = CHANGING_HIGH;
 	else if( target_value_set->chassis_data_->sit_flag )
@@ -665,7 +665,7 @@ void Target_Value_Set( chassis_move_t *target_value_set )
 	else if( target_value_set->mode.jumping_stage == PREPARING_LANDING )
 		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 	else
-		target_value_set->mode.chassis_high_mode = SIT_MODE;
+		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 
 	// --------- Leg Length Set --------- 
 	if( target_value_set->mode.chassis_high_mode == SIT_MODE )
@@ -913,10 +913,10 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	}
 	else {
 		bl_ctrl->torque_info.foot_balancing_torque_L = (int) ( 
-			-LQR[0][4]*( bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L) 
-			-LQR[0][5]*(                  0.0f                         - bl_ctrl->chassis_posture_info.leg_gyro_L)*0.1f
-		// 	+LQR[0][8]*( bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
-		// 	+LQR[0][9]*( bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro) *0.1f
+			-LQR[0][4]*( bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L) *1.04f
+			-LQR[0][5]*(                  0.0f                         - bl_ctrl->chassis_posture_info.leg_gyro_L)*0.04f
+			// +LQR[0][8]*( bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) *0.6f
+			// +LQR[0][9]*( bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro) *0.02f
 		)* TORQ_K;
 
 		bl_ctrl->torque_info.foot_moving_torque_L = (int) ( 
@@ -927,10 +927,10 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		)* TORQ_K;
 
 		bl_ctrl->torque_info.foot_balancing_torque_R = (int)-( 
-			-LQR[1][6]*( bl_ctrl->chassis_posture_info.leg_angle_R_set  - bl_ctrl->chassis_posture_info.leg_angle_R) 
-			-LQR[1][7]*(                  0.0f                         - bl_ctrl->chassis_posture_info.leg_gyro_R)  *0.1f
-			// -LQR[1][8]*( bl_ctrl->chassis_posture_info.pitch_angle_set  - bl_ctrl->chassis_posture_info.pitch_angle) 
-			// -LQR[1][9]*( bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro) *0.1f
+			-LQR[1][6]*( bl_ctrl->chassis_posture_info.leg_angle_R_set  - bl_ctrl->chassis_posture_info.leg_angle_R) *1.04f
+			-LQR[1][7]*(                  0.0f                         - bl_ctrl->chassis_posture_info.leg_gyro_R)*0.04f
+			// +LQR[1][8]*( bl_ctrl->chassis_posture_info.pitch_angle_set  - bl_ctrl->chassis_posture_info.pitch_angle) *0.6f
+			// +LQR[1][9]*( bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro) *0.02f
 		)* TORQ_K;
 
 		bl_ctrl->torque_info.foot_moving_torque_R =(int) -( 
