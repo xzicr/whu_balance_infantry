@@ -48,59 +48,63 @@ compiling chassis_task.c...
   #endif
 ../components/algorithm/LQR.h(13): warning:  #1-D: last line of file ends without a newline
   #endif
+..\application\chassis_task.c(261): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    	chassis_move_init->foot_motor_L.distance_offset = ( chassis_move_init->foot_motor_L.position/360.0f ) * 
+HEEL_PERIMETER;
+..\application\chassis_task.c(262): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	chassis_move_init->foot_motor_R.distance_offset = ( (360.0f-chassis_move_init->foot_motor_R.position/360.0f) ) * 
+HEEL_PERIMETER;
 ..\application\chassis_task.c(298): warning:  #177-D: variable "motor_speed_pid"  was declared but never referenced
       const static fp32 motor_speed_pid[3] = {M3505_MOTOR_SPEED_PID_KP, M3505_MOTOR_SPEED_PID_KI, M3505_MOTOR_SPEED_PID_KD};
-..\application\chassis_task.c(509): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(507): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		Moving_High_Offset >= 0.2 &&
-..\application\chassis_task.c(520): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(518): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		if( Moving_High_Offset < 0.2 )
-..\application\chassis_task.c(1064): warning:  #174-D: expression has no effect
+..\application\chassis_task.c(1061): warning:  #174-D: expression has no effect
   		bl_ctrl->joint_motor_3.min_torque = -1.0f * 
 NLIMITED_TORQUE;
 IMITED_TORQUE;
-..\application\chassis_task.c(1184): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1181): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   	fdb->foot_motor_L.distance	= ( fdb->foot_motor_L.position/360.0f + fdb->foot_motor_L.turns ) * 
 HEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
-..\application\chassis_task.c(1185): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1182): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   	fdb->foot_motor_R.distance  = ( (360.0f-fdb->foot_motor_R.position/360.0f) + fdb->foot_motor_R.turns ) * 
 HEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
-..\application\chassis_task.c(1536): warning:  #177-D: variable "dL0"  was declared but never referenced
+..\application\chassis_task.c(1535): warning:  #177-D: variable "dL0"  was declared but never referenced
     fp32 dL0=0,L0=0,Q0=0,S0=0;
-..\application\chassis_task.c(1536): warning:  #550-D: variable "S0"  was set but never used
-    fp32 dL0=0,L0=0,Q0=0,S0=0;
-..\application\chassis_task.c(1538): warning:  #550-D: variable "S3"  was set but never used
+..\application\chassis_task.c(1537): warning:  #550-D: variable "S3"  was set but never used
     fp32 A0,B0,C0,Q2,Q3,S2,S3;
-..\application\chassis_task.c(1540): warning:  #177-D: variable "sin_Q2"  was declared but never referenced
+..\application\chassis_task.c(1539): warning:  #177-D: variable "sin_Q2"  was declared but never referenced
     fp32 sin_Q2,cos_Q2,sin_Q3,cos_Q3;
-..\application\chassis_task.c(1540): warning:  #177-D: variable "cos_Q2"  was declared but never referenced
+..\application\chassis_task.c(1539): warning:  #177-D: variable "cos_Q2"  was declared but never referenced
     fp32 sin_Q2,cos_Q2,sin_Q3,cos_Q3;
-..\application\chassis_task.c(1540): warning:  #177-D: variable "sin_Q3"  was declared but never referenced
+..\application\chassis_task.c(1539): warning:  #177-D: variable "sin_Q3"  was declared but never referenced
     fp32 sin_Q2,cos_Q2,sin_Q3,cos_Q3;
-..\application\chassis_task.c(1540): warning:  #177-D: variable "cos_Q3"  was declared but never referenced
+..\application\chassis_task.c(1539): warning:  #177-D: variable "cos_Q3"  was declared but never referenced
     fp32 sin_Q2,cos_Q2,sin_Q3,cos_Q3;
-..\application\chassis_task.c(1541): warning:  #177-D: variable "axb"  was declared but never referenced
+..\application\chassis_task.c(1540): warning:  #177-D: variable "axb"  was declared but never referenced
     fp32 axb,ayb,axd,ayd,a2,axc;
-..\application\chassis_task.c(1541): warning:  #177-D: variable "ayb"  was declared but never referenced
+..\application\chassis_task.c(1540): warning:  #177-D: variable "ayb"  was declared but never referenced
     fp32 axb,ayb,axd,ayd,a2,axc;
-..\application\chassis_task.c(1541): warning:  #177-D: variable "axd"  was declared but never referenced
+..\application\chassis_task.c(1540): warning:  #177-D: variable "axd"  was declared but never referenced
     fp32 axb,ayb,axd,ayd,a2,axc;
-..\application\chassis_task.c(1541): warning:  #177-D: variable "ayd"  was declared but never referenced
+..\application\chassis_task.c(1540): warning:  #177-D: variable "ayd"  was declared but never referenced
     fp32 axb,ayb,axd,ayd,a2,axc;
-..\application\chassis_task.c(1541): warning:  #177-D: variable "a2"  was declared but never referenced
+..\application\chassis_task.c(1540): warning:  #177-D: variable "a2"  was declared but never referenced
     fp32 axb,ayb,axd,ayd,a2,axc;
-..\application\chassis_task.c(1541): warning:  #177-D: variable "axc"  was declared but never referenced
+..\application\chassis_task.c(1540): warning:  #177-D: variable "axc"  was declared but never referenced
     fp32 axb,ayb,axd,ayd,a2,axc;
-..\application\chassis_task.c(1627): warning:  #1-D: last line of file ends without a newline
+..\application\chassis_task.c(1626): warning:  #1-D: last line of file ends without a newline
   }
 ..\application\chassis_task.c(96): warning:  #177-D: function "motor_ecd_to_angle_change"  was declared but never referenced
   static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
-..\application\chassis_task.c(1427): warning:  #177-D: function "chassis_vector_to_mecanum_wheel_speed"  was declared but never referenced
+..\application\chassis_task.c(1426): warning:  #177-D: function "chassis_vector_to_mecanum_wheel_speed"  was declared but never referenced
   static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 vy_set, const fp32 wz_set, fp32 wheel_speed[4])
-..\application\chassis_task.c: 32 warnings, 0 errors
+..\application\chassis_task.c: 33 warnings, 0 errors
 linking...
-Program Size: Code=84868 RO-data=7916 RW-data=2060 ZI-data=52428  
+Program Size: Code=85188 RO-data=7916 RW-data=2060 ZI-data=52428  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 32 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 33 Warning(s).
 
 <h2>Software Packages used:</h2>
 

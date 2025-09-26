@@ -5,7 +5,7 @@
 
 #### 软件架构
 
-程序编写采用vscdo结合keil进行高效编写，采用MATLAB拟合LQR VMC拟合矩阵
+程序编写采用vscode结合keil进行高效编写，采用MATLAB拟合LQR VMC拟合矩阵
 
 #### 使用说明
 
@@ -36,19 +36,23 @@
 
 ![image-20250921185536221](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250921185536221.png)
 
-#### 参与贡献
+#### LQR原理讲解
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+![](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250925104638323.png)
+
+![image-20250925105807430](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250925105807430.png)
+
+![image-20250925105045532](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250925105045532.png)
 
 
-#### 特技
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+
+
+
+
+#### 参考文献
+
+[轮腿机器人代码调试补充](https://blog.csdn.net/Kevin3389179304/article/details/148379498?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522c9e3eb48c656ad1cc51178d32528747e%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=c9e3eb48c656ad1cc51178d32528747e&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-148379498-null-null.142^v102^pc_search_result_base5&utm_term=%E5%B9%B3%E8%A1%A1%E6%AD%A5%E5%85%B5%E8%B0%83%E8%AF%95%E6%80%9D%E8%B7%AF&spm=1018.2226.3001.4187)
+
+
+
