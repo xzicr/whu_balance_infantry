@@ -172,7 +172,10 @@ void CAN_receive_chassis_data4(uint8_t rxdata[])
   temp[0].uint8_t[1] = rxdata[1];
   temp[0].uint8_t[2] = rxdata[2];
   temp[0].uint8_t[3] = rxdata[3];
-  chassis_data.yaw_gyro = temp[0].float_t;
+  
+
+  // chassis_data.yaw_gyro = temp[0].float_t;
+  chassis_data.high_set = temp[0].float_t;
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)

@@ -59,6 +59,7 @@
 //yaw,pitch控制通道以及状态开关通道
 #define YAW_CHANNEL   0
 #define PITCH_CHANNEL 1
+#define HEIGHT_CHANNEL 1
 #define GIMBAL_MODE_CHANNEL 0
 //turn 180°
 //掉头180 按键
@@ -78,6 +79,8 @@
 
 #define YAW_MOUSE_SEN   0.0003f
 #define PITCH_MOUSE_SEN 0.0002f
+
+#define HIGH_SEN 0.00000005f
 
 #define YAW_ENCODE_SEN    0.01f
 #define PITCH_ENCODE_SEN  0.01f

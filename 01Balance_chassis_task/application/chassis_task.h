@@ -155,7 +155,7 @@
 #define EXIT_PITCH_ANGLE 0.1f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 21.0f
+#define FEED_f 0.0f
 #define FEED_f_1 3.5f
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET -0.0f
@@ -266,8 +266,8 @@ typedef struct
     const fp32 *chassis_INS_angle_point;
   	const fp32 *chassis_INS_gyro_point;
     const fp32 *chassis_INS_accel_point;
-    fp32 yaw_angle, pitch_angle, roll_angle;
-    fp32 yaw_gyro, pitch_gyro, roll_gyro;
+    fp32 yaw_angle, pitch_angle, roll_angle,last_pitch_angle;
+    fp32 yaw_gyro, pitch_gyro, roll_gyro,last_pitch_gyro;
     fp32 yaw_accel, pitch_accel, roll_accel;
 
     fp32 yaw_angle_sett, pitch_angle_set, roll_angle_set;

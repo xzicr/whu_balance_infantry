@@ -126,6 +126,7 @@ typedef struct
 	float yaw_angle;//yaw轴实时角度
 	float yaw_angle_set;//设置yaw轴角度
 	float yaw_gyro;//yaw轴角速度
+  float high_set;
 	RC_chassis_mode_e chassis_mode;//底盘模式
 	uint16_t shoot_mode;//射击模式
 

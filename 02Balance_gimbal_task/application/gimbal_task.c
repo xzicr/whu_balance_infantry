@@ -695,6 +695,8 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   /* --------------遥控器 键鼠数据处理------------------ */
   int16_t vx_channel, vy_channel;
   fp32 vx_set_channel, vy_set_channel;
+  fp32 high_control;
+  fp32 high_min=0.00f,high_max=0.06f;
   fp32 angleset;
   static int16_t yaw_channel = 0;
   const static fp32 chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
@@ -702,6 +704,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_X_CHANNEL], vx_channel, CHASSIS_RC_DEADLINE);
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_Y_CHANNEL], vy_channel, CHASSIS_RC_DEADLINE);
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
+  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[HEIGHT_CHANNEL], high_control, RC_DEADBAND);
   vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
   vy_set_channel = vy_channel * -CHASSIS_VY_RC_SEN;
 
@@ -788,7 +791,10 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   chassis_data->shoot_mode = gimbal_control_set->gimbal_rc_ctrl->mouse.press_l << 1 | shoot_control.shoot_mode | aimflag << 2;
   chassis_data->yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
   chassis_data->yaw_gyro = gimbal_control_set->gimbal_yaw_motor.motor_gyro;
-  // 设置根据模式设置偏航角
+    /*------------------------平步变腿高---------------------------  */
+  chassis_data->high_set += high_control*HIGH_SEN;
+  chassis_data->high_set = fp32_constrain(chassis_data->high_set,high_min,high_max);
+  // 设置根据模式设置偏航角 
   if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;
@@ -801,6 +807,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   {
     chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
   }
+
   // 以下目前还不需要去管
   else if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW) && aimflag == 1)
   {

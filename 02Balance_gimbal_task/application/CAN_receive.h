@@ -75,6 +75,7 @@ typedef struct
   chassis_mode_e last_chassis_mode;
 	chassis_mode_e chassis_mode;//底盘模式
 	uint16_t shoot_mode;//射击模式
+  float high_set;//变腿高
 }chassis_data_t;
 //rm motor data
 typedef struct

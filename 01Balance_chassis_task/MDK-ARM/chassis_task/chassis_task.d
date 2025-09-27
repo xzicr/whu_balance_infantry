@@ -74,3 +74,4 @@ chassis_task\chassis_task.o: ..\application\INS_task.h
 chassis_task\chassis_task.o: ..\application\vofa.h
 chassis_task\chassis_task.o: ..\application\Chassis_power_control.h
 chassis_task\chassis_task.o: ../components/algorithm/LQR.h
+chassis_task\chassis_task.o: ../Inc/usart.h
