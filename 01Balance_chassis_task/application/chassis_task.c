@@ -33,6 +33,7 @@
 #include "LQR.h"
 
 #include "usart.h"
+#include "user_lib.h"
 
 #define square(x) ((x) * (x))
 #define SIGN(x) ((x) > 0 ? 1 : ((x) < 0 ? -1 : 0))
@@ -122,7 +123,7 @@ fp32 suspend_LQR[2][6] = {
 	20.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 	0, 0, 0, 0, 0, 0};
 /* ------------------------PID info------------------------ */
-fp32 roll_PD[2] = {200.0, 25.0};	  // 200, 45
+fp32 roll_PD[2] = {90.0, 25.0};	  // 200, 45
 fp32 coordinate_PD[2] = {4.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 stand_PD[2] = {152.0f, 2.0f}; //{ 200.0f, 50.0f };
@@ -520,7 +521,8 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = target_value_set->chassis_data_->vx_set * normal_move_scale;
+		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(target_value_set->chassis_data_->vx_set * normal_move_scale,-0.1,0.1);
+
 	}
 	else 
 	{
@@ -1471,7 +1473,7 @@ void Motor_CMD_Send(chassis_move_t *CMD_Send)
 	// vTaskDelay(4);
 
 	CAN_LK_Boradcast_Control(-CMD_Send->foot_motor_L.torque_out,-CMD_Send->foot_motor_R.torque_out,0,0);
-	vTaskDelay(2);
+	vTaskDelay(3);
 	if (CMD_Send->joint_motor_3.motor_mode == MOTOR_FORCE)
 		CAN_HT_CMD(0x03, CMD_Send->joint_motor_3.torque_out);
 	else
