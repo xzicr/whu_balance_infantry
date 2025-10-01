@@ -696,7 +696,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   int16_t vx_channel, vy_channel;
   fp32 vx_set_channel, vy_set_channel;
   fp32 high_control;
-  fp32 high_min=0.00f,high_max=0.06f;
+  fp32 high_min=0.00f,high_max=0.10f;
   fp32 angleset;
   static int16_t yaw_channel = 0;
   const static fp32 chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
@@ -758,7 +758,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   }
   chassis_data->vx_set = chassis_data->chassis_cmd_slow_set_vx.out;
   chassis_data->vy_set = chassis_data->chassis_cmd_slow_set_vy.out;
-  chassis_data->wz_set = -CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
+  chassis_data->wz_set = CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
 
   /* 按键设置模式 */
   if (gimbal_control_set->gimbal_rc_ctrl->rc.s[1] == 2)

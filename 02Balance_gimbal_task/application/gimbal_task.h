@@ -80,7 +80,7 @@
 #define YAW_MOUSE_SEN   0.0003f
 #define PITCH_MOUSE_SEN 0.0002f
 
-#define HIGH_SEN 0.00000005f
+#define HIGH_SEN 0.0000004f
 
 #define YAW_ENCODE_SEN    0.01f
 #define PITCH_ENCODE_SEN  0.01f
