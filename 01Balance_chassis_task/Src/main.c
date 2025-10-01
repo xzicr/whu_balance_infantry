@@ -41,6 +41,8 @@
 #include "detect_task.h"
 #include "INS_task.h"
 #include "led_flow_task.h"
+
+#include "EventRecorder.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -136,7 +138,13 @@ int main(void)
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
-
+	//记录代码段运行时间示例
+	//初始化EventRecorder并开启
+	EventRecorderInitialize(EventRecordAll,1U);
+	
+	EventRecorderStart();
+	//func..
+	EventRecorderStop();
   /* Start scheduler */
   osKernelStart();
 

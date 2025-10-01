@@ -99,6 +99,7 @@
 "chassis_task\ui_default_ungroup_3.o"
 "chassis_task\ui_default_ungroup_4.o"
 "chassis_task\ui_default_ungroup_5.o"
+"chassis_task\eventrecorder.o"
 --strict --scatter "chassis_task\chassis_task.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

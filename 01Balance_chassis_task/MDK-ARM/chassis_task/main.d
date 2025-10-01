@@ -83,3 +83,4 @@ chassis_task\main.o: ../application/shoot.h
 chassis_task\main.o: ../application/detect_task.h
 chassis_task\main.o: ../application/INS_task.h
 chassis_task\main.o: ../application/led_flow_task.h
+chassis_task\main.o: D:\Keil5\ARM\PACK\Keil\ARM_Compiler\1.3.1\Include\EventRecorder.h

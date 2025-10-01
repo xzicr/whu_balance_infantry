@@ -177,6 +177,8 @@ extern void CAN_LK_CLOSE_control(uint16_t id);
 extern void CAN_LK_POSITION_Control(int32_t angleControl);
 extern void CAN_LK_SPEED_Control(int16_t iqControl,int32_t speedControl);
 extern void CAN_LK_Torque_Control(uint16_t id,int16_t iqControl);
+void CAN_LK_Boradcast_Control(int16_t iqControl_1,int16_t iqControl_2,int16_t iqControl_3,int16_t iqControl_4);
+
 /* -----------------------Setpower------------------------ */
 extern void CAN_Send_Setpower(uint16_t setPower);
 

@@ -155,7 +155,7 @@
 #define EXIT_PITCH_ANGLE 0.1f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 0.0f
+#define FEED_f 20.0f
 #define FEED_f_1 3.5f
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET -0.0f
@@ -168,7 +168,7 @@
 // ------------- Transfer info ------------- 
 #define HALF_ECD_RANGE                14383
 #define HALF_POSITION_RANGE    178.0f
-#define TORQ_K              153.23 //  153.23  //387.87878  // 494.483818182
+#define TORQ_K             77.1604f// 195.3125 //  153.23  //387.87878  // 494.483818182
 // ------------- Math info ------------- 
 #define PI2					  6.28318530717959f
 #define PI					  3.14159265358979f

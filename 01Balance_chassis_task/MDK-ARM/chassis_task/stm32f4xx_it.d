@@ -50,3 +50,5 @@ chassis_task\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable
 chassis_task\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
 chassis_task\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 chassis_task\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+chassis_task\stm32f4xx_it.o: ../application/CAN_receive.h
+chassis_task\stm32f4xx_it.o: ../application/struct_typedef.h

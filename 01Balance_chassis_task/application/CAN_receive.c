@@ -25,7 +25,7 @@
 #include "main.h"
 
 #include "detect_task.h"
-
+#include "EventRecorder.h"
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 // motor data read
@@ -74,6 +74,8 @@ extern CAN_HandleTypeDef hcan2;
     Power_data[3] = (float)temp[3] / 100.f; \
   }
 
+	
+	
 static uint16_t float_to_uint(float x, float x_min, float x_max, uint8_t bits)
 {
   float span = x_max - x_min;
@@ -102,6 +104,12 @@ static chassis_data_t chassis_data;
 /* 超级电容反馈数据 */
 float Power_data[4];
 uint16_t power_data_temp[4];
+
+
+/*----------------------时间戳和时间长度标志位------------------------*/
+int32_t cnt;
+extern uint32_t clr_flag;
+
 
 /**
  * @brief          将底盘速度设定值vx vy转化为浮点数
@@ -220,6 +228,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     }
     case CAN_LK_MOTOR_ID1:
     {
+      cnt++;
       get_lkmotor_measure(&lkmotor_data[0], rx_data);
       break;
     }
@@ -508,6 +517,23 @@ void CAN_LK_Torque_Control(uint16_t id,int16_t iqControl)
   chassis_can_send_data[5] = *((uint8_t *)(&iqControl) + 1);
   chassis_can_send_data[6] = 0x00;
   chassis_can_send_data[7] = 0x00;
+  HAL_CAN_AddTxMessage(&hcan1, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
+}
+void CAN_LK_Boradcast_Control(int16_t iqControl_1,int16_t iqControl_2,int16_t iqControl_3,int16_t iqControl_4)
+{
+  uint32_t send_mail_box;
+  chassis_tx_message.StdId = 0x280;
+  chassis_tx_message.IDE = CAN_ID_STD;
+  chassis_tx_message.RTR = CAN_RTR_DATA;
+  chassis_tx_message.DLC = 0x08;
+  chassis_can_send_data[0] = *(uint8_t *)(&iqControl_1);
+  chassis_can_send_data[1] = *((uint8_t *)(&iqControl_1)+1);
+  chassis_can_send_data[2] = *(uint8_t *)(&iqControl_2);
+  chassis_can_send_data[3] = *((uint8_t *)(&iqControl_2)+1);
+  chassis_can_send_data[4] = *(uint8_t *)(&iqControl_3);
+  chassis_can_send_data[5] = *((uint8_t *)(&iqControl_3) + 1);
+  chassis_can_send_data[6] = *(uint8_t *)(&iqControl_4);
+  chassis_can_send_data[7] = *((uint8_t *)(&iqControl_4)+1);
   HAL_CAN_AddTxMessage(&hcan1, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
 }
 /* -----------------超级电容功率控制----------------- */
