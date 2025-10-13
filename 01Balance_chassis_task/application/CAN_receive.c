@@ -112,7 +112,7 @@ extern uint32_t clr_flag;
 
 
 /**
- * @brief          将底盘速度设定值vx vy转化为浮点数
+ * @brief          将底盘速度设定值vx high_set转化为浮点数
  * @param[in]      can接受数据
  * @retval         none
  */
@@ -129,7 +129,7 @@ void CAN_receive_chassis_data1(uint8_t rxdata[])
   temp[1].uint8_t[2] = rxdata[6];
   temp[1].uint8_t[3] = rxdata[7];
   chassis_data.vx_set = temp[0].float_t;
-  chassis_data.vy_set = temp[1].float_t;
+  chassis_data.high_set = temp[1].float_t;
 }
 /**
  * @brief          将底盘旋转速度wz和底盘跟随云台角度angle转化为浮点数
@@ -169,21 +169,18 @@ void CAN_receive_chassis_data3(uint8_t rxdata[])
   chassis_data.yaw_angle_set = temp[0].float_t;
 }
 /**
- * @brief          接受云台yaw轴角速度
+ * @brief          接受跳跃标志位数据
  * @param[in]      can接受数据
  * @retval         none
  */
 void CAN_receive_chassis_data4(uint8_t rxdata[])
 {
-  send_float_typedef temp[1];
-  temp[0].uint8_t[0] = rxdata[0];
-  temp[0].uint8_t[1] = rxdata[1];
-  temp[0].uint8_t[2] = rxdata[2];
-  temp[0].uint8_t[3] = rxdata[3];
-  
+
+
+
+  chassis_data.jump_flag = rxdata[0];
 
   // chassis_data.yaw_gyro = temp[0].float_t;
-  chassis_data.high_set = temp[0].float_t;
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)

@@ -96,7 +96,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+   	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -113,10 +113,12 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_CAN1_Init();
+	
   MX_CAN2_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
+	 
   MX_USART3_UART_Init();
   MX_TIM8_Init();
   MX_I2C3_Init();
@@ -139,12 +141,7 @@ int main(void)
   /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
 	//记录代码段运行时间示例
-	//初始化EventRecorder并开启
-	EventRecorderInitialize(EventRecordAll,1U);
-	
-	EventRecorderStart();
-	//func..
-	EventRecorderStop();
+
   /* Start scheduler */
   osKernelStart();
 

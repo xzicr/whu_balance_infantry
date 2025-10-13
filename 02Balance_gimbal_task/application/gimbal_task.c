@@ -39,18 +39,6 @@
 #include "stm32f4xx_hal.h"
 #include "usart.h"
 
-/**
- * @brief          remote control dealline solve,because the value of rocker is not zero in middle place,
- * @param          input:the raw channel value
- * @param          output: the processed channel value
- * @param          deadline
- */
-/**
- * @brief          遥控器的死区判断，因为遥控器的拨杆在中位的时候，不一定为0，
- * @param          输入的遥控器值
- * @param          输出的死区处理后遥控器值
- * @param          死区值
- */
 #define rc_deadband_limit(input, output, dealine)    \
   {                                                  \
     if ((input) > (dealine) || (input) < -(dealine)) \
@@ -118,159 +106,38 @@ float sliding_average(float new_yaw)
 }
 uint8_t start;
 uint8_t close;
-/**
- * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
- *                 data point initialization, and gyro sensor angle point initialization.
- * @param[out]     init: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          初始化"gimbal_control"变量，包括pid初始化， 遥控器指针初始化，云台电机指针初始化，陀螺仪角度指针初始化
- * @param[out]     init:"gimbal_control"变量指针.
- * @retval         none
- */
-static void gimbal_init(gimbal_control_t *init);
 
-void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data);
-/**
- * @brief          set gimbal control mode, mainly call 'gimbal_behaviour_mode_set' function
- * @param[out]     gimbal_set_mode: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          设置云台控制模式，主要在'gimbal_behaviour_mode_set'函数中改变
- * @param[out]     gimbal_set_mode:"gimbal_control"变量指针.
- * @retval         none
- */
-static void gimbal_set_mode(gimbal_control_t *set_mode);
-/**
- * @brief          gimbal some measure data updata, such as motor enconde, euler angle, gyro
- * @param[out]     gimbal_feedback_update: "gimbal_control" valiable point
- * @retval         none
- */
-/**
-  * @brief          底盘测量数据更新，包括电机速度，欧拉角度，机器人速度
-  * @param[out]     gimbal_feedback_update:"gimbal_control"变量指针.
-  * @retval         none
-//  */
-static void gimbal_feedback_update(gimbal_control_t *feedback_update);
-/**
- * @brief          calculate the relative angle between ecd and offset_ecd
- * @param[in]      ecd: motor now encode
- * @param[in]      offset_ecd: gimbal offset encode
- * @retval         relative angle, unit rad
- */
-/**
- * @brief          计算ecd与offset_ecd之间的相对角度
- * @param[in]      ecd: 电机当前编码
- * @param[in]      offset_ecd: 电机中值编码
- * @retval         相对角度，单位rad
- */
-static fp32 motor_ecd_to_angle_change(int16_t encoder);
-/**
- * @brief          set gimbal control set-point, control set-point is set by "gimbal_behaviour_control_set".
- * @param[out]     gimbal_set_control: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          设置云台控制设定值，控制值是通过gimbal_behaviour_control_set函数设置的
- * @param[out]     gimbal_set_control:"gimbal_control"变量指针.
- * @retval         none
- */
-static void gimbal_set_control(gimbal_control_t *set_control);
-/**
- * @brief          control loop, according to control set-point, calculate motor current,
- *                 motor current will be sent to motor
- * @param[out]     gimbal_control_loop: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          控制循环，根据控制设定值，计算电机电流值，进行控制
- * @param[out]     gimbal_control_loop:"gimbal_control"变量指针.
- * @retval         none
- */
-static void gimbal_control_loop(gimbal_control_t *control_loop);
-
-/**
- * @brief          gimbal angle pid init, because angle is in range(-pi,pi),can't use PID in pid.c
- * @param[out]     pid: pid data pointer stucture
- * @param[in]      maxout: pid max out
- * @param[in]      intergral_limit: pid max iout
- * @param[in]      kp: pid kp
- * @param[in]      ki: pid ki
- * @param[in]      kd: pid kd
- * @retval         none
- */
-/**
- * @brief          云台角度PID初始化, 因为角度范围在(-pi,pi)，不能用PID.c的PID
- * @param[out]     pid:云台PID指针
- * @param[in]      maxout: pid最大输出
- * @param[in]      intergral_limit: pid最大积分输出
- * @param[in]      kp: pid kp
- * @param[in]      ki: pid ki
- * @param[in]      kd: pid kd
- * @retval         none
- */
-static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
-
-/**
- * @brief          gimbal PID clear, clear pid.out, iout.
- * @param[out]     pid_clear: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          云台PID清除，清除pid的out,iout
- * @param[out]     pid_clear:"gimbal_control"变量指针.
- * @retval         none
- */
-static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
-/**
- * @brief          gimbal angle pid calc, because angle is in range(-pi,pi),can't use PID in pid.c
- * @param[out]     pid: pid data pointer stucture
- * @param[in]      get: angle feeback
- * @param[in]      set: angle set-point
- * @param[in]      error_delta: rotation speed
- * @retval         pid out
- */
-/**
- * @brief          云台角度PID计算, 因为角度范围在(-pi,pi)，不能用PID.c的PID
- * @param[out]     pid:云台PID指针
- * @param[in]      get: 角度反馈
- * @param[in]      set: 角度设定
- * @param[in]      error_delta: 角速度
- * @retval         pid 输出
- */
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
-#if GIMBAL_TEST_MODE
-// j-scope 帮助pid调参
-static void J_scope_gimbal_test(void);
-#endif
-
-// gimbal control data
-// 云台控制所有相关数据
+/*--------------云台控制所有相关数据----------------*/
 gimbal_control_t gimbal_control;
 uint8_t chassis_flag = 0, aimflag = 0, turnflag = 0;
-// 底盘控制所有相关数据
+
+
+/*------------底盘数据------------------*/
 chassis_data_t chassis_data;
 InputData *Self_aim_data;
-const motor_measure_t *a;
 first_order_filter_type_t chassis_self_aim_yaw;
 const static fp32 chassis_self_aim_yaw_filter[1] = {CHASSIS_ACCEL_Y_NUM};
 
-// motor current
-// 发送的电机电流
-static int16_t yaw_can_set_current = 0, pitch_can_set_current = 0;
+static void gimbal_init(gimbal_control_t *init);
+void leg_control_init(chassis_data_t *leg_contorl);
+void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data);
+static void gimbal_set_mode(gimbal_control_t *set_mode);
+static void gimbal_feedback_update(gimbal_control_t *feedback_update);
+static fp32 motor_ecd_to_angle_change(int16_t encoder);
+static void gimbal_set_control(gimbal_control_t *set_control);
+static void gimbal_control_loop(gimbal_control_t *control_loop);
 
-/**
- * @brief          gimbal task, osDelay GIMBAL_CONTROL_TIME (1ms)
- * @param[in]      pvParameters: null
- * @retval         none
- */
-/**
- * @brief          云台任务，间隔 GIMBAL_CONTROL_TIME 1ms
- * @param[in]      pvParameters: 空
- * @retval         none
- */
+
+static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
+static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
+static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
+
+
+
+
+
+
+
 
 void gimbal_task(void const *pvParameters)
 {
@@ -278,8 +145,10 @@ void gimbal_task(void const *pvParameters)
   // wait a time
   vTaskDelay(GIMBAL_TASK_INIT_TIME);
   // gimbal init
-  // 云台初始化
+
   gimbal_init(&gimbal_control);
+
+  leg_control_init(&chassis_data);
 
 	/* 射击初始化 */
   shoot_Init();
@@ -298,63 +167,25 @@ void gimbal_task(void const *pvParameters)
     vTaskDelay(GIMBAL_CONTROL_TIME);
   }
 }
-/**
- * @brief          return yaw motor data point
- * @param[in]      none
- * @retval         yaw motor data point
- */
-/**
- * @brief          返回yaw 电机数据指针
- * @param[in]      none
- * @retval         yaw电机指针
- */
-const gimbal_motor_t *get_yaw_motor_point(void)
-{
-  return &gimbal_control.gimbal_yaw_motor;
-}
 
-/**
- * @brief          return pitch motor data point
- * @param[in]      none
- * @retval         pitch motor data point
- */
-/**
- * @brief          返回pitch 电机数据指针
- * @param[in]      none
- * @retval         pitch
- */
-const gimbal_motor_t *get_pitch_motor_point(void)
-{
-  return &gimbal_control.gimbal_pitch_motor;
-}
 
-/**
- * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
- *                 data point initialization, and gyro sensor angle point initialization.
- * @param[out]     init: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          初始化"gimbal_control"变量，包括pid初始化， 遥控器指针初始化，云台电机指针初始化，陀螺仪角度指针初始化
- * @param[out]     init:"gimbal_control"变量指针.
- * @retval         none
- */
+
 static void gimbal_init(gimbal_control_t *init)
 {
 
-  //static const fp32 Pitch_speed_pid[3] = {PITCH_SPEED_PID_KP, PITCH_SPEED_PID_KI, PITCH_SPEED_PID_KD};
   static const fp32 Pitch_angle_pid_1[3] = {PITCH_GYRO_ABSOLUTE_PID_KP_1, PITCH_GYRO_ABSOLUTE_PID_KI_1, PITCH_GYRO_ABSOLUTE_PID_KD_1};
-  // 陀螺仪数据指针获取
+
   init->INS = get_INS();
   init->gimbal_INT_angle_point = get_INS_angle_point();
   init->gimbal_INT_gyro_point = get_gyro_data_point();
-  // 遥控器数据指针获取
   init->gimbal_rc_ctrl = get_remote_control_point();
-  // 初始化电机模式
+
+
   init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_OFF;
   chassis_data.shoot_mode = 0;
   chassis_data.chassis_mode = 0;
-  // 初始化pitch电机pid
+
+
   PID_init(&init->gimbal_pitch_motor.gimbal_motor_angle_pid_1, PID_POSITION, Pitch_angle_pid_1, PITCH_GYRO_ABSOLUTE_PID_MAX_OUT_1, PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT_1);
 
   gimbal_feedback_update(init);
@@ -365,16 +196,11 @@ static void gimbal_init(gimbal_control_t *init)
   Self_aim_data = get_selfaim_data();
 }
 
-/**
- * @brief          set gimbal control mode, mainly call 'gimbal_behaviour_mode_set' function
- * @param[out]     gimbal_set_mode: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          设置云台控制模式，主要在'gimbal_behaviour_mode_set'函数中改变
- * @param[out]     gimbal_set_mode:"gimbal_control"变量指针.
- * @retval         none
- */
+void leg_control_init(chassis_data_t *leg_contorl)
+{
+  leg_contorl->high_set=0;
+}
+
 static void gimbal_set_mode(gimbal_control_t *set_mode)
 {
   if (set_mode == NULL)
@@ -429,16 +255,7 @@ static void gimbal_set_mode(gimbal_control_t *set_mode)
   }
   set_mode->gimbal_pitch_motor.last_gimbal_motor_mode = set_mode->gimbal_pitch_motor.gimbal_motor_mode;
 }
-/**
- * @brief          gimbal some measure data updata, such as motor enconde, euler angle, gyro
- * @param[out]     gimbal_feedback_update: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          底盘测量数据更新，包括电机速度，欧拉角度，机器人速度
- * @param[out]     gimbal_feedback_update:"gimbal_control"变量指针.
- * @retval         none
- */
+
 static void gimbal_feedback_update(gimbal_control_t *feedback_update)
 {
   if (feedback_update == NULL)
@@ -466,20 +283,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
 
 }
 
-/**
- * @brief          calculate the relative angle between ecd and offset_ecd
- * @param[in]      ecd: motor now encode
- * @param[in]      offset_ecd: gimbal offset encode
- * @retval         relative angle, unit rad
- */
-;
 
-/**
- * @brief          计算ecd与offset_ecd之间的相对角度
- * @param[in]      ecd: 电机当前编码
- * @param[in]      offset_ecd: 电机中值编码
- * @retval         相对角度，单位rad
- */
 static fp32 motor_ecd_to_angle_change(int16_t last_encoder)
 {
   //    int32_t relative_ecd = ecd - offset_ecd;
@@ -495,11 +299,6 @@ static fp32 motor_ecd_to_angle_change(int16_t last_encoder)
   return angle;
 }
 
-/**
- * @brief          设置云台PITCH轴目标角度
- * @param[out]     gimbal_control_t
- * @retval         none
- */
 static void gimbal_set_control(gimbal_control_t *set_control)
 {
   static int16_t pitch_channel = 0;
@@ -543,17 +342,7 @@ static void gimbal_set_control(gimbal_control_t *set_control)
   }
 }
 
-/**
- * @brief          control loop, according to control set-point, calculate motor current,
- *                 motor current will be sent to motor
- * @param[out]     gimbal_control_loop: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          控制循环，根据控制设定值，计算电机电流值，进行控制
- * @param[out]     gimbal_control_loop:"gimbal_control"变量指针.
- * @retval         none
- */
+
 static void gimbal_control_loop(gimbal_control_t *control_loop)
 {
   if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_OFF)
@@ -587,16 +376,6 @@ static void gimbal_control_loop(gimbal_control_t *control_loop)
   }
 }
 
-/**
- * @brief          gimbal control mode :GIMBAL_MOTOR_GYRO, use euler angle calculated by gyro sensor to control.
- * @param[out]     gimbal_motor: yaw motor or pitch motor
- * @retval         none
- */
-/**
- * @brief          云台控制模式:GIMBAL_MOTOR_GYRO，使用陀螺仪计算的欧拉角进行控制
- * @param[out]     gimbal_motor:yaw电机或者pitch电机
- * @retval         none
- */
 static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
 {
   if (gimbal_motor == NULL)
@@ -609,17 +388,6 @@ static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
   // 控制值赋值
   gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
 }
-/**
- * @brief          "gimbal_control" valiable initialization, include pid initialization, remote control data point initialization, gimbal motors
- *                 data point initialization, and gyro sensor angle point initialization.
- * @param[out]     gimbal_init: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          初始化"gimbal_control"变量，包括pid初始化， 遥控器指针初始化，云台电机指针初始化，陀螺仪角度指针初始化
- * @param[out]     gimbal_init:"gimbal_control"变量指针.
- * @retval         none
- */
 static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
 {
   if (pid == NULL)
@@ -658,16 +426,7 @@ static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_de
   return pid->out;
 }
 
-/**
- * @brief          gimbal PID clear, clear pid.out, iout.
- * @param[out]     gimbal_pid_clear: "gimbal_control" valiable point
- * @retval         none
- */
-/**
- * @brief          云台PID清除，清除pid的out,iout
- * @param[out]     gimbal_pid_clear:"gimbal_control"变量指针.
- * @retval         none
- */
+
 static void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear)
 {
   if (gimbal_pid_clear == NULL)
@@ -696,7 +455,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   int16_t vx_channel, vy_channel;
   fp32 vx_set_channel, vy_set_channel;
   fp32 high_control;
-  fp32 high_min=0.00f,high_max=0.10f;
+  fp32 high_min=0.00f,high_max=0.30f;
   fp32 angleset;
   static int16_t yaw_channel = 0;
   const static fp32 chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
@@ -740,7 +499,6 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   {
     vy_set_channel = -2;
   }
-  // first order low-pass replace ramp function, calculate chassis speed set-point to improve control performance
   // 一阶低通滤波代替斜波作为底盘速度输入
   first_order_filter_init(&chassis_data->chassis_cmd_slow_set_vx, GIMBAL_CONTROL_TIME, chassis_x_order_filter);
   first_order_filter_init(&chassis_data->chassis_cmd_slow_set_vy, GIMBAL_CONTROL_TIME, chassis_y_order_filter);
@@ -794,6 +552,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
     /*------------------------平步变腿高---------------------------  */
   chassis_data->high_set += high_control*HIGH_SEN;
   chassis_data->high_set = fp32_constrain(chassis_data->high_set,high_min,high_max);
+  chassis_data->jump_flag = gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 3  ;
   // 设置根据模式设置偏航角 
   if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
   {
@@ -802,6 +561,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;
+    chassis_data->high_set = 0;
   }
   if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW) && aimflag == 0 && turnflag == 0)
   {
@@ -831,11 +591,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
     turnflag = 0;
   }
 }
-/**
- * @brief          返回底盘数据指针供CAN_task任务使用
- * @param[out]     none
- * @retval         none
- */
+
 chassis_data_t *get_chassis_data_point()
 {
   return &chassis_data;

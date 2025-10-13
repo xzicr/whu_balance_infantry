@@ -238,7 +238,7 @@ void can_gimbal_chassis_data1(chassis_data_t *chassis_data)
 {
   send_float_typedef temp[2];
   temp[0].float_t = chassis_data->vx_set;
-  temp[1].float_t = chassis_data->vy_set;
+  temp[1].float_t = chassis_data->high_set;
   uint32_t send_mail_box;
   chassis_tx_message.StdId = CAN_gmbial_chassis_data1;
   chassis_tx_message.IDE = CAN_ID_STD;
@@ -301,24 +301,13 @@ void can_gimbal_chassis_data3(chassis_data_t *chassis_data)
 }
 void can_gimbal_chassis_data4(chassis_data_t *chassis_data)
 {
-  send_float_typedef temp[1];
   uint32_t send_mail_box;
-  // temp[0].float_t = chassis_data->yaw_gyro;
-  temp[0].float_t = chassis_data->high_set;
   chassis_tx_message.StdId = CAN_gimbal_chassis_data4;
   chassis_tx_message.IDE = CAN_ID_STD;
   chassis_tx_message.RTR = CAN_RTR_DATA;
-  chassis_tx_message.DLC = 0x04;
-  // chassis_can_send_data[0] = temp[0].uint8_t[0];
-  // chassis_can_send_data[1] = temp[0].uint8_t[1];
-  // chassis_can_send_data[2] = temp[0].uint8_t[2];
-  // chassis_can_send_data[3] = temp[0].uint8_t[3];
-  chassis_can_send_data[0] = temp[0].uint8_t[0];
-  chassis_can_send_data[1] = temp[0].uint8_t[1];
-  chassis_can_send_data[2] = temp[0].uint8_t[2];
-  chassis_can_send_data[3] = temp[0].uint8_t[3];
-  while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0)
-    ;
+  chassis_tx_message.DLC = 0x01;
+  chassis_can_send_data[0] = chassis_data->jump_flag;
+  while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);
   HAL_CAN_AddTxMessage(&hcan2, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
 }
 

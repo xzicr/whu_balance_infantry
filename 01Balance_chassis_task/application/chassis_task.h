@@ -136,7 +136,7 @@
 
 // ------------- Limit info ------------- 
 #define MAX_ACCL 13000.0f
-#define MAX_ACCL_JOINT 15.0f
+#define MAX_ACCL_JOINT 20.0f
 #define MAX_FOOT_OUTPUT 2048
 
 // ------------- Mech info ------------- 
@@ -151,11 +151,11 @@
 #define LEG_OFFSET       30.0f// 水平位置到上限位的夹角
 #define LOWER_SUPPORT_FORCE_FOR_JUMP 5.0f
 #define LOWER_SUPPORT_FORCE 0.0f
-#define MOVE_LOWER_BOUND 0.3f
+#define MOVE_LOWER_BOUND 0.5f
 #define EXIT_PITCH_ANGLE 0.1f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 20.0f
+#define FEED_f 21.0f
 #define FEED_f_1 3.5f
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET -0.0f
@@ -266,7 +266,7 @@ typedef struct
     const fp32 *chassis_INS_angle_point;
   	const fp32 *chassis_INS_gyro_point;
     const fp32 *chassis_INS_accel_point;
-    fp32 yaw_angle, pitch_angle, roll_angle,last_pitch_angle;
+    fp32 yaw_angle,yaw_angle_last,yaw_angle_total, pitch_angle, roll_angle,last_pitch_angle;
     fp32 yaw_gyro, pitch_gyro, roll_gyro,last_pitch_gyro;
     fp32 yaw_accel, pitch_accel, roll_accel;
 
@@ -293,6 +293,7 @@ typedef struct
     fp32 foot_speed, foot_speed_K, foot_speed_set;
 
     fp32 supportive_force_L, supportive_force_R;
+    fp32 balance_force_L, balance_force_R;
 
 } chassis_posture_info_t;
 
@@ -300,26 +301,26 @@ typedef struct
 typedef struct
 {
     // -------- horizontal force -------- 
-    fp32 joint_balancing_torque_L, joint_balancing_torque_R;
     fp32 foot_balancing_torque_L,  foot_balancing_torque_R;
-	
-	fp32 foot_moving_torque_L,  foot_moving_torque_R;
-    fp32 joint_moving_torque_L, joint_moving_torque_R;
-
-    fp32 joint_prevent_splits_torque_L, joint_prevent_splits_torque_R;
-
-    fp32 joint_horizontal_torque_L, joint_horizontal_torque_R;
+	  fp32 foot_moving_torque_L,  foot_moving_torque_R;
     fp32 foot_horizontal_torque_L,  foot_horizontal_torque_R;
-
+    
+    fp32 joint_balancing_torque_L, joint_balancing_torque_R;
+    fp32 joint_moving_torque_L, joint_moving_torque_R;
+    fp32 joint_prevent_splits_torque_L, joint_prevent_splits_torque_R;
+    fp32 joint_horizontal_torque_L, joint_horizontal_torque_R;
+    
+    fp32 joint_roll_torque_L,  joint_roll_torque_R;
+    
+    
     fp32 joint_horizontal_torque_temp1_R, joint_horizontal_torque_temp2_R;
     fp32 joint_horizontal_torque_temp1_L, joint_horizontal_torque_temp2_L;
-
+    
     fp32 yaw_torque;
-
+    
     // -------- vertical force -------- 
-    fp32 joint_roll_torque_L,  joint_roll_torque_R;
+    
     fp32 joint_stand_torque_L, joint_stand_torque_R;
-
     fp32 joint_vertical_torque_L,      joint_vertical_torque_R;
     fp32 joint_real_vertical_torque_L, joint_real_vertical_torque_R;
 
