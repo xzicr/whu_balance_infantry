@@ -5,7 +5,7 @@
 **********************************************************************
 
 File          : E:/02GC/02RM_Balance_git/01Balance_chassis_task/MDK-ARM/balance_chassis.jdebug
-Created       : 12 Oct 2025 10:26
+Created       : 31 Oct 2025 21:00
 Ozone Version : V3.24
 */
 
@@ -25,7 +25,7 @@ void OnProjectLoad (void) {
   Project.AddPathSubstitute ("E:/02GC/02RM_Balance_git/01Balance_chassis_task/MDK-ARM", "$(ProjectDir)");
   Project.AddPathSubstitute ("e:/02gc/02rm_balance_git/01balance_chassis_task/mdk-arm", "$(ProjectDir)");
   Project.SetDevice ("Cortex-M4");
-  Project.SetHostIF ("USB", "1043585064");
+  Project.SetHostIF ("USB", "1049751124");
   Project.SetTargetIF ("SWD");
   Project.SetTIFSpeed ("4 MHz");
   Project.AddSvdFile ("$(InstallDir)/Config/CPU/Cortex-M4F.svd");
@@ -33,7 +33,6 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  Edit.SysVar (VAR_HSS_SPEED, FREQ_10_KHZ);
   File.Open ("$(ProjectDir)/chassis_task/chassis_task.axf");
 }
 

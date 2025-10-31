@@ -35,6 +35,19 @@
 #include "usart.h"
 #include "user_lib.h"
 
+//debug»·½Ú
+fp32 L_leg_angle_chazhi;
+fp32 R_leg_angle_chazhi;
+
+fp32 L_leg_gyro_chazhi;
+fp32 R_leg_gyro_chazhi;
+
+fp32 L_body_angle_chazhi;
+fp32 R_body_angle_chazhi;
+
+fp32 L_body_gyro_chazhi;
+fp32 R_body_gyro_chazhi;
+
 #define square(x) ((x) * (x))
 #define SIGN(x) ((x) > 0 ? 1 : ((x) < 0 ? -1 : 0))
 #define min(a, b) ((a) < (b) ? (a) : (b))
@@ -909,7 +922,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 					+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
 					- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 					- LQR[2][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
-					- LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
+					- LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 				);
 				bl_ctrl->torque_info.joint_moving_torque_L    = (
 					+ LQR[2][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET)
@@ -930,6 +943,21 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 					+ LQR[3][2] * ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total )
 					+ LQR[3][3] * ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 					);
+
+				// //debug
+				// L_leg_angle_chazhi = bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L;
+				// R_leg_angle_chazhi = bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R;
+
+				// L_leg_gyro_chazhi = 0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L;
+				// R_leg_gyro_chazhi = 0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R;
+
+				// L_body_angle_chazhi = bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle;
+				// R_body_angle_chazhi = bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle;
+
+				// L_body_gyro_chazhi = bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro;
+				// R_body_gyro_chazhi = bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro;
+
+
 			}
 		}
 	}
