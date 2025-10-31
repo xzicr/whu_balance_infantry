@@ -187,18 +187,34 @@ void UART_SEND_DATA(uint8_t torque_out_1,uint8_t torque_out_2,uint8_t torque_out
 void chassis_task(void const *pvParameters)
 {
 	vTaskDelay(CHASSIS_TASK_INIT_TIME);
+
+	//初始化电机 传感器数据获取
 	chassis_init(&chassis_move);
 
 	while (1)
 	{
-
+		//更新传感器 电机数据
 		chassis_feedback_update(&chassis_move);
+
+		//状态检测
 		Chassis_Status_Detect(&chassis_move);
+
+		//模式设置
 		chassis_set_mode(&chassis_move);
+
+		//模式切换控制
 		chassis_mode_change_control_transit(&chassis_move);
+
+		//目标值设置
 		Target_Value_Set(&chassis_move);
+
+		//力矩输出计算
 		Chassis_Torque_Calculation(&chassis_move);
+
+		//虚拟腿映射关节电机力矩计算
 		Chassis_Torque_Combine(&chassis_move);
+
+		//发送计算结果
 		Motor_CMD_Send(&chassis_move);
 
 		vTaskDelay(CHASSIS_CONTROL_TIME_MS);
@@ -222,8 +238,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	HT_Motor_zero_set();
 	Motor_Zero_CMD_Send();
 	vTaskDelay(1);
-	// CAN_LK_START_control(0x141);
-	// CAN_LK_START_control(0x142);
+
 	/* -------------------------param get---------------------------- */
 	chassis_move_init->joint_motor_1.motor_measure = get_HT_motor_measure_point(0);
 	chassis_move_init->joint_motor_2.motor_measure = get_HT_motor_measure_point(1);
@@ -238,8 +253,6 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_move_init->gimbal_lkmotor_measure = get_yaw_gimbal_lkmotor_measure_point();
 
 	/* ----------------------------Mode set --------------------------- */
-	//   chassis_move_init->chassis_mode = CHASSIS_VECTOR_RAW;
-
 	chassis_move_init->mode.chassis_mode = chassis_move_init->mode.last_chassis_mode = DISABLE_CHASSIS;
 	chassis_move_init->mode.chassis_balancing_mode = chassis_move_init->mode.last_chassis_balancing_mode = NO_FORCE;
 	chassis_move_init->mode.sport_mode = chassis_move_init->mode.last_sport_mode = NORMAL_MOVING_MODE;
@@ -300,9 +313,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
 	const static fp32 chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
 	const static fp32 chassis_y_order_filter[1] = {CHASSIS_ACCEL_Y_NUM};
-	//  chassis_move_init
 
-	// initialize angle PID
+
 	// 初始化角度PID
 	PID_init(&chassis_move_init->chassis_angle_pid, PID_POSITION, chassis_yaw_pid, CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT, CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT);
 	// 用一阶滤波代替斜波函数生成
@@ -450,7 +462,8 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
 		chassis_mode_change->mode.chassis_balancing_mode = NO_FORCE;
 		reduce_flag = 0;
 	}
-	/* ---------------------目前尚未开发运动模式，不存在判断跳跃状态---------------------------- */
+
+	//跳跃模式流程
 	if (chassis_mode_change->mode.sport_mode == JUMPING_MODE && chassis_mode_change->mode.last_sport_mode != JUMPING_MODE)
 	{
 		chassis_mode_change->mode.jumping_mode = STANDING_JUMP;
@@ -500,6 +513,7 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
 	}
 	else
 		chassis_mode_change->mode.jumping_stage = FINISHED;
+
 
 	if (chassis_mode_change->flag_info.stablize_high_flag == 1 &&
 		Moving_High_Offset >= 0.2 &&
@@ -1171,11 +1185,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm;
 	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm;
 	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm;
-
-	// fdb->joint_motor_1.torque_get =  fdb->joint_motor_1.motor_measure->real_torque;
-	// fdb->joint_motor_2.torque_get =  fdb->joint_motor_2.motor_measure->real_torque;
-	// fdb->joint_motor_3.torque_get =  fdb->joint_motor_3.motor_measure->real_torque;
-	// fdb->joint_motor_4.torque_get =  fdb->joint_motor_4.motor_measure->real_torque;
 
 	fdb->joint_motor_1.torque_get = 0.95f * fdb->joint_motor_1.torque_get + 0.05f * fdb->joint_motor_1.motor_measure->real_torque;
 	fdb->joint_motor_2.torque_get = 0.95f * fdb->joint_motor_2.torque_get + 0.05f * fdb->joint_motor_2.motor_measure->real_torque;
