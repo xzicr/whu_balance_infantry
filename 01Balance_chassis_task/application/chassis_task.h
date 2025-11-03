@@ -62,6 +62,9 @@
 //摇杆死区
 #define CHASSIS_RC_DEADLINE 10
 
+#define CHASSIS_RC_WZ_DEADLINE 60
+
+
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_VX 0.25f
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_VY 0.25f
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_WZ 0.25f
@@ -155,7 +158,7 @@
 #define EXIT_PITCH_ANGLE 0.1f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 28.0f
+#define FEED_f 24.0f
 
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET -0.0f
@@ -269,31 +272,40 @@ typedef struct
     fp32 yaw_angle,yaw_angle_last,yaw_angle_total, pitch_angle, roll_angle,last_pitch_angle;
     fp32 yaw_gyro, pitch_gyro, roll_gyro,last_pitch_gyro;
     fp32 yaw_accel, pitch_accel, roll_accel;
+    fp32 x_accel,y_accel,z_accel;
 
     fp32 yaw_angle_sett, pitch_angle_set, roll_angle_set;
     fp32 yaw_gyro_set, pitch_gyro_set, roll_gyro_set;
 
     fp32 ideal_high;
-    fp32 leg_length_L, last_leg_length_L, leg_length_L_set;
-    fp32 leg_length_R, last_leg_length_R, leg_length_R_set;
-    fp32 leg_dlength_L;
-    fp32 leg_dlength_R;
+    fp32 leg_length_L_set, leg_length_R_set;
+    fp32 leg_length_L, last_leg_length_L;
+    fp32 leg_length_R, last_leg_length_R;
+    fp32 leg_dlength_L,leg_dlength_R,last_leg_dlength_L,last_leg_dlength_R;
+    fp32 leg_ddlength_L,leg_ddlength_R,last_leg_ddlength_L,last_leg_ddlength_R;
+
 
     fp32 foot_roll_angle;
     fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set;
     fp32 leg_angle_R, last_leg_angle_R, leg_angle_R_set;
-    fp32 leg_gyro_L, leg_gyro_R;
+    fp32 leg_gyro_L, leg_gyro_R,last_leg_gyro_L,last_leg_gyro_R;
+    fp32 leg_accel_L, leg_accel_R;
 
     /* ----------debug param-------- */
     fp32 xc,yc,xb,yb;
     fp32 Q2;
 
-
-    fp32 foot_distance, foot_distance_K, foot_distance_set;
+    uint16_t position_lock_flag;
+    uint16_t position_lock_state;
+    fp32 foot_distance, foot_distance_K, foot_distance_set,target_distance_set;
     fp32 foot_speed, foot_speed_K, foot_speed_set;
 
-    fp32 supportive_force_L, supportive_force_R;
-    fp32 balance_force_L, balance_force_R;
+
+    //车身加速度
+    fp32 chassis_accel;
+    //轮子加速度计算
+    fp32 foot_accel_L, foot_accel_R;
+
 
 } chassis_posture_info_t;
 
@@ -326,6 +338,10 @@ typedef struct
 
     fp32 joint_vertical_torque_temp1_R, joint_vertical_torque_temp2_R;
     fp32 joint_vertical_torque_temp1_L, joint_vertical_torque_temp2_L;
+
+    fp32 forque_L, forque_R;
+    fp32 supportive_force_L, supportive_force_R;
+    fp32 balance_force_L, balance_force_R;
 
 } torque_info_t;
 typedef struct
@@ -374,10 +390,7 @@ typedef struct
     suspend_flag_e suspend_flag_R, last_suspend_flag_R;
     bool_t Ignore_Off_Ground;
     bool_t abnormal_flag;
-    bool_t static_flag, last_static_flag;
-    bool_t moving_flag, last_moving_flag;
     bool_t rotation_flag;
-    bool_t controlling_flag;
     bool_t set_pos_after_moving;
     bool_t overpower_warning_flag;
     bool_t last_overpower_warning_flag;
@@ -429,6 +442,7 @@ typedef struct
   const RC_ctrl_t *chassis_RC;               
   const fp32 *chassis_INS_angle;    
   const fp32 *chassis_INS_gyro;      
+  const fp32 *chassis_INS_accel;
 	const chassis_data_t *chassis_data_;	 //从云台接受到的底盘数据设定值
 
 
@@ -495,7 +509,6 @@ extern void chassis_task(void const *pvParameters);
   * @retval         none
   */
 extern void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector);
-extern float data[2];
 extern chassis_move_t chassis_move;
 float evaluate_polynomial(float L0, float Q0, PolynomialCoefficients coeffs);
 float get_jacobian_element(chassis_move_t *VMCJ, float L0, float Q0, uint8_t element_type);

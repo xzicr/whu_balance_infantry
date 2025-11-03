@@ -33,6 +33,7 @@
         "detect_task.h": "c",
         "remote_control.h": "c",
         "chassis_behaviour.h": "c",
-        "queue": "c"
+        "queue": "c",
+        "variant": "c"
     }
 }
