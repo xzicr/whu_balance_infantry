@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx,USE_HAL_DRIVER,STM32F407xx,ARM_MATH_CM4,__FPU_USED=1U,__FPU_PRESENT=1U,__CC_ARM,ARM_MATH_MATRIX_CHECK,ARM_MATH_ROUNDING</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../bsp/boards;../application;../components/algorithm;../components/algorithm/Include;../components/controller;../components/devices;../components/UI;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../bsp/boards;../application;../components/algorithm;../components/algorithm/Include;../components/controller;../components/devices;../components/UI;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;..\components\filter</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -508,117 +508,22 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Drivers/CMSIS</GroupName>
-          <Files>
-            <File>
-              <FileName>system_stm32f4xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/system_stm32f4xx.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>boards</GroupName>
-          <Files>
-            <File>
-              <FileName>bsp_buzzer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_buzzer.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_can.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_delay.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_imu_pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_imu_pwm.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_led.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_rc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_rc.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_usart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\bsp\boards\bsp_usart.h</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_adc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\bsp\boards\bsp_adc.h</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp\boards\bsp_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_i2c.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\bsp\boards\bsp_i2c.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>application</GroupName>
           <Files>
-            <File>
-              <FileName>calibrate_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\calibrate_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>CAN_receive.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\CAN_receive.c</FilePath>
-            </File>
-            <File>
-              <FileName>chassis_behaviour.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\chassis_behaviour.c</FilePath>
-            </File>
             <File>
               <FileName>chassis_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\chassis_task.c</FilePath>
             </File>
             <File>
-              <FileName>detect_task.c</FileName>
+              <FileName>gimbal_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\application\detect_task.c</FilePath>
+              <FilePath>..\application\gimbal_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\application\gimbal_task.h</FilePath>
             </File>
             <File>
               <FileName>INS_task.c</FileName>
@@ -629,6 +534,46 @@
               <FileName>led_flow_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\led_flow_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>shoot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\shoot.c</FilePath>
+            </File>
+            <File>
+              <FileName>shoot.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\application\shoot.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart_receive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\uart_receive.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_receive.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\application\uart_receive.h</FilePath>
+            </File>
+            <File>
+              <FileName>CAN_receive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\CAN_receive.c</FilePath>
+            </File>
+            <File>
+              <FileName>calibrate_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\calibrate_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>chassis_behaviour.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\chassis_behaviour.c</FilePath>
+            </File>
+            <File>
+              <FileName>detect_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\detect_task.c</FilePath>
             </File>
             <File>
               <FileName>remote_control.c</FileName>
@@ -651,26 +596,6 @@
               <FilePath>..\application\vofa.c</FilePath>
             </File>
             <File>
-              <FileName>gimbal_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\gimbal_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>gimbal_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\application\gimbal_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>shoot.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\shoot.c</FilePath>
-            </File>
-            <File>
-              <FileName>shoot.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\application\shoot.h</FilePath>
-            </File>
-            <File>
               <FileName>referee.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\referee.c</FilePath>
@@ -689,11 +614,6 @@
               <FileName>referee_usart_task.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\application\referee_usart_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>protocol.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\application\protocol.h</FilePath>
             </File>
             <File>
               <FileName>Chassis_power_control.c</FileName>
@@ -744,6 +664,111 @@
               <FileName>oled_task.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\application\oled_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>protocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\application\protocol.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>UI</GroupName>
+          <Files>
+            <File>
+              <FileName>ui_default_Ungroup_0.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_0.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_0.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_0.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_interface.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_interface.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_types.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_1.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_1.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_1.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_2.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_2.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_2.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_3.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_3.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_4.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_4.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_4.h</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_5.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_default_Ungroup_5.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\UI\ui_default_Ungroup_5.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>filter</GroupName>
+          <Files>
+            <File>
+              <FileName>balance_filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\filter\balance_filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>balance_filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\filter\balance_filter.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -840,6 +865,16 @@
               <FileType>5</FileType>
               <FilePath>..\components\algorithm\LQR.h</FilePath>
             </File>
+            <File>
+              <FileName>kalman_filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\components\algorithm\kalman_filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>kalman_filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\components\algorithm\kalman_filter.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -849,6 +884,91 @@
               <FileName>pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\components\controller\pid.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>boards</GroupName>
+          <Files>
+            <File>
+              <FileName>bsp_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_imu_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_imu_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_rc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_rc.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_usart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\bsp\boards\bsp_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\bsp\boards\bsp_adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\boards\bsp_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_i2c.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\bsp\boards\bsp_i2c.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/CMSIS</GroupName>
+          <Files>
+            <File>
+              <FileName>system_stm32f4xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/system_stm32f4xx.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2925,91 +3045,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>UI</GroupName>
-          <Files>
-            <File>
-              <FileName>ui_default_Ungroup_0.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_0.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_0.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_0.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_interface.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_interface.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_interface.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_types.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_1.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_1.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_1.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_2.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_2.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_2.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_3.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_3.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_3.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_4.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_4.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_4.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_5.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default_Ungroup_5.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default_Ungroup_5.h</FilePath>
             </File>
           </Files>
         </Group>

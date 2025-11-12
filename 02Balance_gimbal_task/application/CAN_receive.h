@@ -57,27 +57,24 @@ typedef union
 typedef enum
 {
   CHASSIS_MODE_OFF=0,
-  CHASSIS_MODE_NO_FOLLOW,
   CHASSIS_MODE_FOLLOW,
+  CHASSIS_MODE_NO_FOLLOW,
   CHASSIS_MODE_INIT,
+  CHASSIS_MODE_ROTATE,
 }chassis_mode_e;
 
 typedef struct
 {
 	float vx_set;//底盘x轴方向设定的速度控制量；
+	float vy_set;//底盘y轴方向设定的速度控制量
 	float wz_set;//底盘自旋时 设定的速度控制量；
-	float yaw_angle;//yaw轴角度实时值
+  float high_set;//变腿高
 	float yaw_angle_set;//yaw轴角度设定值
-	first_order_filter_type_t chassis_cmd_slow_set_vx;  //use first order filter to slow set-point.使用一阶低通滤波减缓设定值
-	first_order_filter_type_t chassis_cmd_slow_set_vy;  //use first order filter to slow set-point.使用一阶低通滤波减缓设定值
-  chassis_mode_e last_chassis_mode;
+	float yaw_angle;//yaw轴角度实时值
+	float yaw_gyro;//yaw轴角速度实时值
 	chassis_mode_e chassis_mode;//底盘模式
 	uint16_t shoot_mode;//射击模式
-  float high_set;//变腿高
   uint8_t tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
-  
-	float vy_set;//底盘y轴方向设定的速度控制量
-	float yaw_gyro;//yaw轴角速度实时值
 }chassis_data_t;
 
 //rm motor data

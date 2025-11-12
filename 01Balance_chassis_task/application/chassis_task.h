@@ -24,6 +24,7 @@
 #include "remote_control.h"
 #include "user_lib.h"
 #include "gimbal_task.h"
+// #include "kalman_filter.h"
 //in the beginning of task ,wait a time
 //任务开始空闲一段时间
 #define CHASSIS_TASK_INIT_TIME 357
@@ -158,10 +159,10 @@
 #define EXIT_PITCH_ANGLE 0.1f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 24.0f
+#define FEED_f 25.0f
 
 
-#define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET -0.0f
+#define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET 0.0f
 
 #define MOTOR_POS_UPPER_BOUND 30.0f
 #define MOTOR_POS_LOWER_BOUND 65.0f
@@ -281,10 +282,8 @@ typedef struct
     fp32 leg_length_L_set, leg_length_R_set;
     fp32 leg_length_L, last_leg_length_L;
     fp32 leg_length_R, last_leg_length_R;
-    fp32 leg_dlength_L,leg_dlength_R,last_leg_dlength_L,last_leg_dlength_R;
+    fp32 leg_dlength_L,leg_dlength_R,last_leg_dlength_L,last_leg_dlength_R,leg_dlength_L_kf,leg_dlength_R_kf;
     fp32 leg_ddlength_L,leg_ddlength_R,last_leg_ddlength_L,last_leg_ddlength_R;
-
-
     fp32 foot_roll_angle;
     fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set;
     fp32 leg_angle_R, last_leg_angle_R, leg_angle_R_set;
@@ -298,7 +297,7 @@ typedef struct
     uint16_t position_lock_flag;
     uint16_t position_lock_state;
     fp32 foot_distance, foot_distance_K, foot_distance_set,target_distance_set;
-    fp32 foot_speed, foot_speed_K, foot_speed_set;
+    fp32 foot_speed, foot_speed_KF, foot_speed_set;
 
 
     //车身加速度
@@ -333,6 +332,7 @@ typedef struct
     // -------- vertical force -------- 
     
     fp32 joint_stand_torque_L, joint_stand_torque_R;
+    fp32 last_control_torque_L,last_control_torque_R;
     fp32 joint_vertical_torque_L,      joint_vertical_torque_R;
     fp32 joint_real_vertical_torque_L, joint_real_vertical_torque_R;
 
@@ -365,6 +365,8 @@ typedef struct
     fp32 position_offset;
 
     fp32 velocity;
+    // fp32 velocity_kf; //滤波后的速度
+
     fp32 torque_out, torque_get;
     fp32 max_torque, min_torque;
 } joint_motor_t;
@@ -377,8 +379,9 @@ typedef struct
     bool_t offline_flag;
 
     fp32 distance, distance_offset, last_position, position, turns;
-    fp32 speed;
+    fp32 speed,speed_kf;
     fp32 torque_out, torque_get;
+    fp32 last_control_torque;
 
 } foot_motor_t;
 
@@ -429,10 +432,12 @@ typedef struct {
     PolynomialCoefficients N22;
 } InverseJacobianCoefficients;
 
+
+
 typedef struct
 {
   
-  mode_t mode;
+  mode_t                  mode;
   flag_info_t             flag_info;
   chassis_posture_info_t  chassis_posture_info;
   torque_info_t           torque_info;
@@ -444,16 +449,12 @@ typedef struct
   const fp32 *chassis_INS_gyro;      
   const fp32 *chassis_INS_accel;
 	const chassis_data_t *chassis_data_;	 //从云台接受到的底盘数据设定值
+  const lkmotor_measure_t *gimbal_lkmotor_measure;
 
-
-  // rc_control_mode_e chassis_mode;               //state machine. 底盘控制状态机
-  // rc_control_mode_e last_chassis_mode;          //last state machine.底盘上次控制状态机
   chassis_motor_t motor_chassis[4];          //chassis motor data.底盘电机数据
   pid_type_def motor_speed_pid[4];             //motor speed PID.底盘电机速度pid
   pid_type_def chassis_angle_pid;              //follow angle PID.底盘跟随角度pid
 
-  first_order_filter_type_t chassis_cmd_slow_set_vx;  //use first order filter to slow set-point.使用一阶低通滤波减缓设定值
-  first_order_filter_type_t chassis_cmd_slow_set_vy;  //use first order filter to slow set-point.使用一阶低通滤波减缓设定值
 
   fp32 vx;                          //chassis vertical speed, positive means forward,unit m/s. 底盘速度 前进方向 前为正，单位 m/s
   fp32 vy;                          //chassis horizontal speed, positive means letf,unit m/s.底盘速度 左右方向 左为正  单位 m/s
@@ -473,11 +474,9 @@ typedef struct
   fp32 chassis_pitch; 
   fp32 chassis_roll;  
 	gimbal_motor_t gimbal_yaw_motor;
-  const lkmotor_measure_t *gimbal_lkmotor_measure;
-
-
   joint_motor_t joint_motor_1,joint_motor_2,joint_motor_3,joint_motor_4;
   foot_motor_t foot_motor_L,foot_motor_R;
+
 } chassis_move_t;
 
 /**

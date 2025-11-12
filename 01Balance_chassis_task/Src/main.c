@@ -42,7 +42,7 @@
 #include "INS_task.h"
 #include "led_flow_task.h"
 
-#include "EventRecorder.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

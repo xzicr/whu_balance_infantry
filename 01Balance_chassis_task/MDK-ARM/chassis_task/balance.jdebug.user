@@ -1,0 +1,25 @@
+
+GraphedExpression="((chassis_move).torque_info).foot_moving_torque_R", Color=#a00909
+GraphedExpression="LQR[0][1]", Color=#09a01b
+GraphedExpression="LQR[1][1]", Color=#09a087
+GraphedExpression="((chassis_move).chassis_posture_info).leg_length_L", Color=#0984a0
+GraphedExpression="((chassis_move).chassis_posture_info).leg_length_R", Color=#ff557f
+OpenDocument="main.c", FilePath="C:/Users/ASUS/Desktop/uart_balance/01Balance_chassis_task/Src/main.c", Line=64
+OpenToolbar="Debug", Floating=0, x=0, y=0
+OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=1154, h=455, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=742, h=636, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=742, h=329, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Terminal", DockArea=BOTTOM, x=1, y=0, w=269, h=455, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Data Sampling", DockArea=RIGHT, x=0, y=1, w=1632, h=342, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=0, w=1632, h=623, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="5 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="179;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1405;-69", CodeGraphLegendShown=0, CodeGraphLegendPosition="1420;0"
+OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=1135, h=455, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[1562;104;100;100;798]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" ((chassis_move).torque_info).foot_moving_torque_R";" LQR[0][1]";" LQR[1][1]";" ((chassis_move).chassis_posture_info).leg_length_L";" ((chassis_move).chassis_posture_info).leg_length_R"], ColWidths=[100;100;100;100;100;100;100]
+TableHeader="Data Sampling Setup", SortCol="Max", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[485;100;124;124;124;124;110;144;297]
+TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[288;100;100;228]
+TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;340]
+WatchedExpression="chassis_move", Window=Watched Data 1
+WatchedExpression="a", Window=Watched Data 1
+WatchedExpression="LQR", Window=Watched Data 1

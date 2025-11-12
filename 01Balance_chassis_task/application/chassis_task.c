@@ -20,7 +20,6 @@
 #include "chassis_task.h"
 #include "chassis_behaviour.h"
 #include "cmsis_os.h"
-
 #include "arm_math.h"
 #include "math.h"
 #include "pid.h"
@@ -31,10 +30,10 @@
 #include "vofa.h"
 #include "Chassis_power_control.h"
 #include "LQR.h"
-
 #include "usart.h"
 #include "user_lib.h"
-
+#include "balance_filter.h"
+#include "uart_receive.h"
 
 #define square(x) ((x) * (x))
 #define SIGN(x) ((x) > 0 ? 1 : ((x) < 0 ? -1 : 0))
@@ -96,21 +95,8 @@ fp32 angle_change(float angle)
 uint32_t chassis_high_water;
 #endif
 
-static fp32 motor_ecd_to_angle_change(uint16_t ecd, uint16_t offset_ecd)
-{
-	int32_t relative_ecd = ecd - offset_ecd;
-	if (relative_ecd > HALF_ECD_RANGE)
-	{
-		relative_ecd -= ECD_RANGE;
-	}
-	else if (relative_ecd < -HALF_ECD_RANGE)
-	{
-		relative_ecd += ECD_RANGE;
-	}
-
-	return relative_ecd * MOTOR_ECD_TO_RAD;
-}
-
+float a,b,c,d;
+float temp;
 
 
 //物理/车体 属性
@@ -119,9 +105,6 @@ const fp32 m_w = 1.19f;
 
 // 底盘运动数据
 chassis_move_t chassis_move;
-feed_type_def feed;
-
-float suspend_foot_speed_Kp = 10.0f;
 
 fp32 TK_x_p = -10.0f, TK_y_p = 10.0f, TK_y_d = 3.0f, reducing_p = 120.0f;
 
@@ -129,47 +112,38 @@ fp32 suspend_LQR[2][6] = {
 	20.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 	0, 0, 0, 0, 0, 0};
 /* ------------------------PID info------------------------ */
-fp32 roll_PID[3] = {36.0f, 16.0f,10.0f};	  // 200, 45
+fp32 roll_PID[3] = {36.0f, 24.0f,18.0f};	  // 200, 45
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 stand_PD[2] = {36.0f, 16.0f}; //{ 200.0f, 50.0f };
-fp32 jump_stand_PD[2] = {40000.0f, 200.0f};
-fp32 suspend_stand_PD[2] = {100.0f, 30.0f};
+fp32 stand_PD[2] = {36.0f, 18.0f} ;//{45.0f, 25.0f}; //{ 200.0f, 50.0f };
+fp32 jump_stand_PD[2] = {30000.0f, 200.0f};
+fp32 suspend_stand_PD[2] = {36.0f, 18.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
-
-float alpha_dx = 0.11f;
+float alpha_dx = 0.10f;
+float alpha_dv = 0.10f;
 
 fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.2f;
-
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
 uint8_t robot_level = 1;
 fp32 rotate_speed_list[11] = {0.0, 5.0, 5.3, 5.6, 6.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0};
 fp32 move_scale_list[11] = {0.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
 fp32 rotate_move_scale_list[11] = {0.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8};
 
+
 uint8_t no_follow_flag, follow_angle;
-
-int target_speed_sign = 1;
-
-fp32 Moving_High_Offset = 0.0f;
-fp32 HIGH_HIGH = 0.35f;
-fp32 SIT_HIGH = 0.101f;
-fp32 NORMAL_HIGH = 0.12f;
-fp32 High_Offset = 0.0f;
-
 fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01f, leg_dlength_deadband = 0.0f;
-fp32 offset_k = 0.31f;
-fp32 rc_sign = 1.0f, fake_sign = 1.0f;
 fp32 rc_angle, rc_angle_temp, X_speed, Y_speed, temp_max_spd, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.2;
 fp32 normal_move_scale = 0.1f;
-fp32 normalized_speed;
 
 
-
-
+fp32 Moving_High_Offset = 0.0f;
+fp32 HIGH_HIGH = 0.35f;
+fp32 SIT_HIGH = 0.12f;
+fp32 NORMAL_HIGH = 0.12f;
+fp32 High_Offset = 0.0f;
 
 
 /* ----------------------function definition ------------------------ */
@@ -177,8 +151,8 @@ void Joint_Motor_to_Init_Pos(void);
 void Motor_Zero_CMD_Send(void);
 void HT_Motor_zero_set(void);
 void Forward_kinematic_solution(chassis_move_t *feedback_update, fp32 Q1, fp32 S1, fp32 Q4, fp32 S4, uint8_t ce);
-void calculate_wheel_vertical_acceleration(chassis_move_t * detect, uint8_t index );
-void Supportive_Force_Cal(chassis_move_t * detect, uint8_t index );
+void calculate_wheel_vertical_acceleration(chassis_move_t * detect );
+void Supportive_Force_Cal(chassis_move_t * detect);
 
 void chassis_init(chassis_move_t *chassis_move_init);
 void chassis_feedback_update(chassis_move_t *chassis_move_update);
@@ -190,12 +164,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl);
 void Chassis_Torque_Combine(chassis_move_t *bl_ctrl);
 void Motor_CMD_Send(chassis_move_t *CMD_Send);
 
-void chassis_set_contorl(chassis_move_t *chassis_move_control);
 
-
-
-/* ------------------------调试函数------------------------ */
-void UART_SEND_DATA(uint8_t torque_out_1,uint8_t torque_out_2,uint8_t torque_out_3,uint8_t torque_out_4);
 
 void chassis_task(void const *pvParameters)
 {
@@ -263,7 +232,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_move_init->chassis_INS_angle = get_INS_angle_point();
 	chassis_move_init->chassis_INS_gyro = get_gyro_data_point();
 	chassis_move_init->chassis_INS_accel = get_accel_data_point();
-	chassis_move_init->chassis_data_ = get_Chassisdata_point();
+	chassis_move_init->chassis_data_ = get_Uart_Chassisdata_point();
 	chassis_move_init->gimbal_lkmotor_measure = get_yaw_gimbal_lkmotor_measure_point();
 	
 	/* ----------------------------Mode set --------------------------- */
@@ -331,13 +300,15 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	
 	// 初始化角度PID
 	PID_init(&chassis_move_init->chassis_angle_pid, PID_POSITION, chassis_yaw_pid, CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT, CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT);
-	// 用一阶滤波代替斜波函数生成
-	first_order_filter_init(&chassis_move_init->chassis_cmd_slow_set_vx, CHASSIS_CONTROL_TIME, chassis_x_order_filter);
-	first_order_filter_init(&chassis_move_init->chassis_cmd_slow_set_vy, CHASSIS_CONTROL_TIME, chassis_y_order_filter);
 	
+	//轮毂电机滤波初始化   伸腿速度滤波
+    FootMotor_Kalman_Init(chassis_move_init);
+	Leg_dlength_Kalman_Init(chassis_move_init);
+
 	chassis_move_init->flag_info.init_flag = 1;
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
+
 }
 void chassis_feedback_update(chassis_move_t *fdb)
 {
@@ -377,6 +348,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm;
 	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm;
 
+	//更新力矩反馈
 	fdb->joint_motor_1.torque_get = 0.95f * fdb->joint_motor_1.torque_get + 0.05f * fdb->joint_motor_1.motor_measure->real_torque;
 	fdb->joint_motor_2.torque_get = 0.95f * fdb->joint_motor_2.torque_get + 0.05f * fdb->joint_motor_2.motor_measure->real_torque;
 	fdb->joint_motor_3.torque_get = 0.95f * fdb->joint_motor_3.torque_get + 0.05f * fdb->joint_motor_3.motor_measure->real_torque;
@@ -406,8 +378,9 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->foot_motor_R.speed = fdb->foot_motor_R.motor_measure->speed * PI2 * WHEEL_RADIUS / 10.0f / 60.0f;
 	fdb->chassis_posture_info.foot_speed = (fdb->foot_motor_L.speed + fdb->foot_motor_R.speed) / 2.0f;
 	/* ------------------------------------卡尔曼滤波------------------------------------------- */
-	/* 目前还不会 */
-	fdb->chassis_posture_info.foot_speed_K = fdb->chassis_posture_info.foot_speed;
+	    // 使用卡尔曼滤波更新速度
+    FootMotor_Kalman_Update(fdb);
+    fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed_kf + fdb->foot_motor_R.speed_kf ) / 2.0f;
 	fdb->chassis_posture_info.foot_distance_K = fdb->chassis_posture_info.foot_distance;
 	/*---------------------------------------- Five_Bars_to_Pendulum -----------------------------*/
 	Forward_kinematic_solution(fdb, fdb->joint_motor_1.position, fdb->joint_motor_1.velocity,
@@ -447,18 +420,22 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	/*------------------------------------- foot/leg angle/lenght information update -------------------------------------------- */
 	fdb->chassis_posture_info.leg_angle_L -= fdb->chassis_posture_info.pitch_angle;
 	fdb->chassis_posture_info.leg_angle_R -= fdb->chassis_posture_info.pitch_angle;
-	
-	fp32 temp_v_L = (fdb->chassis_posture_info.leg_length_L - fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_dlength_L = alpha_dx * temp_v_L + (1 - alpha_dx) * fdb->chassis_posture_info.last_leg_dlength_L;
-	fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_dlength_R = alpha_dx * temp_v_R + (1 - alpha_dx) * fdb->chassis_posture_info.last_leg_dlength_R;
+	// fp32 temp_v_L = (fdb->chassis_posture_info.leg_length_L - fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_dlength_L = alpha_dx * temp_v_L + (1 - alpha_dx) * fdb->chassis_posture_info.last_leg_dlength_L;
+	// fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_dlength_R = alpha_dx * temp_v_R + (1 - alpha_dx) * fdb->chassis_posture_info.last_leg_dlength_R;
+
+	fdb->chassis_posture_info.leg_dlength_L = (fdb->chassis_posture_info.leg_length_L- fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
+	fdb->chassis_posture_info.leg_dlength_R = (fdb->chassis_posture_info.leg_length_R- fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
+	Leg_Kalman_Update(fdb);
 	
 	// 计算加速度
 	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L - fdb->chassis_posture_info.last_leg_dlength_L) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_ddlength_L = 0.11f * temp_a_L + 0.89f * fdb->chassis_posture_info.last_leg_ddlength_L;
+	fdb->chassis_posture_info.leg_ddlength_L = alpha_dv * temp_a_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_L;
 	fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R - fdb->chassis_posture_info.last_leg_dlength_R) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_ddlength_R = 0.11f * temp_a_R + 0.89f * fdb->chassis_posture_info.last_leg_ddlength_R;
+	fdb->chassis_posture_info.leg_ddlength_R = alpha_dv * temp_a_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_R;
 	
+
 	fdb->chassis_posture_info.last_leg_angle_L = fdb->chassis_posture_info.leg_angle_L;
 	fdb->chassis_posture_info.last_leg_angle_R = fdb->chassis_posture_info.leg_angle_R;
 
@@ -469,57 +446,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.last_leg_ddlength_L = fdb->chassis_posture_info.leg_ddlength_L;
 	fdb->chassis_posture_info.last_leg_ddlength_R = fdb->chassis_posture_info.leg_ddlength_R;
 	/*---------------------------- Rotate and Move Info update ------------------------------*/
-	rotate_move_offset = offset_k * rotate_speed_list[robot_level];
-	rc_sign = 1.0f;
-	X_speed = fdb->chassis_data_->vx_set;
-	Y_speed = fdb->chassis_data_->vy_set;
-	// Original rc angle
-	if (X_speed == 0)
-	{
-		if (Y_speed > 0)
-			rc_angle_temp = PI / 2;
-		else if (Y_speed < 0)
-			rc_angle_temp = -PI / 2;
-		else
-			rc_angle_temp = 0;
-	}
-	else
-	{
-		Y_speed = fdb->chassis_data_->vy_set;
-		rc_angle_temp = atan(Y_speed / X_speed);
-	}
-	// Normalized speed
-	if (fabs(X_speed) < 0.1 || fabs(Y_speed) < 0.1)
-		temp_max_spd = 1.0f;
-	else if (X_speed < Y_speed)
-	{
-		temp_max_spd = sqrt(square((1 / Y_speed) * X_speed) + 1);
-	}
-	else
-	{
-		temp_max_spd = sqrt(square((1 / X_speed) * Y_speed) + 1);
-	}
-	normalized_speed = sqrt(X_speed * X_speed + Y_speed * Y_speed) / temp_max_spd;
-	// Ref angle and sign
-	if (X_speed < 0)
-		rc_sign *= -1.0f;
-	rc_angle_temp += rotate_move_offset;
-	if (rc_angle_temp > PI / 2 || rc_angle_temp < -PI / 2)
-	{
-		rc_sign *= -1.0f;
-	}
-	while (rc_angle_temp > PI / 2)
-	{
-		rc_angle_temp -= PI;
-	}
-	while (rc_angle_temp < -PI / 2)
-	{
-		rc_angle_temp += PI;
-	}
-	// if (X_speed < 0) rc_sign = -1.0f;
-	rc_angle = rc_angle_temp * 180.0f / PI;
-	// if (fdb->chassis_rc_ctrl->fake_flag == 0) fake_sign = -1.0f;
-	// else fake_sign = 1.0f;
 }
 
 static void chassis_set_mode(chassis_move_t *chassis_move_mode)
@@ -720,7 +646,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = -fp32_constrain(target_value_set->chassis_data_->vx_set * normal_move_scale,-9.0f,9.0f);
+		target_value_set->chassis_posture_info.foot_speed_set = -fp32_constrain(target_value_set->chassis_data_->vx_set * normal_move_scale,-15.0f,15.0f);
 	}
 	else 
 	{
@@ -816,21 +742,21 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 		target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-	if (target_value_set->mode.chassis_mode == ENABLE_CHASSIS && target_value_set->mode.last_chassis_mode == DISABLE_CHASSIS)
-		{
-			target_value_set->chassis_posture_info.yaw_angle_sett = target_value_set->chassis_posture_info.yaw_angle_total;
-			target_value_set->chassis_posture_info.yaw_gyro_set = 0.0f;
-		}
-		else if(target_value_set->mode.chassis_mode==ENABLE_CHASSIS&&target_value_set->mode.last_chassis_mode==ENABLE_CHASSIS)
-		{
-			if (target_value_set->chassis_data_->wz_set > -CHASSIS_RC_WZ_DEADLINE)
-				target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set * 0.002f);
-			else if (target_value_set->chassis_data_->wz_set < CHASSIS_RC_WZ_DEADLINE)
-				target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set * 0.002f);
-			else
-				// target_value_set->chassis_posture_info.yaw_angle_sett = target_value_set->chassis_posture_info.yaw_angle;
+		if (target_value_set->mode.chassis_mode == ENABLE_CHASSIS && target_value_set->mode.last_chassis_mode == DISABLE_CHASSIS)
+			{
+				target_value_set->chassis_posture_info.yaw_angle_sett = target_value_set->chassis_posture_info.yaw_angle_total;
 				target_value_set->chassis_posture_info.yaw_gyro_set = 0.0f;
-		}
+			}
+			else if(target_value_set->mode.chassis_mode==ENABLE_CHASSIS&&target_value_set->mode.last_chassis_mode==ENABLE_CHASSIS)
+			{
+				if (target_value_set->chassis_data_->wz_set > -CHASSIS_RC_WZ_DEADLINE)
+					target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set * 0.002f);
+				else if (target_value_set->chassis_data_->wz_set < CHASSIS_RC_WZ_DEADLINE)
+					target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set * 0.002f);
+				else
+					// target_value_set->chassis_posture_info.yaw_angle_sett = target_value_set->chassis_posture_info.yaw_angle;
+					target_value_set->chassis_posture_info.yaw_gyro_set = 0.0f;
+			}
 	}
 	else
 	{
@@ -868,7 +794,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 
 	// ----------------- Chassis High Mode Update -----------------
 	if (target_value_set->mode.sport_mode == ABNORMAL_MOVING_MODE || target_value_set->mode.sport_mode == TK_MODE)
-		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
+		target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else if (target_value_set->mode.chassis_balancing_mode == FOOT_LAUNCHING)
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else if (target_value_set->mode.chassis_balancing_mode == JOINT_LAUNCHING)
@@ -895,7 +821,6 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->chassis_posture_info.ideal_high = SIT_HIGH;
 	else if (target_value_set->mode.chassis_high_mode == NORMAL_MODE)
 		target_value_set->chassis_posture_info.ideal_high = NORMAL_HIGH + target_value_set->chassis_data_->high_set;
-	//- Moving_High_Offset;
 	else if (target_value_set->mode.chassis_high_mode == HIGH_MODE)
 		target_value_set->chassis_posture_info.ideal_high = HIGH_HIGH + High_Offset - Moving_High_Offset;
 	else if (target_value_set->mode.chassis_high_mode == CHANGING_HIGH)
@@ -964,10 +889,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			rollD = 0.0f;
 		}
 
-		if(bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband||bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband)
+		if(bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband||bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband
+			||bl_ctrl->mode.chassis_mode ==   DISABLE_CHASSIS)
 		{
-			rollI+=roll_PID[2]*(bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle + roll_angle_deadband));
-			rollI =  fp32_constrain(rollI,0,20);
+			rollI+=roll_PID[2]*(bl_ctrl->chassis_posture_info.roll_angle_set - bl_ctrl->chassis_posture_info.roll_angle );
+			rollI =  fp32_constrain(rollI,0,100);
 		}
 		else{rollI=0;}
 		bl_ctrl->torque_info.joint_roll_torque_R = rollP + rollD + rollI;//极性问题建议自己实际尝试
@@ -1124,22 +1050,22 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			else
 			{
 
-				bl_ctrl->torque_info.joint_balancing_torque_L = (
-					+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-					- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-					- LQR[3][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
-					- LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
-				);
-
 				// bl_ctrl->torque_info.joint_balancing_torque_L = (
-				// 	+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-				// 	- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-				// 	- LQR[2][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
-				// 	- LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
+				// 	+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+				// 	- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+				// 	- LQR[3][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
+				// 	- LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 				// );
+
+				bl_ctrl->torque_info.joint_balancing_torque_L = (
+					+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+					- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+					- LQR[2][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
+					- LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
+				);
 				bl_ctrl->torque_info.joint_moving_torque_L    = (
 					+ LQR[2][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET)
-					+ LQR[2][1] * ( bl_ctrl->chassis_posture_info.foot_speed_set    - bl_ctrl->chassis_posture_info.foot_speed_K )
+					+ LQR[2][1] * ( bl_ctrl->chassis_posture_info.foot_speed_set    - bl_ctrl->chassis_posture_info.foot_speed_KF )
 					+ LQR[2][2] * ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total )
 					+ LQR[2][3] * ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 					);
@@ -1152,7 +1078,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 				);
 				bl_ctrl->torque_info.joint_moving_torque_R    = (
 					+ LQR[3][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET)
-					+ LQR[3][1] * ( bl_ctrl->chassis_posture_info.foot_speed_set    - bl_ctrl->chassis_posture_info.foot_speed_K )
+					+ LQR[3][1] * ( bl_ctrl->chassis_posture_info.foot_speed_set    - bl_ctrl->chassis_posture_info.foot_speed_KF )
 					- LQR[3][2] * ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total )
 					- LQR[3][3] * ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 					);
@@ -1165,9 +1091,9 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	{
 		bl_ctrl->torque_info.foot_balancing_torque_L = 0.0f;
 		bl_ctrl->torque_info.foot_balancing_torque_R = 0.0f;
-		bl_ctrl->torque_info.foot_moving_torque_L = (int)(-TK_x_p * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_speed_K) - TK_y_p * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.yaw_angle_total) - TK_y_d * (0.0f - bl_ctrl->chassis_posture_info.yaw_gyro)) * TORQ_K;
+		bl_ctrl->torque_info.foot_moving_torque_L = (int)(-TK_x_p * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_speed_KF) - TK_y_p * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.yaw_angle_total) - TK_y_d * (0.0f - bl_ctrl->chassis_posture_info.yaw_gyro)) * TORQ_K;
 		bl_ctrl->torque_info.foot_moving_torque_R = (int)-(
-														-TK_x_p * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_speed_K) + TK_y_p * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.yaw_angle_total) + TK_y_d * (0.0f - bl_ctrl->chassis_posture_info.yaw_gyro)) *
+														-TK_x_p * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_speed_KF) + TK_y_p * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.yaw_angle_total) + TK_y_d * (0.0f - bl_ctrl->chassis_posture_info.yaw_gyro)) *
 													TORQ_K;
 	}
 	else
@@ -1180,7 +1106,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		) * TORQ_K;
 		bl_ctrl->torque_info.foot_moving_torque_L = (int)(
 			- LQR[0][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET)  
-			+ LQR[0][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_K)
+			+ LQR[0][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
  			- LQR[0][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
 			- LQR[0][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 		)*TORQ_K;
@@ -1192,63 +1118,63 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		) * TORQ_K;
 		bl_ctrl->torque_info.foot_moving_torque_R = (int)-(
 			- LQR[1][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET)  
-			+ LQR[1][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_K)
+			+ LQR[1][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
 			- LQR[1][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
 			- LQR[1][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 		) *TORQ_K;
 	}
 
-	//被动离地情况下的关节 轮毂电机控制
+	// 被动离地情况下的关节 轮毂电机控制
+	// if (bl_ctrl->flag_info.suspend_flag_L == 1)
+	// {
+	// 	bl_ctrl->torque_info.joint_balancing_torque_L =
+	// 	-suspend_LQR[0][0] * (0.0f - bl_ctrl->chassis_posture_info.leg_angle_L) 
+	// 	- suspend_LQR[0][1] * (0 - bl_ctrl->chassis_posture_info.leg_gyro_L);
+	// 	bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
+
+	// 	bl_ctrl->torque_info.foot_moving_torque_L =
+	// 	// +suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_L.speed);
+	// 	0;
+	// 	bl_ctrl->torque_info.foot_balancing_torque_L = 0.0f;
+	// }
+	
+	// if (bl_ctrl->flag_info.suspend_flag_R == 1)
+	// {
+	// 	bl_ctrl->torque_info.joint_balancing_torque_R = 
+	// 	-suspend_LQR[0][0] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_angle_R )
+	// 	-suspend_LQR[0][1] * ( 0 - bl_ctrl->chassis_posture_info.leg_gyro_R );
+	// 	bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
+
+	// 	bl_ctrl->torque_info.foot_moving_torque_R =
+	// 		// -suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_R.speed);
+	// 		0;
+	// 	bl_ctrl->torque_info.foot_balancing_torque_R = 0.0f;
+	// }
+//	FZX的改版
 	if (bl_ctrl->flag_info.suspend_flag_R == 1)
 	{
-		bl_ctrl->torque_info.joint_balancing_torque_R = 
-		-suspend_LQR[0][0] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_angle_R )
-		-suspend_LQR[0][1] * ( 0 - bl_ctrl->chassis_posture_info.leg_gyro_R );
-
-		bl_ctrl->torque_info.foot_moving_torque_R =
-			-suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_R.speed);
-
+		bl_ctrl->torque_info.joint_balancing_torque_L = (
+			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+		);
 		bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
+		
 		bl_ctrl->torque_info.foot_balancing_torque_R = 0.0f;
+		bl_ctrl->torque_info.foot_moving_torque_R = 0;
+			// -suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_R.speed);
 	}
 	if (bl_ctrl->flag_info.suspend_flag_L == 1)
 	{
-		bl_ctrl->torque_info.joint_balancing_torque_L =
-			-suspend_LQR[0][0] * (0.0f - bl_ctrl->chassis_posture_info.leg_angle_L) 
-			- suspend_LQR[0][1] * (0 - bl_ctrl->chassis_posture_info.leg_gyro_L);
-
-		bl_ctrl->torque_info.foot_moving_torque_L =
-			+suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_L.speed);
-
+		bl_ctrl->torque_info.joint_balancing_torque_L = (
+			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+		);
 		bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
+		
 		bl_ctrl->torque_info.foot_balancing_torque_L = 0.0f;
+		bl_ctrl->torque_info.foot_moving_torque_L = 0;
+			// +suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_L.speed);
 	}
-
-	//FZX的改版
-	// if (bl_ctrl->flag_info.suspend_flag_R == 1)
-	// {
-	// 	bl_ctrl->torque_info.joint_balancing_torque_L = (
-	// 		+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-	// 		- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-	// 	);
-	// 	bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
-		
-	// 	bl_ctrl->torque_info.foot_balancing_torque_R = 0.0f;
-	// 	bl_ctrl->torque_info.foot_moving_torque_R =
-	// 		-suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_R.speed);
-	// }
-	// if (bl_ctrl->flag_info.suspend_flag_L == 1)
-	// {
-	// 	bl_ctrl->torque_info.joint_balancing_torque_L = (
-	// 		+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-	// 		- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-	// 	);
-	// 	bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
-		
-	// 	bl_ctrl->torque_info.foot_balancing_torque_L = 0.0f;
-	// 	bl_ctrl->torque_info.foot_moving_torque_L =
-	// 		+suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_L.speed);
-	// }
 
 
 	LimitMax( bl_ctrl->torque_info.foot_moving_torque_L,  MAX_ACCL );
@@ -1307,9 +1233,9 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	bl_ctrl->torque_info.joint_vertical_torque_temp2_L =
 		(bl_ctrl->torque_info.joint_vertical_torque_L) * (-bl_ctrl->mapping_info.J2_L);
 	bl_ctrl->torque_info.joint_vertical_torque_temp1_R =
-	(bl_ctrl->torque_info.joint_vertical_torque_R) * (-bl_ctrl->mapping_info.J1_R);
+		(bl_ctrl->torque_info.joint_vertical_torque_R) * (-bl_ctrl->mapping_info.J1_R);
 	bl_ctrl->torque_info.joint_vertical_torque_temp2_R =
-	(bl_ctrl->torque_info.joint_vertical_torque_R) * (bl_ctrl->mapping_info.J2_R);
+		(bl_ctrl->torque_info.joint_vertical_torque_R) * (bl_ctrl->mapping_info.J2_R);
 	
 	/****************************************/
 
@@ -1328,8 +1254,9 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	bl_ctrl->joint_motor_2.torque_out = +bl_ctrl->torque_info.joint_horizontal_torque_temp2_L + bl_ctrl->torque_info.joint_vertical_torque_temp2_L;
 	bl_ctrl->joint_motor_3.torque_out = -bl_ctrl->torque_info.joint_horizontal_torque_temp1_R + bl_ctrl->torque_info.joint_vertical_torque_temp1_R;
 	bl_ctrl->joint_motor_4.torque_out = -bl_ctrl->torque_info.joint_horizontal_torque_temp2_R + bl_ctrl->torque_info.joint_vertical_torque_temp2_R;
-	// UART_SEND_DATA(bl_ctrl->joint_motor_1.torque_out,bl_ctrl->joint_motor_2.torque_out,
-	// bl_ctrl->joint_motor_3.torque_out,bl_ctrl->joint_motor_3.torque_out);
+
+	// bl_ctrl->joint_motor_3.torque_out = 1.1f*bl_ctrl->joint_motor_3.torque_out;
+	// bl_ctrl->joint_motor_4.torque_out = 1.1f*bl_ctrl->joint_motor_4.torque_out;
 
 	/* ----------------------------调试阶段可以先不加----------------------------------------- */
 	if (fabs(bl_ctrl->joint_motor_1.motor_measure->ecd) >= MOTOR_POS_UPPER_BOUND)
@@ -1412,14 +1339,13 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 	{
 		if (fabs(detect->chassis_posture_info.pitch_angle) >= DANGER_PITCH_ANGLE)
 			detect->flag_info.abnormal_flag = 1;
-		else if (fabs(detect->chassis_posture_info.foot_speed_K) < MOVE_LOWER_BOUND &&
+		else if (fabs(detect->chassis_posture_info.foot_speed_KF) < MOVE_LOWER_BOUND &&
 				 fabs(detect->chassis_posture_info.pitch_angle) < 0.1f &&
 				 detect->flag_info.abnormal_flag)
 			detect->flag_info.abnormal_flag = 0;
 	}
 
-	Supportive_Force_Cal(detect, 1.0f );
-	Supportive_Force_Cal(detect, 0.0f );
+	Supportive_Force_Cal(detect);
 
 	if (detect->mode.jumping_stage == CONSTACTING_LEGS)
 		detect->flag_info.suspend_flag_L = detect->flag_info.suspend_flag_R = ON_GROUND;
@@ -1429,25 +1355,28 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 		{
 			if (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
 				detect->chassis_posture_info.leg_length_R > 0.13f)
-				{}// detect->flag_info.suspend_flag_R = OFF_GROUND;
+				detect->flag_info.suspend_flag_R = OFF_GROUND;
 			else
 				detect->flag_info.suspend_flag_L = ON_GROUND;
 			if (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
 				detect->chassis_posture_info.leg_length_L > 0.13f)
-				{}// detect->flag_info.suspend_flag_L = OFF_GROUND;
+				detect->flag_info.suspend_flag_L = OFF_GROUND;
 			else
 				detect->flag_info.suspend_flag_R = ON_GROUND;
 		}
 		else
 		{
-			if( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
-				detect->chassis_posture_info.leg_length_R > 0.13f )
-				{}// detect->flag_info.suspend_flag_R = OFF_GROUND;
+			if( (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
+				detect->chassis_posture_info.leg_length_R > 0.13f )||
+				(detect->chassis_posture_info.leg_length_R>0.33&&detect->torque_info.supportive_force_R <= 20))
+				detect->flag_info.suspend_flag_R = OFF_GROUND;
 			else
 				detect->flag_info.suspend_flag_L = ON_GROUND;
-			if( detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
-				detect->chassis_posture_info.leg_length_L > 0.13f )
-				{}// detect->flag_info.suspend_flag_L = OFF_GROUND;
+			if(( detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
+				detect->chassis_posture_info.leg_length_L > 0.13f )||
+				(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_R <= 20))
+
+				detect->flag_info.suspend_flag_L = OFF_GROUND;
 			else
 				detect->flag_info.suspend_flag_R = ON_GROUND;
 		}
@@ -1465,119 +1394,38 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 		detect->flag_info.suspend_flag_L = ON_GROUND;
 	}
 
-	if (fabs(detect->chassis_posture_info.foot_speed_K) > stablize_foot_speed_threshold &&
+	if (fabs(detect->chassis_posture_info.foot_speed_KF) > stablize_foot_speed_threshold &&
 		fabs(detect->chassis_posture_info.yaw_gyro) > stablize_yaw_speed_threshold)
 		detect->flag_info.stablize_high_flag = 1;
-}
-
-void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector)
-{
-	if (chassis_move_rc_to_vector == NULL || vx_set == NULL || vy_set == NULL)
-	{
-		return;
-	}
-
-	int16_t vx_channel, vy_channel;
-	fp32 vx_set_channel, vy_set_channel;
-	// deadline, because some remote control need be calibrated,  the value of rocker is not zero in middle place,
-	// 死区限制，因为遥控器可能存在差异 摇杆在中间，其值不为0
-	rc_deadband_limit(chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_X_CHANNEL], vx_channel, CHASSIS_RC_DEADLINE);
-	rc_deadband_limit(chassis_move_rc_to_vector->chassis_RC->rc.ch[CHASSIS_Y_CHANNEL], vy_channel, CHASSIS_RC_DEADLINE);
-
-	vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
-	vy_set_channel = vy_channel * -CHASSIS_VY_RC_SEN;
-
-	// keyboard set speed set-point
-	// 键盘控制
-	if (chassis_move_rc_to_vector->chassis_RC->key.v & CHASSIS_FRONT_KEY)
-	{
-		vx_set_channel = chassis_move_rc_to_vector->vx_max_speed;
-	}
-	else if (chassis_move_rc_to_vector->chassis_RC->key.v & CHASSIS_BACK_KEY)
-	{
-		vx_set_channel = chassis_move_rc_to_vector->vx_min_speed;
-	}
-
-	if (chassis_move_rc_to_vector->chassis_RC->key.v & CHASSIS_LEFT_KEY)
-	{
-		vy_set_channel = chassis_move_rc_to_vector->vy_max_speed;
-	}
-	else if (chassis_move_rc_to_vector->chassis_RC->key.v & CHASSIS_RIGHT_KEY)
-	{
-		vy_set_channel = chassis_move_rc_to_vector->vy_min_speed;
-	}
-
-	// first order low-pass replace ramp function, calculate chassis speed set-point to improve control performance
-	// 一阶低通滤波代替斜波作为底盘速度输入
-	first_order_filter_cali(&chassis_move_rc_to_vector->chassis_cmd_slow_set_vx, vx_set_channel);
-	first_order_filter_cali(&chassis_move_rc_to_vector->chassis_cmd_slow_set_vy, vy_set_channel);
-	// stop command, need not slow change, set zero derectly
-	// 停止信号，不需要缓慢加速，直接减速到零
-	if (vx_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN && vx_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN)
-	{
-		chassis_move_rc_to_vector->chassis_cmd_slow_set_vx.out = 0.0f;
-	}
-
-	if (vy_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN && vy_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN)
-	{
-		chassis_move_rc_to_vector->chassis_cmd_slow_set_vy.out = 0.0f;
-	}
-
-	*vx_set = chassis_move_rc_to_vector->chassis_cmd_slow_set_vx.out;
-	*vy_set = chassis_move_rc_to_vector->chassis_cmd_slow_set_vy.out;
-}
-
-/**
- * @brief          four mecanum wheels speed is calculated by three param.
- * @param[in]      vx_set: vertial speed
- * @param[in]      vy_set: horizontal speed
- * @param[in]      wz_set: rotation speed
- * @param[out]     wheel_speed: four mecanum wheels speed
- * @retval         none
- */
-/**
- * @brief          四个麦轮速度是通过三个参数计算出来的
- * @param[in]      vx_set: 纵向速度
- * @param[in]      vy_set: 横向速度
- * @param[in]      wz_set: 旋转速度
- * @param[out]     wheel_speed: 四个麦轮速度
- * @retval         none
- */
-static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 vy_set, const fp32 wz_set, fp32 wheel_speed[4])
-{
-	// because the gimbal is in front of chassis, when chassis rotates, wheel 0 and wheel 1 should be slower and wheel 2 and wheel 3 should be faster
-	// 旋转的时候， 由于云台靠前，所以是前面两轮 0 ，1 旋转的速度变慢， 后面两轮 2,3 旋转的速度变快
-	wheel_speed[0] = (vx_set + vy_set + (CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set) * 1.41421356f;
-	wheel_speed[1] = (-vx_set + vy_set + (CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set) * 1.41421356f;
-	wheel_speed[2] = (-vx_set - vy_set + (-CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set) * 1.41421356f;
-	wheel_speed[3] = (vx_set - vy_set + (-CHASSIS_WZ_SET_SCALE - 1.0f) * MOTOR_DISTANCE_TO_CENTER * wz_set) * 1.41421356f;
 }
 
 void Motor_CMD_Send(chassis_move_t *CMD_Send)
 {
 
+	Record_FootMotor_Control(CMD_Send);
+	Record_Leg_Control(CMD_Send);
 
 	if (CMD_Send->joint_motor_1.motor_mode == MOTOR_FORCE)
 		CAN_HT_CMD(0x01, CMD_Send->joint_motor_1.torque_out);
 	else
 		CAN_HT_CMD(0x01, 0.0);
-	if (CMD_Send->joint_motor_2.motor_mode == MOTOR_FORCE)
-		CAN_HT_CMD(0x02, CMD_Send->joint_motor_2.torque_out);
+	if (CMD_Send->joint_motor_3.motor_mode == MOTOR_FORCE)
+		CAN_HT_CMD(0x03, CMD_Send->joint_motor_3.torque_out);
 	else
-		CAN_HT_CMD(0x02, 0.0);
-	vTaskDelay(4);
+		CAN_HT_CMD(0x03, 0.0);
+	vTaskDelay(2);
 	if (CMD_Send->foot_motor_R.motor_mode != MOTOR_FORCE)
 		CMD_Send->foot_motor_R.torque_out = 0.0f;
 	if (CMD_Send->foot_motor_L.motor_mode != MOTOR_FORCE)
 		CMD_Send->foot_motor_L.torque_out = 0.0f;
 
 	CAN_LK_Boradcast_Control(-CMD_Send->foot_motor_L.torque_out,-CMD_Send->foot_motor_R.torque_out,0,0);
-	vTaskDelay(3);
+
 	
-	if (CMD_Send->joint_motor_3.motor_mode == MOTOR_FORCE)
-		CAN_HT_CMD(0x03, CMD_Send->joint_motor_3.torque_out);
+	if (CMD_Send->joint_motor_2.motor_mode == MOTOR_FORCE)
+		CAN_HT_CMD(0x02, CMD_Send->joint_motor_2.torque_out);
 	else
-		CAN_HT_CMD(0x03, 0.0);
+		CAN_HT_CMD(0x02, 0.0);
 	if (CMD_Send->joint_motor_4.motor_mode == MOTOR_FORCE)
 		CAN_HT_CMD(0x04, CMD_Send->joint_motor_4.torque_out);
 	else
@@ -1718,23 +1566,29 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 
 
 /* -----------------计算腿部支持力----------------- */
-void calculate_wheel_vertical_acceleration(chassis_move_t * detect, uint8_t index )
+void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 {
 	detect->chassis_posture_info.chassis_accel = detect->chassis_posture_info.z_accel-g*cos(detect->chassis_posture_info.pitch_angle);
 
 	detect->chassis_posture_info.foot_accel_L=
 	+detect->chassis_posture_info.chassis_accel
 	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L);
-	// +2*detect->chassis_posture_info.leg_dlength_L*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
-	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
-	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
+	+2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
+	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
+	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
+
+	detect->chassis_posture_info.foot_accel_R=
+	+detect->chassis_posture_info.chassis_accel
+	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R);
+	+2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
+	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
+	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
 
 }
-//具体理由请看matlab理论模型和实际电机转动正方向以及腿部摆动角度正方向的差别
 
 //F_N = P + M_w*a + M_w*g 
 
-void Supportive_Force_Cal(chassis_move_t * detect, uint8_t index )
+void Supportive_Force_Cal(chassis_move_t * detect)
 {
 	//计算腿部支持力
 	detect->torque_info.forque_L=
@@ -1745,9 +1599,11 @@ void Supportive_Force_Cal(chassis_move_t * detect, uint8_t index )
 	+fabs(detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R));
 
 	//计算加速度环节
-	calculate_wheel_vertical_acceleration(detect,index);
+	calculate_wheel_vertical_acceleration(detect);
 	//支持力计算环节
 	detect->torque_info.supportive_force_L=detect->torque_info.forque_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
+	detect->torque_info.supportive_force_R=detect->torque_info.forque_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
+
 }
 
 
@@ -1784,14 +1640,5 @@ float get_jacobian_element(chassis_move_t *VMCJ, float L0, float Q0, uint8_t ele
 
 
 
-void UART_SEND_DATA(uint8_t torque_out_1,uint8_t torque_out_2,uint8_t torque_out_3,uint8_t torque_out_4)
-{
-	uint8_t a=0xAA;
-	uint8_t b=0xBB;
-//	HAL_UART_Transmit_DMA(&huart6, &a, sizeof(a));
-//	HAL_UART_Transmit_DMA(&huart6, (uint8_t *)&torque_out_1, sizeof(torque_out_1));
-//	HAL_UART_Transmit_DMA(&huart6, (uint8_t *)&torque_out_2, sizeof(torque_out_2));
-//	HAL_UART_Transmit_DMA(&huart6, (uint8_t *)&torque_out_3, sizeof(torque_out_3));
-//	HAL_UART_Transmit_DMA(&huart6, (uint8_t *)&torque_out_4, sizeof(torque_out_4));
-//	HAL_UART_Transmit_DMA(&huart6, &b, sizeof(b));
-}
+
+

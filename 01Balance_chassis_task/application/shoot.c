@@ -6,6 +6,7 @@
 #include "referee.h"
 #include "detect_task.h"
 #include "math.h"
+#include "uart_receive.h"
 
 shoot_control_t shoot_control;
 uint16_t shootflag=0;
@@ -47,7 +48,7 @@ void shoot_init()
 	static const fp32 Trigger_speed_pid[3] = {TRIGGER_SPEED_PID_KP, TRIGGER_SPEED_PID_KI, TRIGGER_SPEED_PID_KD};
 	static const fp32 Trigger_angle_pid[3]={TRIGGER_ANGLE_PID_KP ,TRIGGER_ANGLE_PID_KI ,TRIGGER_ANGLE_PID_KD };
 	shoot_control.shoot_motor_measure=get_trigger_motor_measure_point();
-	shoot_control.shoot_control_data=get_Chassisdata_point();
+	shoot_control.shoot_control_data=get_Uart_Chassisdata_point();
 	PID_init(&shoot_control.trigger_motor_speed_pid, PID_POSITION, Trigger_speed_pid, TRIGGER_BULLET_PID_MAX_OUT, TRIGGER_BULLET_PID_MAX_IOUT);
 	PID_init(&shoot_control.trigger_motor_angle_pid,PID_POSITION,Trigger_angle_pid,TRIGGER_ANGLE_PID_MAX_OUT ,TRIGGER_ANGLE_PID_MAX_IOUT);
 	shoot_control.angle =shoot_control.shoot_motor_measure->angle;

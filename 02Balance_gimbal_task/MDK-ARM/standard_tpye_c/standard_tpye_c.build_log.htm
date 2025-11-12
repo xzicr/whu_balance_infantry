@@ -21,56 +21,13 @@ Target DLL:      CMSIS_AGDI.dll V1.28.3.0
 Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
-E:\02GC\02RM_Balance_git\02Balance_gimbal_task\MDK-ARM\standard_robot.uvprojx
-Project File Date:  08/04/2025
+C:\Users\ASUS\Desktop\uart_balance\02Balance_gimbal_task\MDK-ARM\standard_robot.uvprojx
+Project File Date:  11/11/2025
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'standard_robot'
-compiling gimbal_task.c...
-..\application\CAN_receive.h(92): warning:  #64-D: declaration does not declare anything
-  extern motor_measure_t;
-..\application\CAN_receive.h(92): warning:  #1000-D: a storage class may not be specified here
-  extern motor_measure_t;
-..\application\CAN_receive.h(104): warning:  #64-D: declaration does not declare anything
-  extern lkmotor_measure_t;
-..\application\CAN_receive.h(104): warning:  #1000-D: a storage class may not be specified here
-  extern lkmotor_measure_t;
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(296): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(297): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\Self_aim.h(49): warning:  #1-D: last line of file ends without a newline
-  InputData *get_selfaim_data();
-..\application\Self_aim.h(49): warning:  #1295-D: Deprecated declaration get_selfaim_data - give arg types
-  InputData *get_selfaim_data();
-..\application\gimbal_task.c(186): warning:  #188-D: enumerated type mixed with another type
-    chassis_data.chassis_mode = 0;
-..\application\gimbal_task.c(279): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-    feedback_update->gimbal_pitch_motor.self_aim_pitch_angle = Self_aim_data->shoot_pitch / 3.14 * 180;
-..\application\gimbal_task.c(281): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-    feedback_update->gimbal_yaw_motor.self_aim_yaw_angle = sliding_average(Self_aim_data->shoot_yaw / 3.14 * 180);
-..\application\gimbal_task.c(308): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      set_control->gimbal_pitch_motor.absolute_angle_set -= pitch_channel * 
-ITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * 
-ITCH_MOUSE_SEN * 0.5;
-..\application\gimbal_task.c(459): warning:  #177-D: variable "angleset"  was declared but never referenced
-    fp32 angleset;
-..\application\gimbal_task.c(119): warning:  #177-D: variable "chassis_self_aim_yaw_filter"  was declared but never referenced
-  const static fp32 chassis_self_aim_yaw_filter[1] = {CHASSIS_ACCEL_Y_NUM};
-..\application\gimbal_task.c(391): warning:  #177-D: function "gimbal_PID_init"  was declared but never referenced
-  static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
-..\application\gimbal_task.c(430): warning:  #177-D: function "gimbal_PID_clear"  was declared but never referenced
-  static void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear)
-..\application\gimbal_task.c(379): warning:  #177-D: function "gimbal_motor_absolute_angle_control"  was declared but never referenced
-  static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
-..\application\gimbal_task.c: 18 warnings, 0 errors
-linking...
-Program Size: Code=74600 RO-data=4420 RW-data=1532 ZI-data=52020  
-FromELF: creating hex file...
-".\standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 18 Warning(s).
+".\standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -93,7 +50,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

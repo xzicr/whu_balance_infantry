@@ -108,8 +108,15 @@ uint8_t start;
 uint8_t close;
 
 /*--------------云台控制所有相关数据----------------*/
+//云台数据结构体
 gimbal_control_t gimbal_control;
-uint8_t chassis_flag = 0, aimflag = 0, turnflag = 0;
+
+//自瞄 转向标志位
+uint8_t  aimflag = 0, turnflag = 0;
+
+//PID参数
+static const fp32 Pitch_angle_pid_1[3] = {PITCH_GYRO_ABSOLUTE_PID_KP_1, PITCH_GYRO_ABSOLUTE_PID_KI_1, PITCH_GYRO_ABSOLUTE_PID_KD_1};
+
 
 
 /*------------底盘数据------------------*/
@@ -141,16 +148,15 @@ static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_de
 
 void gimbal_task(void const *pvParameters)
 {
-  // 等待陀螺仪任务更新陀螺仪数据
-  // wait a time
   vTaskDelay(GIMBAL_TASK_INIT_TIME);
-  // gimbal init
 
+  //云台初始化
   gimbal_init(&gimbal_control);
 
+  //腿部控制初始化
   leg_control_init(&chassis_data);
 
-	/* 射击初始化 */
+	//射击初始化
   shoot_Init();
 
   while (1)
@@ -172,28 +178,26 @@ void gimbal_task(void const *pvParameters)
 
 static void gimbal_init(gimbal_control_t *init)
 {
-
-  static const fp32 Pitch_angle_pid_1[3] = {PITCH_GYRO_ABSOLUTE_PID_KP_1, PITCH_GYRO_ABSOLUTE_PID_KI_1, PITCH_GYRO_ABSOLUTE_PID_KD_1};
-
+  //初始化陀螺仪 遥控器  自瞄数据
   init->INS = get_INS();
   init->gimbal_INT_angle_point = get_INS_angle_point();
   init->gimbal_INT_gyro_point = get_gyro_data_point();
   init->gimbal_rc_ctrl = get_remote_control_point();
+  Self_aim_data = get_selfaim_data();
 
-
+  //模式初始化
   init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_OFF;
   chassis_data.shoot_mode = 0;
   chassis_data.chassis_mode = 0;
+  init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
+  init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
+  chassis_data.yaw_angle_set = init->gimbal_yaw_motor.absolute_angle;
 
-
+  //PID初始化
   PID_init(&init->gimbal_pitch_motor.gimbal_motor_angle_pid_1, PID_POSITION, Pitch_angle_pid_1, PITCH_GYRO_ABSOLUTE_PID_MAX_OUT_1, PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT_1);
 
   gimbal_feedback_update(init);
   
-  init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
-  init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
-  chassis_data.yaw_angle_set = init->gimbal_yaw_motor.absolute_angle;
-  Self_aim_data = get_selfaim_data();
 }
 
 void leg_control_init(chassis_data_t *leg_contorl)
@@ -455,7 +459,7 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   int16_t vx_channel, vy_channel;
   fp32 vx_set_channel, vy_set_channel;
   fp32 high_control;
-  fp32 high_min=0.00f,high_max=0.30f;
+  fp32 high_min=0.00f,high_max=0.40f;
   fp32 angleset;
   static int16_t yaw_channel = 0;
   const static fp32 chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
@@ -499,23 +503,19 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   {
     vy_set_channel = -2;
   }
-  // 一阶低通滤波代替斜波作为底盘速度输入
-  first_order_filter_init(&chassis_data->chassis_cmd_slow_set_vx, GIMBAL_CONTROL_TIME, chassis_x_order_filter);
-  first_order_filter_init(&chassis_data->chassis_cmd_slow_set_vy, GIMBAL_CONTROL_TIME, chassis_y_order_filter);
-  first_order_filter_cali(&chassis_data->chassis_cmd_slow_set_vx, vx_set_channel);
-  first_order_filter_cali(&chassis_data->chassis_cmd_slow_set_vy, vy_set_channel);
+
   // 停止信号，不需要缓慢加速，直接减速到零
   if (vx_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN && vx_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN)
   {
-    chassis_data->chassis_cmd_slow_set_vx.out = 0.0f;
+    vx_set_channel=0;
   }
 
   if (vy_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN && vy_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN)
   {
-    chassis_data->chassis_cmd_slow_set_vy.out = 0.0f;
+    vy_set_channel=0;
   }
-  chassis_data->vx_set = chassis_data->chassis_cmd_slow_set_vx.out;
-  chassis_data->vy_set = chassis_data->chassis_cmd_slow_set_vy.out;
+  chassis_data->vx_set = vx_set_channel;
+  chassis_data->vy_set = vy_set_channel;
   chassis_data->wz_set = CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
 
   /* 按键设置模式 */
@@ -541,15 +541,10 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
     aimflag = !aimflag;
   }
 
-  // if (chassis_data->last_chassis_mode == CHASSIS_MODE_OFF && chassis_data->chassis_mode != CHASSIS_MODE_OFF)
-  // {
-  //   chassis_data->chassis_mode = CHASSIS_MODE_INIT;
-  // }
-  chassis_data->last_chassis_mode = chassis_data->chassis_mode;
   chassis_data->shoot_mode = gimbal_control_set->gimbal_rc_ctrl->mouse.press_l << 1 | shoot_control.shoot_mode | aimflag << 2;
   chassis_data->yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
   chassis_data->yaw_gyro = gimbal_control_set->gimbal_yaw_motor.motor_gyro;
-    /*------------------------平步变腿高---------------------------  */
+  //平步变腿高
   chassis_data->high_set += high_control*HIGH_SEN;
   chassis_data->high_set = fp32_constrain(chassis_data->high_set,high_min,high_max);
   chassis_data->jump_flag = gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 3  ;
@@ -574,7 +569,6 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
     if (gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle - chassis_data->yaw_angle > 0)
     {
       chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle + 2;
-      // chassis_data->yawangle_set=chassis_self_aim_yaw.out+2;
     }
     else
       chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle;

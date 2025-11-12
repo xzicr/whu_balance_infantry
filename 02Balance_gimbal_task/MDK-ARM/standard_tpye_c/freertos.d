@@ -79,4 +79,6 @@
 .\standard_tpye_c\freertos.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\standard_tpye_c\freertos.o: ../application/led_flow_task.h
 .\standard_tpye_c\freertos.o: ../application/CAN_task.h
+.\standard_tpye_c\freertos.o: ../application/UART_task.h
+.\standard_tpye_c\freertos.o: ../Inc/usart.h
 .\standard_tpye_c\freertos.o: ../application/Self_aim.h

@@ -38,6 +38,7 @@
 #include "voltage_task.h"
 #include "oled_task.h"
 #include "set_power_task.h"
+#include "uart_receive.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +55,7 @@ osThreadId can_task_handle;
 osThreadId battery_voltage_handle;
 osThreadId oled_handle;
 osThreadId setpower_handle;
+osThreadId uart_receive_handle;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -178,6 +180,10 @@ void MX_FREERTOS_Init(void) {
 
   osThreadDef(SETPOWER,send_setpower_task,osPriorityNormal,0,128);
   setpower_handle = osThreadCreate(osThread(SETPOWER), NULL);
+
+  osThreadDef(UART_RECEIVE,uart_start_task,osPriorityNormal,0,128);
+  setpower_handle = osThreadCreate(osThread(UART_RECEIVE), NULL);
+
   /* USER CODE END RTOS_THREADS */
 
 }

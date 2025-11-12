@@ -10,6 +10,7 @@
   *  V1.0.0     Dec-26-2018     RM              1. done
   *  V1.1.0     Nov-11-2019     RM              1. support hal lib
   *
+  *  V2.0.0     Nov-12-2025     xzicr              1. support hal lib
   @verbatim
   ==============================================================================
 
@@ -19,13 +20,10 @@
   */
 
 #include "CAN_receive.h"
-
 #include "cmsis_os.h"
-
 #include "main.h"
-
 #include "detect_task.h"
-#include "EventRecorder.h"
+
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 // motor data read
@@ -104,84 +102,10 @@ static chassis_data_t chassis_data;
 /* 超级电容反馈数据 */
 float Power_data[4];
 uint16_t power_data_temp[4];
-
-
-/*----------------------时间戳和时间长度标志位------------------------*/
-int32_t cnt;
-extern uint32_t clr_flag;
-
-
-/**
- * @brief          将底盘速度设定值vx high_set转化为浮点数
- * @param[in]      can接受数据
- * @retval         none
- */
-void CAN_receive_chassis_data1(uint8_t rxdata[])
-{
-  send_float_typedef temp[2];
-  temp[0].uint8_t[0] = rxdata[0];
-  temp[0].uint8_t[1] = rxdata[1];
-  temp[0].uint8_t[2] = rxdata[2];
-  temp[0].uint8_t[3] = rxdata[3];
-
-  temp[1].uint8_t[0] = rxdata[4];
-  temp[1].uint8_t[1] = rxdata[5];
-  temp[1].uint8_t[2] = rxdata[6];
-  temp[1].uint8_t[3] = rxdata[7];
-  chassis_data.vx_set = temp[0].float_t;
-  chassis_data.high_set = temp[1].float_t;
-}
-/**
- * @brief          将底盘旋转速度wz和底盘跟随云台角度angle转化为浮点数
- * @param[in]      can接受数据
- * @retval         none
- */
-void CAN_receive_chassis_data2(uint8_t rxdata[])
-{
-  send_float_typedef temp[2];
-  temp[0].uint8_t[0] = rxdata[0];
-  temp[0].uint8_t[1] = rxdata[1];
-  temp[0].uint8_t[2] = rxdata[2];
-  temp[0].uint8_t[3] = rxdata[3];
-
-  temp[1].uint8_t[0] = rxdata[4];
-  temp[1].uint8_t[1] = rxdata[5];
-  temp[1].uint8_t[2] = rxdata[6];
-  temp[1].uint8_t[3] = rxdata[7];
-  chassis_data.wz_set = temp[0].float_t;
-  chassis_data.yaw_angle = temp[1].float_t;
-  ;
-}
-/**
- * @brief          接受底盘模式和云台yaw轴角度
- * @param[in]      can接受数据
- * @retval         none
- */
-void CAN_receive_chassis_data3(uint8_t rxdata[])
-{
-  send_float_typedef temp[1];
-  temp[0].uint8_t[0] = rxdata[4];
-  temp[0].uint8_t[1] = rxdata[5];
-  temp[0].uint8_t[2] = rxdata[6];
-  temp[0].uint8_t[3] = rxdata[7];
-  chassis_data.chassis_mode = (uint16_t)(rxdata[0] << 8 | rxdata[1]);
-  chassis_data.shoot_mode = (uint16_t)(rxdata[2] << 8 | rxdata[3]);
-  chassis_data.yaw_angle_set = temp[0].float_t;
-}
-/**
- * @brief          接受跳跃标志位数据
- * @param[in]      can接受数据
- * @retval         none
- */
-void CAN_receive_chassis_data4(uint8_t rxdata[])
-{
+uint32_t cnt;
 
 
 
-  chassis_data.jump_flag = rxdata[0];
-
-  // chassis_data.yaw_gyro = temp[0].float_t;
-}
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -223,17 +147,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
       detect_hook(CHASSIS_MOTOR1_TOE + i);
       break;
     }
-    case CAN_LK_MOTOR_ID1:
-    {
-      cnt++;
-      get_lkmotor_measure(&lkmotor_data[0], rx_data);
-      break;
-    }
-    case CAN_LK_MOTOR_ID2:
-    {
-      get_lkmotor_measure(&lkmotor_data[1], rx_data);
-      break;
-    }
+
     case CAN_SUPER_CAP_ID:
     {
       get_supercap_data(power_data_temp, rx_data);
@@ -250,30 +164,20 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
     switch (rx_header.StdId)
     {
-    case CAN_gmbial_chassis_data1:
-    {
-      CAN_receive_chassis_data1(rx_data);
-      break;
-    }
-    case CAN_gmbial_chassis_data2:
-    {
-      CAN_receive_chassis_data2(rx_data);
-      break;
-    }
-    case CAN_gmbial_chassis_data3:
-    {
-      CAN_receive_chassis_data3(rx_data);
-      break;
-    }
-    case CAN_gmbial_chassis_data4:
-    {
-      CAN_receive_chassis_data4(rx_data);
-      break;
-    }
-    default:
-    {
-      break;
-    }
+      case CAN_LK_MOTOR_ID1:
+      {
+        get_lkmotor_measure(&lkmotor_data[0], rx_data);
+        break;
+      }
+      case CAN_LK_MOTOR_ID2:
+      {
+        get_lkmotor_measure(&lkmotor_data[1], rx_data);
+        break;
+      }
+      default:
+      {
+        break;
+      }
     }
   }
 }
@@ -531,7 +435,7 @@ void CAN_LK_Boradcast_Control(int16_t iqControl_1,int16_t iqControl_2,int16_t iq
   chassis_can_send_data[5] = *((uint8_t *)(&iqControl_3) + 1);
   chassis_can_send_data[6] = *(uint8_t *)(&iqControl_4);
   chassis_can_send_data[7] = *((uint8_t *)(&iqControl_4)+1);
-  HAL_CAN_AddTxMessage(&hcan1, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
+  HAL_CAN_AddTxMessage(&hcan2, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
 }
 /* -----------------超级电容功率控制----------------- */
 void CAN_Send_Setpower(uint16_t setPower)

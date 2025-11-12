@@ -12,6 +12,13 @@
         "main.h": "c",
         "shoot.h": "c",
         "gimbal_task.h": "c",
-        "detect_task.h": "c"
+        "detect_task.h": "c",
+        "random": "c",
+        "format": "c",
+        "limits": "c",
+        "type_traits": "c",
+        "functional": "c",
+        "uart_task.h": "c",
+        "usart.h": "c"
     }
 }

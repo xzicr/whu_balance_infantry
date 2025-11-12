@@ -24,7 +24,6 @@
 #include "struct_typedef.h"
 
 #define CHASSIS_CAN hcan1
-#define GIMBAL_CAN hcan1
 #define REFEREE_CAN hcan2
 
 #define LIMIT_MIN_MAX(x,min,max) (x) = (((x)<=(min))?(min):(((x)>=(max))?(max):(x)))
@@ -123,15 +122,13 @@ typedef struct
 	float vx_set;//底盘x轴方向设定的速度控制量；
 	float vy_set;//底盘y轴方向设定的速度控制量
 	float wz_set;//底盘自旋时 设定的速度控制量；
-	float yaw_angle;//yaw轴实时角度
-	float yaw_angle_set;//设置yaw轴角度
-	float yaw_gyro;//yaw轴角速度
   float high_set;
+	float yaw_angle_set;//设置yaw轴角度
+	float yaw_angle;//yaw轴实时角度
+	float yaw_gyro;//yaw轴角速度
 	RC_chassis_mode_e chassis_mode;//底盘模式
 	uint16_t shoot_mode;//射击模式
-
-  
-  fp32 tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
+  uint8_t tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
 }chassis_data_t;	
 
 

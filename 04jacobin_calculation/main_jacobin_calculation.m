@@ -33,8 +33,8 @@ l3 =parameters.l3;    % 左腿第一段长度 [m]
 l4 =parameters.l4;    % 左腿第二段长度 [m]
 l5 =parameters.l5;    % 髋关节间距 [m]
 % 示例1：正常位置
-test_l = 0.20;          % [m] 腿长
-test_theta = 0;        % [°] 角度（垂直向下为0°）
+test_l = 0.15;          % [m] 腿长
+test_theta = 0.160*180/pi;        % [°] 角度（垂直向下为0°）
 test_theta_rad = test_theta * pi/180;
 %[phi1, phi2] = solve_kinematics_accurate(test_l, test_theta_rad);
 [J1 ,J2 ,J3, J4] = calculate_jacobian_elements(test_l, test_theta_rad);
@@ -50,8 +50,8 @@ disp('雅可比转置矩阵 J = ');
 disp([J1 ,J2 ,J3, J4]);
 
 % 示例2：另一个位置
-test_l2 = 0.30;
-test_theta2 = -45;
+test_l2 = 0.15;
+test_theta2 = 0.156*180/pi;
 test_theta_rad2 = test_theta2 * pi/180;
 [phi1, phi2] = solve_kinematics_accurate(test_l2, test_theta_rad2);
 [J1 ,J2, J3, J4] = calculate_jacobian_elements(test_l2, test_theta_rad2);

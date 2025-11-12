@@ -8,6 +8,8 @@
 #include "user_lib.h"
 #include "math.h"
 #include "chassis_task.h"
+#include "uart_receive.h"
+
 gimbal_control_t gimbal_control;
 extern chassis_move_t chassis_move;
 uint8_t start;
@@ -67,7 +69,7 @@ static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_de
 void gimbal_Init(gimbal_control_t *gimbal_control)
 {
 
-	gimbal_control->yaw_ctrl_data=get_Chassisdata_point();
+	gimbal_control->yaw_ctrl_data=get_Uart_Chassisdata_point();
 	gimbal_control->gimbal_yaw_motor.gimbal_lkmotor_measure=get_yaw_gimbal_lkmotor_measure_point();
 	gimbal_control->gimbal_yaw_motor.absolute_angle_set=gimbal_control->gimbal_yaw_motor.absolute_angle;
 	gimbal_control->gimbal_yaw_motor.absolute_angle_set1=rad_format(gimbal_control->gimbal_yaw_motor.absolute_angle_set);

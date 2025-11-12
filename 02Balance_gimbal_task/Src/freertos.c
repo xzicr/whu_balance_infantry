@@ -32,7 +32,7 @@
 #include "INS_task.h"
 #include "led_flow_task.h"
 #include "CAN_task.h"
-
+#include "UART_task.h"
 #include "Self_aim.h"
 
 /* USER CODE END Includes */
@@ -45,6 +45,7 @@ osThreadId gimbalTaskHandle;
 osThreadId imuTaskHandle;
 osThreadId led_RGB_flow_handle;
 osThreadId can_task_handle;
+osThreadId uart_task_handle;
 osThreadId Self_aim_task_handle;
 /* USER CODE END PTD */
 
@@ -155,10 +156,13 @@ void MX_FREERTOS_Init(void) {
     osThreadDef(led, led_RGB_flow_task, osPriorityNormal, 0, 256);
     led_RGB_flow_handle = osThreadCreate(osThread(led), NULL);
 
-	osThreadDef(CAN_task, can_task, osPriorityNormal, 0, 256);
+	  osThreadDef(CAN_task, can_task, osPriorityNormal, 0, 256);
     can_task_handle = osThreadCreate(osThread(CAN_task), NULL);
-	
-	osThreadDef(SELF_AIM_task, Self_aim_task, osPriorityNormal, 0, 256);
+
+    osThreadDef(UART_task, uart_task, osPriorityNormal, 0, 256);
+    can_task_handle = osThreadCreate(osThread(UART_task), NULL);
+
+	  osThreadDef(SELF_AIM_task, Self_aim_task, osPriorityNormal, 0, 256);
     can_task_handle = osThreadCreate(osThread(SELF_AIM_task), NULL);
 
 

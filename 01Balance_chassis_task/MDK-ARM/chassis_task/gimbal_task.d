@@ -68,3 +68,5 @@ chassis_task\gimbal_task.o: D:\Keil5\ARM\ARMCC\Bin\..\include\math.h
 chassis_task\gimbal_task.o: ..\application\chassis_task.h
 chassis_task\gimbal_task.o: ..\application\remote_control.h
 chassis_task\gimbal_task.o: ../bsp/boards/bsp_rc.h
+chassis_task\gimbal_task.o: ..\application\uart_receive.h
+chassis_task\gimbal_task.o: ../Inc/usart.h

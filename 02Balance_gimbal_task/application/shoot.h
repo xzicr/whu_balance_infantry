@@ -32,12 +32,16 @@
 
 typedef enum
 {
-    SHOOT_STOP = 0,   //停止射击
-    SHOOT_READY_FRIC,    //摩擦准备就绪
-    SHOOT_READY_BULLET,  //弹药准备就绪
-    SHOOT_READY,         //射击准备就绪
-    SHOOT_BULLET,        //正在射击
-    SHOOT_CONTINUE_BULLET,   //继续射击
+    SHOOT_STOP = 0,   
+    SHOOT_READY_FRIC,    
+    SHOOT_READY_BULLET,  
+
+
+    SHOOT_SINGLE,
+    SHOOT_CONTINUE,
+    SHOOT_READY,       
+    SHOOT_BULLET,        
+    SHOOT_CONTINUE_BULLET,   
     SHOOT_DONE,            //射击完成
 }shoot_mode_e;
 
@@ -53,11 +57,16 @@ typedef struct
 	shoot_mode_e shoot_mode;
 	const motor_measure_t *friction_motor_measure[2];
 	const RC_ctrl_t *shoot_rc;
-    ramp_function_source_t fric_ramp;      //斜波函数结构体
+    //斜波函数结构体
+    ramp_function_source_t fric_ramp;      
     /* 左轮 */
 	pid_type_def friction_left_motor_speed_pid; 
     /* 右轮 */
 	pid_type_def friction_right_motor_speed_pid; 
+    /* 左轮电流环PID */
+	pid_type_def friction_left_motor_current_pid; 
+    /* 右轮电流环PID */
+	pid_type_def friction_right_motor_current_pid; 
     /* 低通滤波器*/ 
     low_pass_filter_t left_speed_filter;
     low_pass_filter_t right_speed_filter;

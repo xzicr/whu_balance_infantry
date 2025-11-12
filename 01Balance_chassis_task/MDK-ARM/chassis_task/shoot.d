@@ -62,3 +62,5 @@ chassis_task\shoot.o: ..\application\referee.h
 chassis_task\shoot.o: ..\application\protocol.h
 chassis_task\shoot.o: ..\application\detect_task.h
 chassis_task\shoot.o: D:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+chassis_task\shoot.o: ..\application\uart_receive.h
+chassis_task\shoot.o: ../Inc/usart.h

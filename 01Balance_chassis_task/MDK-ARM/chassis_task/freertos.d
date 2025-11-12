@@ -77,3 +77,5 @@ chassis_task\freertos.o: ../application/Can_task.h
 chassis_task\freertos.o: ../application/voltage_task.h
 chassis_task\freertos.o: ../application/oled_task.h
 chassis_task\freertos.o: ../application/set_power_task.h
+chassis_task\freertos.o: ../application/uart_receive.h
+chassis_task\freertos.o: ../Inc/usart.h

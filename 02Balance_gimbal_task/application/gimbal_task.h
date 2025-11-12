@@ -133,7 +133,8 @@
 //有关底盘的定义
 
 //遥控器前进摇杆（max 660）转化成车体前进速度（m/s）的比例
-#define CHASSIS_VX_RC_SEN 0.012f
+#define CHASSIS_VX_RC_SEN 0.020f
+// #define CHASSIS_VX_RC_SEN 0.012f
 //遥控器左右摇杆（max 660）转化成车体左右速度（m/s）的比例
 #define CHASSIS_VY_RC_SEN 0.005f
 #define CHASSIS_RC_DEADLINE 10

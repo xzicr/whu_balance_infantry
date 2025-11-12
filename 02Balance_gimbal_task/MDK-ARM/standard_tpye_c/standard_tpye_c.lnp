@@ -52,6 +52,7 @@
 ".\standard_tpye_c\vofa.o"
 ".\standard_tpye_c\self_aim.o"
 ".\standard_tpye_c\can_task.o"
+".\standard_tpye_c\uart_task.o"
 ".\standard_tpye_c\bmi088driver.o"
 ".\standard_tpye_c\bmi088middleware.o"
 ".\standard_tpye_c\ist8310driver.o"

@@ -34,6 +34,11 @@
         "remote_control.h": "c",
         "chassis_behaviour.h": "c",
         "queue": "c",
-        "variant": "c"
+        "variant": "c",
+        "kalman_filter.h": "c",
+        "balance_filter.h": "c",
+        "uart_receive.h": "c",
+        "bit": "c",
+        "unordered_map": "c"
     }
 }
