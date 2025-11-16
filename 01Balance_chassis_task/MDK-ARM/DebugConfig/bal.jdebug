@@ -4,8 +4,8 @@
 *                         www.segger.com                             *
 **********************************************************************
 
-File          : C:/Users/ASUS/Desktop/uart_balance/01Balance_chassis_task/MDK-ARM/chassis_task/balance.jdebug
-Created       : 12 Nov 2025 14:19
+File          : E:/02GC/02RM_Balance_git/01Balance_chassis_task/MDK-ARM/bal.jdebug
+Created       : 15 Nov 2025 21:07
 Ozone Version : V3.24
 */
 
@@ -22,8 +22,8 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  Project.AddPathSubstitute ("C:/Users/ASUS/Desktop/uart_balance/01Balance_chassis_task/MDK-ARM/chassis_task", "$(ProjectDir)");
-  Project.AddPathSubstitute ("c:/users/asus/desktop/uart_balance/01balance_chassis_task/mdk-arm/chassis_task", "$(ProjectDir)");
+  Project.AddPathSubstitute ("E:/02GC/02RM_Balance_git/01Balance_chassis_task/MDK-ARM", "$(ProjectDir)");
+  Project.AddPathSubstitute ("e:/02gc/02rm_balance_git/01balance_chassis_task/mdk-arm", "$(ProjectDir)");
   Project.SetDevice ("Cortex-M4");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("SWD");
@@ -33,7 +33,7 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  File.Open ("$(ProjectDir)/chassis_task.axf");
+  File.Open ("$(ProjectDir)/chassis_task/chassis_task.axf");
 }
 
 /*********************************************************************

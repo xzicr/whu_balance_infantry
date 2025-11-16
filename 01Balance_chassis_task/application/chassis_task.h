@@ -63,7 +63,7 @@
 //Ò¡¸ËËÀÇø
 #define CHASSIS_RC_DEADLINE 10
 
-#define CHASSIS_RC_WZ_DEADLINE 60
+#define CHASSIS_RC_WZ_DEADLINE 0.5
 
 
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_VX 0.25f
@@ -476,6 +476,9 @@ typedef struct
 	gimbal_motor_t gimbal_yaw_motor;
   joint_motor_t joint_motor_1,joint_motor_2,joint_motor_3,joint_motor_4;
   foot_motor_t foot_motor_L,foot_motor_R;
+
+  fp32 yaw_change;
+  fp32 yaw_gyro_change;
 
 } chassis_move_t;
 

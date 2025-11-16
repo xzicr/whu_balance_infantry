@@ -1,5 +1,6 @@
 % solve_kinematics.m
 % 五杆机构运动学逆解 - 正确求解髋关节角度
+% 这是以左边腿部作为参照面计算出来的电机角度
 
 function [phi3, phi4] = solve_kinematics_accurate(l, theta)
     % 加载机构参数
@@ -35,11 +36,11 @@ function [phi3, phi4] = solve_kinematics_accurate(l, theta)
     % 基础角度：足端相对于右髋的方向
     base_angle_r = atan2(dy_r, dx_r);
     
-    % 最终的三号电机角度
+    % 最终的1号电机角度
     phi3 = pi- base_angle_r + phi3;  % elbow-down配置
     
     
-    % 求解四号电机角度（左腿髋关节角度）
+    % 求解2号电机角度（左腿髋关节角度）
     dx_l = x_e - x_hip_left;
     dy_l = y_e - y_hip;
     L_l = sqrt(dx_l^2 + dy_l^2);
@@ -65,8 +66,8 @@ function [phi3, phi4] = solve_kinematics_accurate(l, theta)
     
     fprintf('虚拟腿: l=%.3fm, θ=%.1f°\n', l, theta*180/pi);
     fprintf('足端位置: x=%.3fm, y=%.3fm\n', x_e, y_e);
-    fprintf('三号电机角度: %.6f rad = %.3f°\n', phi3, phi3_deg);
-    fprintf('四号电机角度: %.6f rad = %.3f°\n', phi4, phi4_deg);
+    fprintf('1号电机角度: %.6f rad = %.3f°\n', phi3, phi3_deg);
+    fprintf('2号电机角度: %.6f rad = %.3f°\n', phi4, phi4_deg);
     fprintf('右髋到足端距离: %.3fm\n', L_r);
     fprintf('左髋到足端距离: %.3fm\n', L_l);
 end
