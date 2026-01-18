@@ -32,8 +32,8 @@
 //遥控器出错数据上限
 #define RC_CHANNAL_ERROR_VALUE 700
 
-extern UART_HandleTypeDef huart3;
-extern DMA_HandleTypeDef hdma_usart3_rx;
+extern UART_HandleTypeDef huart6;
+extern DMA_HandleTypeDef hdma_usart6_rx;
 
 
 //取正函数
@@ -145,41 +145,41 @@ void slove_data_error(void)
 }
 
 //串口中断
-void USART3_IRQHandler(void)
+void USART6_IRQHandler(void)
 {
-    if(huart3.Instance->SR & UART_FLAG_RXNE)//接收到数据
+    if(huart6.Instance->SR & UART_FLAG_RXNE)//接收到数据
     {
-        __HAL_UART_CLEAR_PEFLAG(&huart3);
+        __HAL_UART_CLEAR_PEFLAG(&huart6);
     }
-    else if(USART3->SR & UART_FLAG_IDLE)
+    else if(USART6->SR & UART_FLAG_IDLE)
     {
         static uint16_t this_time_rx_len = 0;
 
-        __HAL_UART_CLEAR_PEFLAG(&huart3);
+        __HAL_UART_CLEAR_PEFLAG(&huart6);
 
-        if ((hdma_usart3_rx.Instance->CR & DMA_SxCR_CT) == RESET)
+        if ((hdma_usart6_rx.Instance->CR & DMA_SxCR_CT) == RESET)
         {
             /* Current memory buffer used is Memory 0 */
 
             //disable DMA
             //失效DMA
-            __HAL_DMA_DISABLE(&hdma_usart3_rx);
+            __HAL_DMA_DISABLE(&hdma_usart6_rx);
 
             //get receive data length, length = set_data_length - remain_length
             //获取接收数据长度,长度 = 设定长度 - 剩余长度
-            this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart3_rx.Instance->NDTR;
+            this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart6_rx.Instance->NDTR;
 
             //reset set_data_lenght
             //重新设定数据长度
-            hdma_usart3_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
+            hdma_usart6_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
             //set memory buffer 1
             //设定缓冲区1
-            hdma_usart3_rx.Instance->CR |= DMA_SxCR_CT;
+            hdma_usart6_rx.Instance->CR |= DMA_SxCR_CT;
             
             //enable DMA
             //使能DMA
-            __HAL_DMA_ENABLE(&hdma_usart3_rx);
+            __HAL_DMA_ENABLE(&hdma_usart6_rx);
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
@@ -194,15 +194,15 @@ void USART3_IRQHandler(void)
             /* Current memory buffer used is Memory 1 */
             //disable DMA
             //失效DMA
-            __HAL_DMA_DISABLE(&hdma_usart3_rx);
+            __HAL_DMA_DISABLE(&hdma_usart6_rx);
 
             //get receive data length, length = set_data_length - remain_length
             //获取接收数据长度,长度 = 设定长度 - 剩余长度
-            this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart3_rx.Instance->NDTR;
+            this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart6_rx.Instance->NDTR;
 
             //reset set_data_lenght
             //重新设定数据长度
-            hdma_usart3_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
+            hdma_usart6_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
             //set memory buffer 0
             //设定缓冲区0
@@ -210,7 +210,7 @@ void USART3_IRQHandler(void)
             
             //enable DMA
             //使能DMA
-            __HAL_DMA_ENABLE(&hdma_usart3_rx);
+            __HAL_DMA_ENABLE(&hdma_usart6_rx);
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
@@ -256,20 +256,26 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
         return;
     }
 
-    rc_ctrl->rc.ch[0] = (sbus_buf[0] | (sbus_buf[1] << 8)) & 0x07ff;        //!< Channel 0
-    rc_ctrl->rc.ch[1] = ((sbus_buf[1] >> 3) | (sbus_buf[2] << 5)) & 0x07ff; //!< Channel 1
-    rc_ctrl->rc.ch[2] = ((sbus_buf[2] >> 6) | (sbus_buf[3] << 2) |          //!< Channel 2
-                         (sbus_buf[4] << 10)) &0x07ff;
-    rc_ctrl->rc.ch[3] = ((sbus_buf[4] >> 1) | (sbus_buf[5] << 7)) & 0x07ff; //!< Channel 3
-    rc_ctrl->rc.s[0] = ((sbus_buf[5] >> 4) & 0x0003);                  //!< Switch left
-    rc_ctrl->rc.s[1] = ((sbus_buf[5] >> 4) & 0x000C) >> 2;                       //!< Switch right
-    rc_ctrl->mouse.x = sbus_buf[6] | (sbus_buf[7] << 8);                    //!< Mouse X axis
-    rc_ctrl->mouse.y = sbus_buf[8] | (sbus_buf[9] << 8);                    //!< Mouse Y axis
-    rc_ctrl->mouse.z = sbus_buf[10] | (sbus_buf[11] << 8);                  //!< Mouse Z axis
-    rc_ctrl->mouse.press_l = sbus_buf[12];                                  //!< Mouse Left Is Press ?
-    rc_ctrl->mouse.press_r = sbus_buf[13];                                  //!< Mouse Right Is Press ?
-    rc_ctrl->key.v = sbus_buf[14] | (sbus_buf[15] << 8);                    //!< KeyBoard value
-    rc_ctrl->rc.ch[4] = sbus_buf[16] | (sbus_buf[17] << 8);                 //NULL
+    /* ------------------------新图传数据接收协议------------------------ */
+    rc_ctrl->rc.ch[0] = (sbus_buf[2] | (sbus_buf[3] << 8)) & 0x07ff;        //!< Channel 0
+    rc_ctrl->rc.ch[1] = ((sbus_buf[3] >> 3) | (sbus_buf[4] << 5)) & 0x07ff; //!< Channel 1
+    rc_ctrl->rc.ch[2] = ((sbus_buf[4] >> 6) | (sbus_buf[5] << 2) |          //!< Channel 2
+                         (sbus_buf[6] << 10)) &0x07ff;
+    rc_ctrl->rc.ch[3] = ((sbus_buf[6] >> 1) | (sbus_buf[7] << 7)) & 0x07ff;  //!< Channel 3
+    rc_ctrl->rc.ch[4] = ((sbus_buf[8] >> 1) | (sbus_buf[9] << 7)) & 0x07ff;  //!< Channel 4
+    rc_ctrl->rc.s[0] = ((sbus_buf[7] >> 4) & 0x0003);                        //!< Switch mode
+    rc_ctrl->rc.s[1] = ((sbus_buf[7] >> 4) & 0x0004)>>2;                     //!< suspend_key
+    rc_ctrl->rc.s[2] = ((sbus_buf[7] >> 4) & 0x0008)>>3;                     //!< left_key
+    rc_ctrl->rc.s[3] = (sbus_buf[8] & 0x0001);                               //!< right_key
+    rc_ctrl->rc.s[4] = ((sbus_buf[9]>>4) & 0x0001);                               //!< left_key
+
+    rc_ctrl->mouse.x = sbus_buf[10] | (sbus_buf[11] << 8);                    //!< Mouse X axis
+    rc_ctrl->mouse.y = sbus_buf[12] | (sbus_buf[13] << 8);                    //!< Mouse Y axis
+    rc_ctrl->mouse.z = sbus_buf[14] | (sbus_buf[15] << 8);                  //!< Mouse Z axis
+    rc_ctrl->mouse.press_l = (sbus_buf[16]&0x0003);                                  //!< Mouse Left Is Press ?
+    rc_ctrl->mouse.press_r = ((sbus_buf[16]>>2)&0x0003);                                  //!< Mouse Right Is Press ?
+    rc_ctrl->mouse.press_m = ((sbus_buf[16]>>4)&0x0003);                                  //!< Mouse Right Is Press ?
+    rc_ctrl->key.v = sbus_buf[17] | (sbus_buf[18] << 8);                    //!< KeyBoard value
 
     rc_ctrl->rc.ch[0] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[1] -= RC_CH_VALUE_OFFSET;
@@ -277,7 +283,6 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->rc.ch[3] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[4] -= RC_CH_VALUE_OFFSET;
 }
-
 /**
   * @brief          send sbus data by usart1, called in usart3_IRQHandle
   * @param[in]      sbus: sbus data, 18 bytes

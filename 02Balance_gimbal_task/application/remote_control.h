@@ -22,9 +22,9 @@
 #include "struct_typedef.h"
 #include "bsp_rc.h"
 
-#define SBUS_RX_BUF_NUM 36u
+#define SBUS_RX_BUF_NUM 42u
 
-#define RC_FRAME_LENGTH 18u
+#define RC_FRAME_LENGTH 21u
 
 #define RC_CH_VALUE_MIN         ((uint16_t)364)
 #define RC_CH_VALUE_OFFSET      ((uint16_t)1024)
@@ -60,7 +60,7 @@ typedef __packed struct
         __packed struct
         {
                 int16_t ch[5];
-                char s[2];
+                char s[5];
         } rc;
         __packed struct
         {
@@ -69,6 +69,7 @@ typedef __packed struct
                 int16_t z;
                 uint8_t press_l;
                 uint8_t press_r;
+                uint8_t press_m;
         } mouse;
         __packed struct
         {

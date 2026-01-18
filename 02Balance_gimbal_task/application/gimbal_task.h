@@ -43,11 +43,11 @@
 
 //pitch gyro angle close-loop PID params, max out and max iout
 //pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP_1       9000.0f                             //-2.5f//-1.0
-#define PITCH_GYRO_ABSOLUTE_PID_KI_1        0.0f                            //-0.5f
-#define PITCH_GYRO_ABSOLUTE_PID_KD_1       666.0f                             //-50.0f
+#define PITCH_GYRO_ABSOLUTE_PID_KP_1       1000.0f                             //-2.5f//-1.0
+#define PITCH_GYRO_ABSOLUTE_PID_KI_1        0.02f                            //-0.5f
+#define PITCH_GYRO_ABSOLUTE_PID_KD_1       160.0f                             //-50.0f
 #define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT_1   1200000.0f        //15.0f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT_1     0.0f     // 0.0f
+#define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT_1     65000.0f     // 0.0f
 
 
 
@@ -58,7 +58,7 @@
 #define GIMBAL_TASK_INIT_TIME 201
 //yaw,pitch控制通道以及状态开关通道
 #define YAW_CHANNEL   0
-#define PITCH_CHANNEL 1
+#define PITCH_CHANNEL 7
 #define HEIGHT_CHANNEL 1
 #define GIMBAL_MODE_CHANNEL 0
 //turn 180°
@@ -80,7 +80,7 @@
 #define YAW_MOUSE_SEN   0.0003f
 #define PITCH_MOUSE_SEN 0.0002f
 
-#define HIGH_SEN 0.0000004f
+#define HIGH_SEN 0.0000005f
 
 #define YAW_ENCODE_SEN    0.01f
 #define PITCH_ENCODE_SEN  0.01f
@@ -136,14 +136,14 @@
 #define CHASSIS_VX_RC_SEN 0.020f
 // #define CHASSIS_VX_RC_SEN 0.012f
 //遥控器左右摇杆（max 660）转化成车体左右速度（m/s）的比例
-#define CHASSIS_VY_RC_SEN 0.005f
+#define CHASSIS_VY_RC_SEN 0.020f
 #define CHASSIS_RC_DEADLINE 10
 //the channel num of controlling vertial speed 
 //前后的遥控器通道号码
-#define CHASSIS_X_CHANNEL 3
+#define CHASSIS_X_CHANNEL 2
 //the channel num of controlling horizontal speed
 //左右的遥控器通道号码
-#define CHASSIS_Y_CHANNEL 2
+#define CHASSIS_Y_CHANNEL 3
 //chassi forward, back, left, right key
 //底盘前后左右控制按键
 #define CHASSIS_FRONT_KEY KEY_PRESSED_OFFSET_W
@@ -190,8 +190,7 @@ typedef struct
 
 typedef struct
 {
-  const lkmotor_measure_t *gimbal_motor_measure;
-  //    const motor_measure_t *gimbal_motor_measure;
+  motor_measure_t *gimbal_motor_measure;
   gimbal_PID_t gimbal_motor_absolute_angle_pid;
   pid_type_def gimbal_motor_angle_pid_1;
   pid_type_def gimbal_motor_angle_pid_2;
@@ -218,18 +217,6 @@ typedef struct
 
 } gimbal_motor_t;
 
-typedef struct
-{
-    fp32 max_yaw;
-    fp32 min_yaw;
-    fp32 max_pitch;
-    fp32 min_pitch;
-    uint16_t max_yaw_ecd;
-    uint16_t min_yaw_ecd;
-    uint16_t max_pitch_ecd;
-    uint16_t min_pitch_ecd;
-    uint8_t step;
-} gimbal_step_cali_t;
 
 typedef struct
 {
@@ -240,13 +227,28 @@ typedef struct
   gimbal_motor_t gimbal_pitch_motor;
   gimbal_motor_t gimbal_yaw_motor;
   const shoot_control_t *shoot;
-  gimbal_step_cali_t gimbal_cali;
   bool_t press_l;
   bool_t last_press_l;
   uint16_t keyboard;
   uint16_t lastkeyboard;
-  uint8_t YAW_INIT_FLAG;
+
+  float vx_set;
 } gimbal_control_t;
+
+typedef struct
+{
+	float vx_set;//底盘x轴方向设定的速度控制量；
+	float vy_set;//底盘y轴方向设定的速度控制量
+	float wz_set;//底盘自旋时 设定的速度控制量；
+  float high_set;//变腿高
+	float yaw_angle_set;//yaw轴角度设定值
+	float yaw_angle;//yaw轴角度实时值
+	float yaw_gyro;//yaw轴角速度实时值
+	chassis_mode_e chassis_mode;//底盘模式
+	shoot_mode_e shoot_mode;//射击模式
+  uint8_t spin_flag;//小陀螺标志位
+  uint8_t tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
+}chassis_data_t;
 
 /**
   * @brief          return yaw motor data point

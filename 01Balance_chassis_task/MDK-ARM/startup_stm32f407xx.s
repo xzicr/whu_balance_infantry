@@ -180,7 +180,7 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
                 AREA    |.text|, CODE, READONLY
 
 ; Reset handler
-Reset_Handler    PROC
+Reset_Handler    PROC  
                  EXPORT  Reset_Handler             [WEAK]
         IMPORT  SystemInit
         IMPORT  __main
@@ -190,7 +190,7 @@ Reset_Handler    PROC
                  LDR     R0, =__main
                  BX      R0
                  ENDP
-
+ 
 ; Dummy Exception Handlers (infinite loops which can be modified)
 
 NMI_Handler     PROC

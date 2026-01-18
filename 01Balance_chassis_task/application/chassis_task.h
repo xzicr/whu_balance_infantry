@@ -128,15 +128,23 @@
 #define M3505_MOTOR_SPEED_PID_MAX_OUT MAX_MOTOR_CAN_CURRENT
 #define M3505_MOTOR_SPEED_PID_MAX_IOUT 5000.0f
 
-//chassis follow angle PID
+
 //底盘旋转跟随PID
 #define CHASSIS_FOLLOW_GIMBAL_PID_KP 0.2f//2.8
-#define CHASSIS_FOLLOW_GIMBAL_PID_KI 1.0f//0.5
-#define CHASSIS_FOLLOW_GIMBAL_PID_KD 4.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.5f//0.5
+#define CHASSIS_FOLLOW_GIMBAL_PID_KD 0.1f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f//2.8
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.5f
 #define MOTOR_ECD_TO_RAD 0.000766990394f 
 /* -----------------------------平步新增宏定义---------------------------- */
+
+//腿长设定PID
+#define LEG_SET_PID_KP 500.0f
+#define LEG_SET_PID_KI 4.0f
+#define LEG_SET_PID_KD 350.0f
+#define LEG_SET_PID_OUT 40.0f
+#define LEG_SET_PID_IOUT 20.0f
+
 
 // ------------- Limit info ------------- 
 #define MAX_ACCL 13000.0f
@@ -156,23 +164,22 @@
 #define LOWER_SUPPORT_FORCE_FOR_JUMP 5.0f
 #define LOWER_SUPPORT_FORCE 0.0f
 #define MOVE_LOWER_BOUND 0.5f
-#define EXIT_PITCH_ANGLE 0.1f
+#define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 25.0f
+#define FEED_f 15.0f
 
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET 0.0f
 
 #define MOTOR_POS_UPPER_BOUND 30.0f
-#define MOTOR_POS_LOWER_BOUND 65.0f
-#define LIMITED_TORQUE 0.5f
+#define MOTOR_POS_LOWER_BOUND 68.0f
+#define LIMITED_TORQUE 5.0f
 #define UNLIMITED_TORQUE 200.0f
 
 // ------------- Transfer info ------------- 
-#define HALF_ECD_RANGE                14383
 #define HALF_POSITION_RANGE    178.0f
-#define TORQ_K             77.1604f// 195.3125 //  153.23  //387.87878  // 494.483818182
+#define TORQ_K            77.1604
 // ------------- Math info ------------- 
 #define PI2					  6.28318530717959f
 #define PI					  3.14159265358979f
@@ -270,7 +277,7 @@ typedef struct
     const fp32 *chassis_INS_angle_point;
   	const fp32 *chassis_INS_gyro_point;
     const fp32 *chassis_INS_accel_point;
-    fp32 yaw_angle,yaw_angle_last,yaw_angle_total, pitch_angle, roll_angle,last_pitch_angle;
+    fp32 yaw_angle,yaw_angle_last,yaw_angle_total, pitch_angle, roll_angle,last_pitch_angle,yaw_round_cnt;
     fp32 yaw_gyro, pitch_gyro, roll_gyro,last_pitch_gyro;
     fp32 yaw_accel, pitch_accel, roll_accel;
     fp32 x_accel,y_accel,z_accel;
@@ -285,8 +292,8 @@ typedef struct
     fp32 leg_dlength_L,leg_dlength_R,last_leg_dlength_L,last_leg_dlength_R,leg_dlength_L_kf,leg_dlength_R_kf;
     fp32 leg_ddlength_L,leg_ddlength_R,last_leg_ddlength_L,last_leg_ddlength_R;
     fp32 foot_roll_angle;
-    fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set;
-    fp32 leg_angle_R, last_leg_angle_R, leg_angle_R_set;
+    fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set,leg_angle_L_kf;
+    fp32 leg_angle_R, last_leg_angle_R, leg_angle_R_set,leg_angle_R_kf;
     fp32 leg_gyro_L, leg_gyro_R,last_leg_gyro_L,last_leg_gyro_R;
     fp32 leg_accel_L, leg_accel_R;
 
@@ -399,6 +406,12 @@ typedef struct
     bool_t last_overpower_warning_flag;
     bool_t stablize_high_flag;
     bool_t last_stablize_high_flag;
+
+    // 跳跃相关标志
+    uint8_t jump_prepare_complete;    // 跳跃准备完成标志
+    uint32_t jump_prepare_timer;      // 跳跃准备计时器
+    uint32_t jump_extend_timer;       // 伸腿计时器
+    uint32_t jump_contact_timer;      // 接触计时器
 } flag_info_t;
 
 /* -----------------------------VMC结构体---------------------------- */
@@ -449,12 +462,12 @@ typedef struct
   const fp32 *chassis_INS_gyro;      
   const fp32 *chassis_INS_accel;
 	const chassis_data_t *chassis_data_;	 //从云台接受到的底盘数据设定值
-  const lkmotor_measure_t *gimbal_lkmotor_measure;
 
   chassis_motor_t motor_chassis[4];          //chassis motor data.底盘电机数据
   pid_type_def motor_speed_pid[4];             //motor speed PID.底盘电机速度pid
-  pid_type_def chassis_angle_pid;              //follow angle PID.底盘跟随角度pid
-
+  pid_type_def chassis_yaw_pid;              //follow angle PID.底盘跟随角度pid
+  pid_type_def leg_L_length_pid;               //腿长设定PID
+  pid_type_def leg_R_length_pid;               //腿长设定PID
 
   fp32 vx;                          //chassis vertical speed, positive means forward,unit m/s. 底盘速度 前进方向 前为正，单位 m/s
   fp32 vy;                          //chassis horizontal speed, positive means letf,unit m/s.底盘速度 左右方向 左为正  单位 m/s
@@ -462,8 +475,6 @@ typedef struct
   fp32 vx_set;                      //chassis set vertical speed,positive means forward,unit m/s.底盘设定速度 前进方向 前为正，单位 m/s
   fp32 vy_set;                      //chassis set horizontal speed,positive means left,unit m/s.底盘设定速度 左右方向 左为正，单位 m/s
   fp32 wz_set;                      //chassis set rotation speed,positive means counterclockwise,unit rad/s.底盘设定旋转角速度，逆时针为正 单位 rad/s
-  fp32 chassis_relative_angle;      //the relative angle between chassis and gimbal.底盘与云台的相对角度，单位 rad
-  fp32 chassis_relative_angle_set;  //the set relative angle.设置相对云台控制角度
   fp32 chassis_yaw_set;             
 
   fp32 vx_max_speed;  
@@ -477,8 +488,8 @@ typedef struct
   joint_motor_t joint_motor_1,joint_motor_2,joint_motor_3,joint_motor_4;
   foot_motor_t foot_motor_L,foot_motor_R;
 
-  fp32 yaw_change;
-  fp32 yaw_gyro_change;
+
+
 
 } chassis_move_t;
 

@@ -23,6 +23,7 @@
 
 #include "struct_typedef.h"
 #include "user_lib.h"
+
 #define CHASSIS_CAN hcan1
 #define GIMBAL_CAN hcan2
 
@@ -38,14 +39,11 @@ typedef enum
   CAN_FRICTION_RIGHT_ID = 0x208,
   CAN_YAW_MOTOR_ID = 0x205,
   CAN_PIT_MOTOR_ID = 0x206,
-  // 瓴控电机控ID
-  CAN_LK_MOTOR_M1_ID = 0x141,
   CAN_GIMBAL_ALL_ID = 0x1FF,
   CAN_gmbial_chassis_data1 = 0x01,
   CAN_gmbial_chassis_data2 = 0x02,
   CAN_gmbial_chassis_data3 = 0x03,
   CAN_gimbal_chassis_data4 = 0x04,
-  CAN_chassis_gimbal_ID=0x123,
   CAN_referee_data = 0x05,
 
 } can_msg_id_e;
@@ -57,25 +55,15 @@ typedef union
 typedef enum
 {
   CHASSIS_MODE_OFF=0,
-  CHASSIS_MODE_FOLLOW,
-  CHASSIS_MODE_NO_FOLLOW,
+  CHASSIS_MODE_FOLLOW_GIMBAL,
+  CHASSIS_MODE_NO_FOLLOW_GIMBAL,
   CHASSIS_MODE_INIT,
   CHASSIS_MODE_ROTATE,
 }chassis_mode_e;
 
-typedef struct
-{
-	float vx_set;//底盘x轴方向设定的速度控制量；
-	float vy_set;//底盘y轴方向设定的速度控制量
-	float wz_set;//底盘自旋时 设定的速度控制量；
-  float high_set;//变腿高
-	float yaw_angle_set;//yaw轴角度设定值
-	float yaw_angle;//yaw轴角度实时值
-	float yaw_gyro;//yaw轴角速度实时值
-	chassis_mode_e chassis_mode;//底盘模式
-	uint16_t shoot_mode;//射击模式
-  uint8_t tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
-}chassis_data_t;
+
+
+
 
 //rm motor data
 typedef struct
@@ -85,20 +73,10 @@ typedef struct
     int16_t given_current;
     uint8_t temperate;
     int16_t last_ecd;
-} motor_measure_t;
-extern motor_measure_t;
+}motor_measure_t;
 
-//瓴控电机数据
-typedef struct
-{
-	int8_t temp;
-	int16_t iq;
-	int16_t speed;
-	uint16_t encoder;
-	int16_t last_encoder;
-	float angle;
-}lkmotor_measure_t;
-extern lkmotor_measure_t;
+
+
 
 
 
@@ -162,39 +140,7 @@ extern void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int1
   * @param[in]      none
   * @retval         none
   */
-extern void can_gimbal_chassis_data1(chassis_data_t *chassis_data);
-/**
-  * @brief          发送底盘旋转速度和跟随云台角度
-  * @param[in]      none
-  * @retval         none
-  */
-extern void can_gimbal_chassis_data2(chassis_data_t *chassis_data);
-/**
-  * @brief          发送底盘模式和云台yaw轴角度
-  * @param[in]      none
-  * @retval         none
-  */
-extern void can_gimbal_chassis_data3(chassis_data_t *chassis_data);
-/**
-  * @brief          发送云台yaw轴角速度
-  * @param[in]      none
-  * @retval         none
-  */
-extern void can_gimbal_chassis_data4(chassis_data_t *chassis_data);
-/**
-  * @brief          发送读取pitch轴瓴控电机数据指令
-  * @param[in]      none
-  * @retval         none
-  */
-extern void CAN_LK_START_control(void);
-extern void CAN_LK_CLOSE_control(void);
-extern void CAN_read_lkmotor_state(void);
-extern void CAN_LK_SPEED_Control(int16_t iqControl,int32_t speedControl);
-/**
-  * @brief          return the yaw 6020 motor data point
-  * @param[in]      none
-  * @retval         motor data point
-  */
+
 /**
   * @brief          返回yaw 6020电机数据指针
   * @param[in]      none
@@ -223,7 +169,6 @@ extern const motor_measure_t *get_pitch_gimbal_motor_measure_point(void);
   * @param[in]      none
   * @retval         电机数据指针
   */
-extern const lkmotor_measure_t *get_pitch_gimbal_lkmotor_measure_point(void);
 
 
 /**

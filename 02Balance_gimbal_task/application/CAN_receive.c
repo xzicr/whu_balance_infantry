@@ -55,8 +55,8 @@ motor data,  0:chassis motor1 3508;1:chassis motor3 3508;2:chassis motor3 3508;3
 4:yaw gimbal motor 6020;5:pitch gimbal motor 6020;6:trigger motor 2006;
 电机数据, 0:底盘电机1 3508电机,  1:底盘电机2 3508电机,2:底盘电机3 3508电机,3:底盘电机4 3508电机;
 4:yaw云台电机 6020电机; 5:pitch云台电机 6020电机; 6:拨弹电机 2006电机*/
-static motor_measure_t motor_chassis[7];
-lkmotor_measure_t lkmotor_data;
+motor_measure_t motor_chassis[7];
+
 
 static CAN_TxHeaderTypeDef gimbal_tx_message;
 static uint8_t gimbal_can_send_data[8];
@@ -99,11 +99,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
       detect_hook(CHASSIS_MOTOR1_TOE + i);
       break;
     }
-    case CAN_LK_MOTOR_M1_ID:
-    {
-      get_lkmotor_measure(&lkmotor_data, rx_data);
-      break;
-    }
     default:
     {
       break;
@@ -117,11 +112,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     case CAN_referee_data:
     {
       CAN_receive_referee_data(rx_data);
-      break;
-    }
-    case CAN_chassis_gimbal_ID:
-    {
-      gimbal_control.YAW_INIT_FLAG = rx_data[0];
       break;
     }
     default:
@@ -312,78 +302,6 @@ void can_gimbal_chassis_data4(chassis_data_t *chassis_data)
 }
 
 
-void CAN_LK_START_control(void)
-{
-  uint32_t send_mail_box;
-  chassis_tx_message.StdId = CAN_LK_MOTOR_M1_ID;
-  chassis_tx_message.IDE = CAN_ID_STD;
-  chassis_tx_message.RTR = CAN_RTR_DATA;
-  chassis_tx_message.DLC = 0x08;
-  chassis_can_send_data[0] = 0x88;
-  chassis_can_send_data[1] = 0x00;
-  chassis_can_send_data[2] = 0x00;
-  chassis_can_send_data[3] = 0x00;
-  chassis_can_send_data[4] = 0x00;
-  chassis_can_send_data[5] = 0x00;
-  chassis_can_send_data[6] = 0x00;
-  chassis_can_send_data[7] = 0x00;
-  HAL_CAN_AddTxMessage(&CHASSIS_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
-}
-void CAN_LK_CLOSE_control(void)
-{
-  uint32_t send_mail_box;
-  chassis_tx_message.StdId = CAN_LK_MOTOR_M1_ID;
-  chassis_tx_message.IDE = CAN_ID_STD;
-  chassis_tx_message.RTR = CAN_RTR_DATA;
-  chassis_tx_message.DLC = 0x08;
-  chassis_can_send_data[0] = 0x80;
-  chassis_can_send_data[1] = 0x00;
-  chassis_can_send_data[2] = 0x00;
-  chassis_can_send_data[3] = 0x00;
-  chassis_can_send_data[4] = 0x00;
-  chassis_can_send_data[5] = 0x00;
-  chassis_can_send_data[6] = 0x00;
-  chassis_can_send_data[7] = 0x00;
-  HAL_CAN_AddTxMessage(&CHASSIS_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
-}
-
-// 读取瓴控电机
-void CAN_read_lkmotor_state(void)
-{
-  uint32_t send_mail_box;
-  chassis_tx_message.StdId = CAN_LK_MOTOR_M1_ID;
-  chassis_tx_message.RTR = CAN_RTR_DATA;
-  chassis_tx_message.IDE = CAN_ID_STD;
-  chassis_tx_message.DLC = 0x08;
-  chassis_can_send_data[0] = 0x9C;
-  chassis_can_send_data[1] = 0x00;
-  chassis_can_send_data[2] = 0x00;
-  chassis_can_send_data[3] = 0x00;
-  chassis_can_send_data[4] = 0x00;
-  chassis_can_send_data[5] = 0x00;
-  chassis_can_send_data[6] = 0x00;
-  chassis_can_send_data[7] = 0x00;
-  HAL_CAN_AddTxMessage(&hcan1, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
-}
-
-void CAN_LK_SPEED_Control(int16_t iqControl, int32_t speedControl)
-{
-  uint32_t send_mail_box;
-  chassis_tx_message.StdId = CAN_LK_MOTOR_M1_ID;
-  chassis_tx_message.IDE = CAN_ID_STD;
-  chassis_tx_message.RTR = CAN_RTR_DATA;
-  chassis_tx_message.DLC = 0x08;
-  chassis_can_send_data[0] = 0xA2;
-  chassis_can_send_data[1] = 0x00;
-  chassis_can_send_data[2] = *((uint8_t *)(&iqControl));
-  chassis_can_send_data[3] = *((uint8_t *)(&iqControl) + 1);
-  chassis_can_send_data[4] = *((uint8_t *)(&speedControl));
-  chassis_can_send_data[5] = *((uint8_t *)(&speedControl) + 1);
-  chassis_can_send_data[6] = *((uint8_t *)(&speedControl) + 2);
-  chassis_can_send_data[7] = *((uint8_t *)(&speedControl) + 3);
-  HAL_CAN_AddTxMessage(&CHASSIS_CAN, &chassis_tx_message, chassis_can_send_data, &send_mail_box);
-}
-
 /**
  * @brief          return the yaw 6020 motor data point
  * @param[in]      none
@@ -412,21 +330,6 @@ const motor_measure_t *get_yaw_gimbal_motor_measure_point(void)
 const motor_measure_t *get_pitch_gimbal_motor_measure_point(void)
 {
   return &motor_chassis[5];
-}
-/**
- * @brief          return the pitch lkmotor data point
- * @param[in]      none
- * @retval         motor data point
- */
-/**
- * @brief          返回pitch 瓴控电机数据指针
- * @param[in]      none
- * @retval         电机数据指针
- */
-
-const lkmotor_measure_t *get_pitch_gimbal_lkmotor_measure_point(void)
-{
-  return &lkmotor_data;
 }
 
 /**
@@ -471,7 +374,3 @@ void get_enemy_color(uint8_t *enemy_color)
 {
   *enemy_color = color;
 }
-// void CAN_receive_yaw_flag(uint8_t yaw_init_flag)
-// {
-//   yaw_init_flag=;
-// }

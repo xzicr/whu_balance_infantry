@@ -1,24 +1,32 @@
 #include "struct_typedef.h"
+#include "gimbal_task.h"
+
 typedef struct {
-    float       curr_yaw;
-    float       curr_pitch;
-    float       curr_omega;
-    uint8_t     state;
-    uint8_t     autoaim;
-    uint8_t     enemy_color;
+    uint8_t     mode;
+    float       q[4];
+    float       yaw;
+    float       yaw_vel;
+    float       pitch;
+    float       pitch_vel;
+    float       bullet_speed;
+    uint16_t    bullet_count;
+
 } __attribute__((packed)) OutputData;
 
 
 typedef struct {
-    float       shoot_yaw;
-    float       shoot_pitch;
-    uint8_t     fire;
-    uint8_t     target_id;
+    uint8_t       mode;
+    float         yaw;
+    float         yaw_vel;
+    float         yaw_acc;
+    float         pitch;
+    float         pitch_vel;
+    float         pitch_acc;
 } __attribute__((packed)) InputData;
 
 typedef struct  {
-    uint8_t     sof;
-    uint8_t     crc8;
+    uint8_t     s;
+    uint8_t     p;
 } __attribute__((packed))FrameHeader;
 
 typedef struct {
@@ -41,9 +49,20 @@ typedef struct  {
 #define RECEIVE_DATA_SIZE 12
 #define SEND_DATA_SIZE 19
 #define FRAME_HEADER      0X7B //Frame_header 
-#define FRAME_TAIL        0X7D //Frame_tail   
-#define FRAME_HEADER_SOF  0xA5  
+#define FRAME_TAIL        0X7D //Frame_tail 
+
+#define FRAME_HEADER_S  'S'     //0x53
+#define FRAME_HEADER_P  'P'     //0x50
+// #define FRAME_HEADER_SOF  0xA5  
 #define FRAME_HEADER_CRC8 0xFF  
 #define FRAME_TAILER_CRC16_init 0xFFFF  
 void Self_aim_task(void const *pvParameters);
-InputData *get_selfaim_data();
+InputData *get_selfaim_data(void);
+
+
+extern void usbd_cdc_receive_handle(void);
+extern uint8_t Usart_Receive[40]; //用于接收单个字节的数据
+
+
+
+

@@ -7,19 +7,18 @@
 #include "shoot.h"
 #include "user_lib.h"
 // yaw 速度环 PID参数以及 PID最大输出，积分输出
-// #define YAW_GYRO_PID_KP -3000.0f
-// #define YAW_GYRO_PID_KI -5.0f
-// #define YAW_GYRO_PID_KD 0.0f
-// #define YAW_GYRO_PID_MAX_OUT 30000.0f
-// #define YAW_GYRO_PID_MAX_IOUT 5000.0f
-
-#define YAW_ANGLE_PID_KP 9000.0f        // -4//-0.8
-#define YAW_ANGLE_PID_KI 0.0f            // 0.2//-1
-#define YAW_ANGLE_PID_KD 800.0f         //	-10//-5
-#define YAW_ANGLE_PID_MAX_OUT 1200000.0f // 3
-#define YAW_ANGLE_PID_MAX_IOUT 0.0f      // 0.5
-#define GIMBAL_CONTROL_TIME 1
-#define YAW_SET_NUM 0.2
+#define YAW_GYRO_PID_KP        5000.0f
+#define YAW_GYRO_PID_KI        5.0f
+#define YAW_GYRO_PID_KD        50.0f
+#define YAW_GYRO_PID_MAX_OUT   30000.0f
+#define YAW_GYRO_PID_MAX_IOUT  10000.0f
+#define YAW_ANGLE_PID_KP        0.4//-0.8
+#define YAW_ANGLE_PID_KI        0.0//-1
+#define YAW_ANGLE_PID_KD       	0.1//-5
+#define YAW_ANGLE_PID_MAX_OUT   3
+#define YAW_ANGLE_PID_MAX_IOUT  0.5
+#define GIMBAL_CONTROL_TIME 2
+#define YAW_SET_NUM 0.2  
 typedef enum
 {
     GIMBAL_MOTOR_OFF = 0, // 电机原始值控制
@@ -49,10 +48,7 @@ typedef struct
 typedef struct
 {
     const motor_measure_t *gimbal_motor_measure;
-    const lkmotor_measure_t *gimbal_lkmotor_measure;
     pid_type_def gimbal_motor_angle_pid;
-	gimbal_PID_t gimbal_motor_angle1_pid;
-	feed_type_def gimbal_motor_angle_feed_pid;
     pid_type_def gimbal_motor_gyro_pid;
     gimbal_motor_mode_e gimbal_motor_mode;
     fp32 absolute_angle;     //rad
@@ -72,10 +68,9 @@ typedef struct
     const chassis_data_t  *yaw_ctrl_data;
     gimbal_motor_t gimbal_yaw_motor;
 	shoot_control_t *shoot;
-    uint8_t YAW_INIT_FLAG;
 
 } gimbal_control_t;
 
-void gimbal_task();
-//extern float data[2];
+extern void gimbal_task(void const *pvParameters);
+
 #endif

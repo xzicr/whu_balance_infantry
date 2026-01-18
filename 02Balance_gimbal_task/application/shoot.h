@@ -3,18 +3,20 @@
 #include "CAN_receive.h"
 #include "pid.h"
 #include "remote_control.h"
-#define FRICTION_SPEED_PID_KP        0.7f
-#define FRICTION_SPEED_PID_KI        0.06f
-#define FRICTION_SPEED_PID_KD        0.3f
+
+#define FRICTION_SPEED_PID_KP        7.0f
+#define FRICTION_SPEED_PID_KI        0.0001f
+#define FRICTION_SPEED_PID_KD        2.0f
 #define FRICTION_SPEED_PID_MAX_OUT   30000.0f
 #define FRICTION_SPEED_PID_MAX_IOUT  5000.0f
-#define FRICTION_CURRENT_PID_KP        0.6f
-#define FRICTION_CURRENT_PID_KI        0.2f
-#define FRICTION_CURRENT_PID_KD        0.0f
+
+#define FRICTION_CURRENT_PID_KP        0.8f     //0.6
+#define FRICTION_CURRENT_PID_KI        0.15f    //0.2
+#define FRICTION_CURRENT_PID_KD        0.6f     //0.2
 #define FRICTION_CURRENT_PID_MAX_OUT   30000.0f
 #define FRICTION_CURRENT_PID_MAX_IOUT  10000.0f
 
-//射击发射开关通道数据
+//灏勫嚮鍙戝皠寮€鍏抽€氶亾鏁版嵁
 #define SHOOT_RC_MODE_CHANNEL       0
 
 #define SHOOT_CONTROL_TIME          GIMBAL_CONTROL_TIME
@@ -25,27 +27,28 @@
 #define FRIC_SPEED_MAX 4000
 #define FRIC_SPEED_MIN 0
 
-//鼠标长按判断
+//榧犳爣闀挎寜鍒ゆ柇
 #define PRESS_LONG_TIME             400
-//遥控器射击开关打下档一段时间后 连续发射子弹 用于清单
+//閬ユ帶鍣ㄥ皠鍑诲紑鍏虫墦涓嬫。涓€娈垫椂闂村悗 杩炵画鍙戝皠瀛愬脊 鐢ㄤ簬娓呭崟
 #define RC_S_LONG_TIME              800
 
 typedef enum
 {
-    SHOOT_STOP = 0,   
-    SHOOT_READY_FRIC,    
-    SHOOT_READY_BULLET,  
+    SHOOT_STOP = 0,   //鍋滄灏勫嚮
+    SHOOT_READY_FRIC,    //鎽╂摝鍑嗗灏辩华
+    SHOOT_READY_BULLET,  //寮硅嵂鍑嗗灏辩华
 
 
     SHOOT_SINGLE,
     SHOOT_CONTINUE,
-    SHOOT_READY,       
-    SHOOT_BULLET,        
-    SHOOT_CONTINUE_BULLET,   
-    SHOOT_DONE,            //射击完成
+    SHOOT_READY,         //灏勫嚮鍑嗗灏辩华
+    SHOOT_BULLET,        //姝ｅ湪灏勫嚮
+    SHOOT_CONTINUE_BULLET,   //缁х画灏勫嚮
+    SHOOT_DONE,            //灏勫嚮瀹屾垚
+    SHOOT_BACK,
 }shoot_mode_e;
 
-/* 低通滤波器结构体 */
+/* 浣庨€氭护娉㈠櫒缁撴瀯浣? */
 typedef struct
 {
 	fp32 output;
@@ -57,17 +60,16 @@ typedef struct
 	shoot_mode_e shoot_mode;
 	const motor_measure_t *friction_motor_measure[2];
 	const RC_ctrl_t *shoot_rc;
-    //斜波函数结构体
-    ramp_function_source_t fric_ramp;      
-    /* 左轮 */
+    ramp_function_source_t fric_ramp;      //鏂滄尝鍑芥暟缁撴瀯浣?
+    /* 宸﹁疆 */
 	pid_type_def friction_left_motor_speed_pid; 
-    /* 右轮 */
+    /* 鍙宠疆 */
 	pid_type_def friction_right_motor_speed_pid; 
-    /* 左轮电流环PID */
+    /* 宸﹁疆 */
 	pid_type_def friction_left_motor_current_pid; 
-    /* 右轮电流环PID */
+    /* 鍙宠疆 */
 	pid_type_def friction_right_motor_current_pid; 
-    /* 低通滤波器*/ 
+    /* 浣庨€氭护娉㈠櫒*/ 
     low_pass_filter_t left_speed_filter;
     low_pass_filter_t right_speed_filter;
     fp32 friction_left_last_speed;
@@ -78,10 +80,10 @@ typedef struct
     fp32 friction_right_speed_set;
 	int16_t shoot_left_given_current;
 	int16_t shoot_right_given_current;
-	bool_t press_l;
-    bool_t press_r;
-    bool_t last_press_l;
-    bool_t last_press_r;
+	bool_t press_l,last_press_l;
+    bool_t press_r,last_press_r;
+    bool_t press_fric,last_press_fric;
+    bool_t press_back,last_press_back;  //退弹按键
     uint16_t press_l_time;
     uint16_t press_r_time;
 	uint16_t rc_s_time;
@@ -92,6 +94,9 @@ typedef struct
 const shoot_control_t *shoot_control_loop(void);
 extern shoot_control_t shoot_control;
 extern void shoot_Init(void);
-extern float data1[2];
+
+extern uint8_t shoot_bullet_fre;
+extern float shoot_bullet_speed;
+
 
 #endif

@@ -60,7 +60,7 @@ typedef __packed struct
         __packed struct
         {
                 int16_t ch[5];
-                char s[2];
+                char s[5];
         } rc;
         __packed struct
         {
@@ -69,6 +69,7 @@ typedef __packed struct
                 int16_t z;
                 uint8_t press_l;
                 uint8_t press_r;
+                uint8_t press_m;
         } mouse;
         __packed struct
         {

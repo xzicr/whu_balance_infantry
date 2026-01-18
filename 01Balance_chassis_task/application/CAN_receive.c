@@ -44,24 +44,26 @@ extern CAN_HandleTypeDef hcan2;
     }                                                                \
     (ptr)->angle = (ptr)->ecd_count * 360 + (ptr)->ecd * 360 / 8192; \
   }
+
+  #define get_lkmotor_measure(ptr, data)                                  \
+    {                                                                     \
+      (ptr)->temp = (int8_t)data[1];                                      \
+      (ptr)->iq = (int16_t)(data[3] << 8 | data[2]);                      \
+      (ptr)->speed = (int16_t)(data[5] << 8 | data[4]);                   \
+      (ptr)->encoder = (uint16_t)(data[7] << 8 | data[6]);                \
+      (ptr)->last_encoder = (ptr)->encoder;                               \
+      (ptr)->angle = (float)(((float)(ptr)->last_encoder / 65536) * 360); \
+    }
+
 #define get_HT_motor_measure(ptr, data)                                                                \
   {                                                                                                    \
     (ptr)->last_ecd = (ptr)->ecd;                                                                      \
     (ptr)->ecd = uint_to_float((uint16_t)((data)[1] << 8 | (data)[2]), P_MIN, P_MAX, 16)*60.0f;        \
 	if((ptr)->ecd>180){(ptr)->ecd-=360;}                                                                    \
 	if((ptr)->ecd<-180){(ptr)->ecd+=360;}                                                                    \
-    (ptr)->speed_rpm = uint_to_float((uint16_t)(data[3] << 4) | (data[4] >> 4), V_MIN, V_MAX, 12);     \
-    (ptr)->real_torque = uint_to_float((uint16_t)(((data[4] & 0x0f) << 8) | (data)[5]), -18, +18, 12); \
-  }
-#define get_lkmotor_measure(ptr, data)                                  \
-  {                                                                     \
-    (ptr)->temp = (int8_t)data[1];                                      \
-    (ptr)->iq = (int16_t)(data[3] << 8 | data[2]);                      \
-    (ptr)->speed = (int16_t)(data[5] << 8 | data[4]);                   \
-    (ptr)->encoder = (uint16_t)(data[7] << 8 | data[6]);                \
-    (ptr)->last_encoder = (ptr)->encoder;                               \
-    (ptr)->angle = (float)(((float)(ptr)->last_encoder / 65536) * 360); \
-  }
+  (ptr)->speed_rpm = uint_to_float((uint16_t)(data[3] << 4) | (data[4] >> 4), V_MIN, V_MAX, 12);     \
+  (ptr)->real_torque = uint_to_float((uint16_t)(((data[4] & 0x0f) << 8) | (data)[5]), -18, +18, 12); \
+}
 
 #define get_supercap_data(temp, data)       \
   {                                         \
@@ -95,10 +97,10 @@ static uint8_t chassis_can_send_data[8];
 static CAN_TxHeaderTypeDef referee_tx_message;
 static uint8_t referee_can_send_data[1];
 
-static motor_measure_t motor_chassis[7];
-HTmotor_measure_t htmotor_data[4];
+motor_measure_t motor_chassis[7];
 lkmotor_measure_t lkmotor_data[2];
-static chassis_data_t chassis_data;
+HTmotor_measure_t htmotor_data[4];
+//static chassis_data_t chassis_data;
 /* 超级电容反馈数据 */
 float Power_data[4];
 uint16_t power_data_temp[4];
@@ -137,11 +139,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     case CAN_3508_M2_ID:
     case CAN_3508_M3_ID:
     case CAN_3508_M4_ID:
-    case CAN_YAW_MOTOR_ID:
-    case CAN_TRIGGER_MOTOR_ID:
     {
       static uint8_t i = 0;
-      // get motor id
       i = rx_header.StdId - CAN_3508_M1_ID;
       get_motor_measure(&motor_chassis[i], rx_data);
       detect_hook(CHASSIS_MOTOR1_TOE + i);
@@ -174,6 +173,20 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         get_lkmotor_measure(&lkmotor_data[1], rx_data);
         break;
       }
+      case CAN_YAW_MOTOR_ID:
+      {
+        static uint8_t i = 0;
+        i = rx_header.StdId - CAN_3508_M1_ID;
+        get_motor_measure(&motor_chassis[i], rx_data)
+      }
+      case CAN_TRIGGER_MOTOR_ID:
+      {
+        static uint8_t i = 0;
+        i = rx_header.StdId - CAN_3508_M1_ID;
+        get_motor_measure(&motor_chassis[i], rx_data);
+        detect_hook(CHASSIS_MOTOR1_TOE + i);
+        break;
+      }      
       default:
       {
         break;
@@ -239,6 +252,28 @@ void CAN_INIT_STATUS(uint8_t status)
   referee_can_send_data[0] = status;
   HAL_CAN_AddTxMessage(&REFEREE_CAN, &referee_tx_message, referee_can_send_data, &send_mail_box);
 }
+//6020y电机协议
+void CAN_cmd_gimbal(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+{
+  uint32_t send_mail_box;
+  gimbal_tx_message.StdId = CAN_GIMBAL_ALL_ID;
+  gimbal_tx_message.IDE = CAN_ID_STD;
+  gimbal_tx_message.RTR = CAN_RTR_DATA;
+  gimbal_tx_message.DLC = 0x08;
+  gimbal_can_send_data[0] = motor1 >> 8;
+  gimbal_can_send_data[1] = motor1;
+  gimbal_can_send_data[2] = motor2 >> 8;
+  gimbal_can_send_data[3] = motor2;
+  gimbal_can_send_data[4] = motor3 >> 8;
+  gimbal_can_send_data[5] = motor3;
+  gimbal_can_send_data[6] = motor4 >> 8;
+  gimbal_can_send_data[7] = motor4;
+
+  HAL_CAN_AddTxMessage(&hcan2, &gimbal_tx_message, gimbal_can_send_data, &send_mail_box);
+}
+
+
+float t1,t2,t3,t4;
 /* ------------------------海泰电机------------------------- */
 void CAN_HT_CMD(uint8_t id, fp32 f_t)
 {
@@ -259,6 +294,29 @@ void CAN_HT_CMD(uint8_t id, fp32 f_t)
   kd = float_to_uint(f_kd, KD_MIN, KD_MAX, 12);
   t = float_to_uint(f_t, T_MIN, T_MAX, 12);
 
+  switch (id)
+  {
+    case 0x01:
+    {
+      t1=f_t;
+      break;
+    }
+    case 0x02:
+      {
+      t2=f_t;
+      break;
+    }
+    case 0x03:
+    {
+      t3=f_t;
+      break;
+    }
+    case 0x04:
+    {
+      t4=f_t;
+      break;
+    }
+  }
   buf[0] = p >> 8;
   buf[1] = p & 0xFF;
   buf[2] = v >> 4;
@@ -455,10 +513,6 @@ const motor_measure_t *get_yaw_gimbal_motor_measure_point(void)
 {
   return &motor_chassis[4];
 }
-const lkmotor_measure_t *get_yaw_gimbal_lkmotor_measure_point(void)
-{
-  return &lkmotor_data[2];
-}
 
 const motor_measure_t *get_pitch_gimbal_motor_measure_point(void)
 {
@@ -474,12 +528,6 @@ const motor_measure_t *get_chassis_motor_measure_point(uint8_t i)
 {
   return &motor_chassis[(i & 0x03)];
 }
-
-const chassis_data_t *get_Chassisdata_point()
-{
-  return &chassis_data;
-}
-
 
 HTmotor_measure_t *get_HT_motor_measure_point(uint8_t i)
 {

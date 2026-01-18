@@ -1,5 +1,5 @@
 /**
-  ****************************(C) COPYRIGHT 2019 DJI****************************
+  ****************************(C) WHU_BALANCE_GIMBAL****************************
   * @file       gimbal_task.c/h
   * @brief      gimbal control task, because use the euler angle calculated by
   *             gyro sensor, range (-pi,pi), angle set-point must be in this
@@ -17,12 +17,13 @@
   *  V1.0.0     Dec-26-2018     RM              1. done
   *  V1.1.0     Nov-11-2019     RM              1. add some annotation
   *
+  *  V2.0.0     Nov-16-2025     xzicr           增加控制模块
   @verbatim
   ==============================================================================
 
   ==============================================================================
   @endverbatim
-  ****************************(C) COPYRIGHT 2019 DJI****************************
+  ****************************(C)WHU_BALANCE_GIMBAL****************************
   */
 
 #include "gimbal_task.h"
@@ -50,15 +51,7 @@
       (output) = 0;                                  \
     }                                                \
   }
-// motor enconde value format, range[0-8191]
-// 电机编码值规整 0—8191
-#define ecd_format(ecd)    \
-  {                        \
-    if ((ecd) > ECD_RANGE) \
-      (ecd) -= ECD_RANGE;  \
-    else if ((ecd) < 0)    \
-      (ecd) += ECD_RANGE;  \
-  }
+
 
 #define gimbal_total_pid_clear(gimbal_clear)                                               \
   {                                                                                        \
@@ -75,21 +68,6 @@
 uint32_t gimbal_high_water;
 
 #endif
-float yaw_angle_limit_func(float input)
-{
-  if (input >= 180)
-  {
-    return input - 360;
-  }
-  else if (input <= -180)
-  {
-    return input + 360;
-  }
-  else
-  {
-    return input;
-  }
-}
 
 #define WINDOW_SIZE 10
 float yaw_buffer[WINDOW_SIZE];
@@ -125,20 +103,22 @@ InputData *Self_aim_data;
 first_order_filter_type_t chassis_self_aim_yaw;
 const static fp32 chassis_self_aim_yaw_filter[1] = {CHASSIS_ACCEL_Y_NUM};
 
+
+//func
 static void gimbal_init(gimbal_control_t *init);
 void leg_control_init(chassis_data_t *leg_contorl);
 void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data);
+void rc_control(gimbal_control_t *gimbal_control_set,chassis_data_t *chassis_data);
+void key_control(gimbal_control_t *gimbal_control_set,chassis_data_t *chassis_data);
+void yaw_set(gimbal_control_t *gimbal_control_set,chassis_data_t *chassis_data);
+
 static void gimbal_set_mode(gimbal_control_t *set_mode);
 static void gimbal_feedback_update(gimbal_control_t *feedback_update);
-static fp32 motor_ecd_to_angle_change(int16_t encoder);
 static void gimbal_set_control(gimbal_control_t *set_control);
 static void gimbal_control_loop(gimbal_control_t *control_loop);
-
-
 static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
 static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
 static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
-
 
 
 
@@ -161,14 +141,28 @@ void gimbal_task(void const *pvParameters)
 
   while (1)
   {
+    //射击控制
     gimbal_control.shoot = shoot_control_loop();
-    chassis_rc_to_control_vector(&gimbal_control, &chassis_data); // 设置底盘控制量
-    gimbal_set_mode(&gimbal_control);                             // 设置云台控制模式
-    gimbal_feedback_update(&gimbal_control);                      // 云台数据反馈
-    gimbal_set_control(&gimbal_control);                          // 设置云台PITCH轴目标角度
-    gimbal_control_loop(&gimbal_control);                         // 云台控制PID计算
+
+    //设置底盘控制量
+    chassis_rc_to_control_vector(&gimbal_control, &chassis_data); 
+
+    // 设置云台控制模式
+    gimbal_set_mode(&gimbal_control);                 
+    
+    // 云台数据反馈
+    gimbal_feedback_update(&gimbal_control);     
+    
+    // 设置云台PITCH轴目标角度
+    gimbal_set_control(&gimbal_control);     
+    
+     // 云台控制PID计算
+    gimbal_control_loop(&gimbal_control);    
+    
     gimbal_control.shoot = shoot_control_loop();
-    CAN_LK_SPEED_Control(1000, gimbal_control.gimbal_pitch_motor.gimbal_motor_angle_pid_1.out);
+
+    CAN_cmd_gimbal(0, -gimbal_control.gimbal_pitch_motor.gimbal_motor_angle_pid_1.out,0,0);
+
     CAN_cmd_chassis(gimbal_control.shoot->shoot_left_given_current,gimbal_control.shoot->shoot_right_given_current, 0, 0);
     vTaskDelay(GIMBAL_CONTROL_TIME);
   }
@@ -243,11 +237,11 @@ static void gimbal_set_mode(gimbal_control_t *set_mode)
       init_time = 0;
     }
   }
-  if (set_mode->gimbal_rc_ctrl->rc.s[1] == 2 || toe_is_error(DBUS_TOE))
+  if (set_mode->gimbal_rc_ctrl->rc.s[0] == 0 || toe_is_error(DBUS_TOE))
   {
     set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_OFF;
   }
-  else if (set_mode->gimbal_rc_ctrl->rc.s[1] == 3 || set_mode->gimbal_rc_ctrl->rc.s[1] == 1)
+  else if (set_mode->gimbal_rc_ctrl->rc.s[0] == 1 || set_mode->gimbal_rc_ctrl->rc.s[1] == 2)
   {
     set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
   }
@@ -267,12 +261,10 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
     return;
   }
   // 云台数据更新
-  feedback_update->gimbal_pitch_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_pitch_motor.gimbal_motor_measure->last_encoder);
+  feedback_update->gimbal_pitch_motor.relative_angle = feedback_update->gimbal_pitch_motor.gimbal_motor_measure->last_ecd;
   feedback_update->gimbal_pitch_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_PITCH_ADDRESS_OFFSET);
   feedback_update->gimbal_pitch_motor.motor_gyro = *(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Y_ADDRESS_OFFSET);
   feedback_update->gimbal_yaw_motor.absolute_angle = INS.YawTotalAngle;
-  feedback_update->gimbal_yaw_motor.relative_angle = motor_ecd_to_angle_change(feedback_update->gimbal_yaw_motor.gimbal_motor_measure->last_encoder);
-  feedback_update->gimbal_yaw_motor.motor_gyro = arm_cos_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Z_ADDRESS_OFFSET)) - arm_sin_f32(feedback_update->gimbal_pitch_motor.relative_angle) * (*(feedback_update->gimbal_INT_gyro_point + INS_GYRO_X_ADDRESS_OFFSET));
   // 键鼠数据获取
   feedback_update->last_press_l = feedback_update->press_l;
   feedback_update->press_l = feedback_update->gimbal_rc_ctrl->mouse.press_l;
@@ -280,28 +272,13 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
   feedback_update->keyboard = feedback_update->gimbal_rc_ctrl->key.v;
   // 自瞄数据获取
   feedback_update->gimbal_pitch_motor.last_self_aim_pitch_angle = feedback_update->gimbal_pitch_motor.self_aim_pitch_angle;
-  feedback_update->gimbal_pitch_motor.self_aim_pitch_angle = Self_aim_data->shoot_pitch / 3.14 * 180;
+  feedback_update->gimbal_pitch_motor.self_aim_pitch_angle = Self_aim_data->pitch / 3.14 * 180;
   feedback_update->gimbal_yaw_motor.last_self_aim_yaw_angle = feedback_update->gimbal_yaw_motor.self_aim_yaw_angle;
-  feedback_update->gimbal_yaw_motor.self_aim_yaw_angle = sliding_average(Self_aim_data->shoot_yaw / 3.14 * 180);
-  //	feedback_update->gimbal_yaw_motor.self_aim_yaw_angle=Self_aim_data->shoot_yaw/3.14*180;
-
+  feedback_update->gimbal_yaw_motor.self_aim_yaw_angle = sliding_average(Self_aim_data->yaw / 3.14 * 180);
 }
 
 
-static fp32 motor_ecd_to_angle_change(int16_t last_encoder)
-{
-  //    int32_t relative_ecd = ecd - offset_ecd;
-  //    if (relative_ecd > HALF_ECD_RANGE)
-  //    {
-  //        relative_ecd -= ECD_RANGE;
-  //    }
-  //    else if (relative_ecd < -HALF_ECD_RANGE)
-  //    {
-  //        relative_ecd += ECD_RANGE;
-  //    }
-  float angle = (float)last_encoder * MOTOR_ECD_TO_RAD;
-  return angle;
-}
+
 
 static void gimbal_set_control(gimbal_control_t *set_control)
 {
@@ -309,14 +286,14 @@ static void gimbal_set_control(gimbal_control_t *set_control)
   rc_deadband_limit(set_control->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
   if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO && aimflag == 1)
   {
-    set_control->gimbal_pitch_motor.absolute_angle_set -= pitch_channel * PITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN * 0.5;
-    if (set_control->gimbal_pitch_motor.absolute_angle_set < -19)
+    set_control->gimbal_pitch_motor.absolute_angle_set += pitch_channel * PITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN * 0.5;
+    if (set_control->gimbal_pitch_motor.absolute_angle_set < -26)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = -19;
+      set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 29)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 26)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 29;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 26;
     }
     else
     {
@@ -325,14 +302,14 @@ static void gimbal_set_control(gimbal_control_t *set_control)
   }
   else if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO && aimflag == 0)
   {
-    set_control->gimbal_pitch_motor.absolute_angle_set -= pitch_channel * PITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN;
-    if (set_control->gimbal_pitch_motor.absolute_angle_set < -19)
+    set_control->gimbal_pitch_motor.absolute_angle_set += pitch_channel * PITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN;
+    if (set_control->gimbal_pitch_motor.absolute_angle_set < -26)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = -19;
+      set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 29)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 26)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 29;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 26;
     }
     else
     {
@@ -351,15 +328,7 @@ static void gimbal_control_loop(gimbal_control_t *control_loop)
 {
   if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_OFF)
   {
-    if(close==0)
-    {
-      CAN_LK_CLOSE_control();
-      close=1;
-    }
-    else if(close==1)
-    {
-      start=0;
-    }
+    gimbal_control.gimbal_pitch_motor.gimbal_motor_angle_pid_1.out=0;
   }
   else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO)
   {
@@ -367,16 +336,7 @@ static void gimbal_control_loop(gimbal_control_t *control_loop)
   }
   else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_INIT)
   {
-    if (start == 0)
-    {
-      CAN_LK_START_control();
-      close = 0;
-      start = 1;
-    }
-    if (start == 1)
-    {
-        PID_calc(&control_loop->gimbal_pitch_motor.gimbal_motor_angle_pid_1, control_loop->gimbal_pitch_motor.absolute_angle, control_loop->gimbal_pitch_motor.absolute_angle_set);
-      }
+    PID_calc(&control_loop->gimbal_pitch_motor.gimbal_motor_angle_pid_1, control_loop->gimbal_pitch_motor.absolute_angle, control_loop->gimbal_pitch_motor.absolute_angle_set);
   }
 }
 
@@ -454,136 +414,17 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
       return;
     }
   }
+  //遥控控制
+  rc_control(gimbal_control_set,chassis_data);
 
-  /* --------------遥控器 键鼠数据处理------------------ */
-  int16_t vx_channel, vy_channel;
-  fp32 vx_set_channel, vy_set_channel;
-  fp32 high_control;
-  fp32 high_min=0.00f,high_max=0.40f;
-  fp32 angleset;
-  static int16_t yaw_channel = 0;
-  const static fp32 chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
-  const static fp32 chassis_y_order_filter[1] = {CHASSIS_ACCEL_Y_NUM};
-  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_X_CHANNEL], vx_channel, CHASSIS_RC_DEADLINE);
-  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_Y_CHANNEL], vy_channel, CHASSIS_RC_DEADLINE);
-  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
-  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[HEIGHT_CHANNEL], high_control, RC_DEADBAND);
-  vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
-  vy_set_channel = vy_channel * -CHASSIS_VY_RC_SEN;
+  //键盘控制
+  key_control(gimbal_control_set,chassis_data);
+  
+  //yaw轴设置更新
+  yaw_set(gimbal_control_set,chassis_data);
 
-  if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_W)
-  {
-    vx_set_channel = 1.5;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_S)
-  {
-    vx_set_channel = -1.5;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_A)
-  {
-    vy_set_channel = 1.5;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_D)
-  {
-    vy_set_channel = -1.5;
-  }
-  if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_W && gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_SHIFT)
-  {
-    vx_set_channel = 2;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_S && gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_SHIFT)
-  {
-    vx_set_channel = -2;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_A && gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_SHIFT)
-  {
-    vy_set_channel = 2;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_D && gimbal_control_set->gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_SHIFT)
-  {
-    vy_set_channel = -2;
-  }
-
-  // 停止信号，不需要缓慢加速，直接减速到零
-  if (vx_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN && vx_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN)
-  {
-    vx_set_channel=0;
-  }
-
-  if (vy_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN && vy_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN)
-  {
-    vy_set_channel=0;
-  }
-  chassis_data->vx_set = vx_set_channel;
-  chassis_data->vy_set = vy_set_channel;
-  chassis_data->wz_set = CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
-
-  /* 按键设置模式 */
-  if (gimbal_control_set->gimbal_rc_ctrl->rc.s[1] == 2)
-  {
-    chassis_data->chassis_mode = CHASSIS_MODE_OFF;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[1] == 3)
-  {
-    chassis_data->chassis_mode = CHASSIS_MODE_NO_FOLLOW;
-  }
-  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[1] == 1)
-  {
-    chassis_data->chassis_mode = CHASSIS_MODE_FOLLOW;
-  }
-
-  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_C && (gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_C) == 0)
-  {
-    turnflag = 1;
-  }
-  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_R && (gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_R) == 0)
-  {
-    aimflag = !aimflag;
-  }
-
-  chassis_data->shoot_mode = gimbal_control_set->gimbal_rc_ctrl->mouse.press_l << 1 | shoot_control.shoot_mode | aimflag << 2;
   chassis_data->yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
   chassis_data->yaw_gyro = gimbal_control_set->gimbal_yaw_motor.motor_gyro;
-  //平步变腿高
-  chassis_data->high_set += high_control*HIGH_SEN;
-  chassis_data->high_set = fp32_constrain(chassis_data->high_set,high_min,high_max);
-  chassis_data->jump_flag = gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 3  ;
-  // 设置根据模式设置偏航角 
-  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
-  {
-    chassis_data->yaw_angle_set = chassis_data->yaw_angle;
-  }
-  if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
-  {
-    chassis_data->yaw_angle_set = chassis_data->yaw_angle;
-    chassis_data->high_set = 0;
-  }
-  if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW) && aimflag == 0 && turnflag == 0)
-  {
-    chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
-  }
-
-  // 以下目前还不需要去管
-  else if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW) && aimflag == 1)
-  {
-    if (gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle - chassis_data->yaw_angle > 0)
-    {
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle + 2;
-    }
-    else
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle;
-
-    //		else if(gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle-chassis_data->yaw_angle>0)
-    //		{
-    //			chassis_data->yawangle_set=gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle-3;
-    //		}
-    //		chassis_data->yawangle_set=gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle;
-  }
-  else if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW) && turnflag == 1)
-  {
-    chassis_data->yaw_angle_set += 180;
-    turnflag = 0;
-  }
 }
 
 chassis_data_t *get_chassis_data_point()
@@ -594,3 +435,168 @@ gimbal_control_t *get_gimbal_data()
 {
   return &gimbal_control;
 }
+
+/**
+ * @brief 遥控控制输入
+ * @param[in] gimbal_control_set
+ * @param[out] chassis_data
+ * @retval 
+ * @note 
+ */
+void rc_control(gimbal_control_t *gimbal_control_set,chassis_data_t *chassis_data)
+{
+  //模式设置
+  if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 0)
+  {
+    chassis_data->chassis_mode = CHASSIS_MODE_OFF;
+  }
+  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 1)
+  {
+    chassis_data->chassis_mode = CHASSIS_MODE_NO_FOLLOW_GIMBAL;
+  }
+  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 2)
+  {
+    chassis_data->chassis_mode = CHASSIS_MODE_FOLLOW_GIMBAL;
+  }
+  int16_t vx_channel, vy_channel;
+  fp32 vx_set_channel, vy_set_channel;
+  fp32 high_control;
+  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_X_CHANNEL], vx_channel, CHASSIS_RC_DEADLINE);
+  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_Y_CHANNEL], vy_channel, CHASSIS_RC_DEADLINE);
+  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[HEIGHT_CHANNEL], high_control, RC_DEADBAND);
+  vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
+  vy_set_channel = vy_channel * -CHASSIS_VY_RC_SEN;
+  
+  chassis_data->vx_set = vx_set_channel;
+  chassis_data->vy_set = vy_set_channel;
+  chassis_data->wz_set = -CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
+  chassis_data->high_set += high_control*HIGH_SEN;
+  chassis_data->high_set = fp32_constrain(chassis_data->high_set,0.0,0.34);
+  chassis_data->jump_flag = gimbal_control_set->gimbal_rc_ctrl->rc.s[2]==1;
+}
+
+/**
+ * @brief 键盘控制输入
+ * @param[in] gimbal_control_set
+ * @param[in] chassis_data
+ * @retval 
+ * @note 
+ */
+void key_control(gimbal_control_t *gimbal_control_set,chassis_data_t *chassis_data)
+{
+    if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
+  {
+    chassis_data->vx_set = 1.5;
+  }
+  else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S)
+  {
+    chassis_data->vx_set = -1.5;
+  }
+  else if (gimbal_control_set->keyboard& KEY_PRESSED_OFFSET_A)
+  {
+    chassis_data->vy_set = 1.5;
+  }
+  else if (gimbal_control_set->keyboard& KEY_PRESSED_OFFSET_D)
+  {
+    chassis_data->vy_set = -1.5;
+  }
+
+  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
+  {
+    chassis_data->vx_set = 3.0;
+  }
+  else if (gimbal_control_set->keyboard& KEY_PRESSED_OFFSET_S && gimbal_control_set->keyboard& KEY_PRESSED_OFFSET_SHIFT)
+  {
+    chassis_data->vx_set = -3.0;
+  }
+  else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
+  {
+    chassis_data->vy_set = 3.0;
+  }
+  else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
+  {
+    chassis_data->vy_set = -3.0;
+  }
+
+  // if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_B&& !(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_B))
+  // {
+  //   chassis_data->jump_flag = 1;
+  // }
+  // else
+  // {
+  //   chassis_data->jump_flag = 0;
+  // }
+
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_F&& gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_F)
+  {
+    chassis_data->high_set = 0.34f;
+  }
+  else if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_C&& gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_C)
+  {
+    chassis_data->high_set = 0.1f;
+  }
+
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Q&&gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)  
+  {
+    chassis_data->high_set += 0.05f;
+    fp32_constrain(chassis_data->high_set,0.1,0.34);
+  }
+  else if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_E&&gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)  
+  {
+    chassis_data->high_set -= 0.05f;
+    fp32_constrain(chassis_data->high_set,0.1,0.34);
+  }
+
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_V&&(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_V) == 0)
+  {
+    aimflag = !aimflag;
+  }
+
+  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_R && (gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_R) == 0)
+  {
+    turnflag = 1;
+  }
+
+  chassis_data->shoot_mode = shoot_control.shoot_mode ;
+
+}
+
+
+/**
+ * @brief yaw轴设置
+ * @param[in] gimbal_control_set
+ * @param[out] chassis_data
+ * @retval 
+ * @note 
+ */
+void yaw_set(gimbal_control_t *gimbal_control_set,chassis_data_t *chassis_data)
+{
+  int16_t yaw_channel = 0;
+  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
+  {
+    chassis_data->yaw_angle_set = chassis_data->yaw_angle;
+  }
+  if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
+  {
+    chassis_data->yaw_angle_set = chassis_data->yaw_angle;
+    chassis_data->high_set = 0;
+  }
+  rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
+  if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW_GIMBAL || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW_GIMBAL) && aimflag == 0 && turnflag == 0)
+  {
+    chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
+  }
+  else if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW_GIMBAL || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW_GIMBAL) && aimflag == 1)
+  {
+    chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle ;
+  }
+  if ((chassis_data->chassis_mode == CHASSIS_MODE_FOLLOW_GIMBAL || chassis_data->chassis_mode == CHASSIS_MODE_NO_FOLLOW_GIMBAL) && turnflag == 1)
+  {
+    chassis_data->yaw_angle_set += 180;
+    turnflag = 0;
+  }
+
+}
+
+
+

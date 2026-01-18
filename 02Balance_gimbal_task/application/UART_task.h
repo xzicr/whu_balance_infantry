@@ -4,12 +4,14 @@
 #include "main.h"
 #include "usart.h"
 #include "gimbal_task.h"
-
+#include "shoot.h"
 
 typedef struct  {
     uint8_t sof1;
     uint8_t sof2;
 } frameHeader;
+
+
 
 typedef struct
 {

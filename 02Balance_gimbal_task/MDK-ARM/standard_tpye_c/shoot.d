@@ -53,3 +53,13 @@
 .\standard_tpye_c\shoot.o: ../bsp/boards/bsp_rc.h
 .\standard_tpye_c\shoot.o: ../bsp/boards/bsp_laser.h
 .\standard_tpye_c\shoot.o: D:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\standard_tpye_c\shoot.o: ..\application\Self_aim.h
+.\standard_tpye_c\shoot.o: ..\application\gimbal_task.h
+.\standard_tpye_c\shoot.o: ..\application\INS_task.h
+.\standard_tpye_c\shoot.o: ../components/devices/BMI088driver.h
+.\standard_tpye_c\shoot.o: ../components/devices/QuaternionEKF.h
+.\standard_tpye_c\shoot.o: ../components/devices/kalman_filter.h
+.\standard_tpye_c\shoot.o: ../components/algorithm/Include/arm_math.h
+.\standard_tpye_c\shoot.o: ../Drivers/CMSIS/Include/core_cm4.h
+.\standard_tpye_c\shoot.o: D:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\standard_tpye_c\shoot.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h

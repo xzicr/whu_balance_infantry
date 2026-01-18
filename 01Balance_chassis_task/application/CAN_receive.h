@@ -74,6 +74,9 @@ typedef enum
 
 } can_msg_id_e;
 
+
+
+
 //rm motor data
 typedef struct
 {
@@ -117,6 +120,20 @@ typedef enum
   CHASSIS_MODE_ROTATE,
 }RC_chassis_mode_e;
 
+typedef enum
+{
+    SHOOT_STOP = 0,   
+    SHOOT_READY_FRIC,  
+    SHOOT_READY_BULLET,
+
+    SHOOT_SINGLE,
+    SHOOT_CONTINUE,
+    SHOOT_READY,       
+    SHOOT_BULLET,      
+    SHOOT_CONTINUE_BULLET,
+    SHOOT_DONE,            
+} shoot_mode_e;
+
 typedef struct
 {
 	float vx_set;//底盘x轴方向设定的速度控制量；
@@ -127,7 +144,8 @@ typedef struct
 	float yaw_angle;//yaw轴实时角度
 	float yaw_gyro;//yaw轴角速度
 	RC_chassis_mode_e chassis_mode;//底盘模式
-	uint16_t shoot_mode;//射击模式
+	shoot_mode_e shoot_mode_rc;//射击模式
+  uint8_t spin_flag;//小陀螺标志位
   uint8_t tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
 }chassis_data_t;	
 
@@ -162,6 +180,8 @@ extern void CAN_cmd_chassis_reset_ID(void);
   * @retval         none
   */
 extern void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
+extern void CAN_cmd_gimbal(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
+
 extern void CAN_cmd_referee_data(uint8_t color);
 extern void CAN_INIT_STATUS(uint8_t status);
 /* -----------------------HT_func------------------------- */
@@ -181,11 +201,9 @@ extern void CAN_Send_Setpower(uint16_t setPower);
 
 /* -----------------------return motor measure----------- */
 extern const motor_measure_t *get_yaw_gimbal_motor_measure_point(void);
-extern const lkmotor_measure_t *get_yaw_gimbal_lkmotor_measure_point(void);
 extern const motor_measure_t *get_pitch_gimbal_motor_measure_point(void);
 extern const motor_measure_t *get_trigger_motor_measure_point(void);
 extern const motor_measure_t *get_chassis_motor_measure_point(uint8_t i);
-extern const chassis_data_t *get_Chassisdata_point();
 
 HTmotor_measure_t *get_HT_motor_measure_point(uint8_t i);
 lkmotor_measure_t *get_LK_motor_measure_point(uint8_t i);
