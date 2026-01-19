@@ -93,8 +93,8 @@ gimbal_control_t gimbal_control;
 uint8_t  aimflag = 0, turnflag = 0;
 
 //PID参数
-static const fp32 Pitch_angle_pid_1[3] = {PITCH_GYRO_ABSOLUTE_PID_KP_1, PITCH_GYRO_ABSOLUTE_PID_KI_1, PITCH_GYRO_ABSOLUTE_PID_KD_1};
-
+static const fp32 Pitch_angle_pid[3] = {PITCH_ANGLE_PID_KP, PITCH_ANGLE_PID_KI, PITCH_ANGLE_PID_KD};
+static const fp32 Pitch_gyro_pid[3] = {PITCH_GYRO_PID_KP, PITCH_GYRO_PID_KI, PITCH_ANGLE_PID_KD};
 
 
 /*------------底盘数据------------------*/
@@ -116,9 +116,6 @@ static void gimbal_set_mode(gimbal_control_t *set_mode);
 static void gimbal_feedback_update(gimbal_control_t *feedback_update);
 static void gimbal_set_control(gimbal_control_t *set_control);
 static void gimbal_control_loop(gimbal_control_t *control_loop);
-static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 intergral_limit, fp32 kp, fp32 ki, fp32 kd);
-static void gimbal_PID_clear(gimbal_PID_t *pid_clear);
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta);
 
 
 
@@ -143,10 +140,10 @@ void gimbal_task(void const *pvParameters)
   {
     //射击控制
     gimbal_control.shoot = shoot_control_loop();
-
+    
     //设置底盘控制量
     chassis_rc_to_control_vector(&gimbal_control, &chassis_data); 
-
+    
     // 设置云台控制模式
     gimbal_set_mode(&gimbal_control);                 
     
@@ -156,13 +153,13 @@ void gimbal_task(void const *pvParameters)
     // 设置云台PITCH轴目标角度
     gimbal_set_control(&gimbal_control);     
     
-     // 云台控制PID计算
+    // 云台控制PID计算
     gimbal_control_loop(&gimbal_control);    
     
     gimbal_control.shoot = shoot_control_loop();
-
-    CAN_cmd_gimbal(0, -gimbal_control.gimbal_pitch_motor.gimbal_motor_angle_pid_1.out,0,0);
-
+    
+    CAN_cmd_gimbal(0, -gimbal_control.gimbal_pitch_motor.given_current,0,0);
+    
     CAN_cmd_chassis(gimbal_control.shoot->shoot_left_given_current,gimbal_control.shoot->shoot_right_given_current, 0, 0);
     vTaskDelay(GIMBAL_CONTROL_TIME);
   }
@@ -178,7 +175,7 @@ static void gimbal_init(gimbal_control_t *init)
   init->gimbal_INT_gyro_point = get_gyro_data_point();
   init->gimbal_rc_ctrl = get_remote_control_point();
   Self_aim_data = get_selfaim_data();
-
+  
   //模式初始化
   init->gimbal_pitch_motor.gimbal_motor_mode = init->gimbal_yaw_motor.last_gimbal_motor_mode = GIMBAL_MOTOR_OFF;
   chassis_data.shoot_mode = 0;
@@ -186,17 +183,45 @@ static void gimbal_init(gimbal_control_t *init)
   init->gimbal_pitch_motor.absolute_angle_set = init->gimbal_pitch_motor.absolute_angle;
   init->gimbal_pitch_motor.motor_gyro_set = init->gimbal_pitch_motor.motor_gyro;
   chassis_data.yaw_angle_set = init->gimbal_yaw_motor.absolute_angle;
-
-  //PID初始化
-  PID_init(&init->gimbal_pitch_motor.gimbal_motor_angle_pid_1, PID_POSITION, Pitch_angle_pid_1, PITCH_GYRO_ABSOLUTE_PID_MAX_OUT_1, PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT_1);
-
-  gimbal_feedback_update(init);
   
-}
-
+  //PID初始化
+  PID_init(&init->gimbal_pitch_motor.gimbal_motor_angle_pid, PID_POSITION, Pitch_angle_pid, 
+    PITCH_ANGLE_PID_MAX_OUT, PITCH_ANGLE_PID_MAX_IOUT);
+    PID_init(&init->gimbal_pitch_motor.gimbal_motor_gyro_pid, PID_POSITION, Pitch_gyro_pid, 
+      PITCH_GYRO_PID_MAX_OUT, PITCH_GYRO_PID_MAX_IOUT);
+      gimbal_feedback_update(init);
+      
+    }
+    
 void leg_control_init(chassis_data_t *leg_contorl)
 {
   leg_contorl->high_set=0;
+}
+void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
+{
+  /* --------------进入函数前提条件------------------ */
+  if (gimbal_control_set == NULL)
+  {
+    return;
+  }
+  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
+  {
+    if ( fabs(gimbal_control_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR)
+    {
+      return;
+    }
+  }
+  //遥控控制
+  rc_control(gimbal_control_set,chassis_data);
+
+  //键盘控制
+  key_control(gimbal_control_set,chassis_data);
+  
+  //yaw轴设置更新
+  yaw_set(gimbal_control_set,chassis_data);
+
+  chassis_data->yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+  chassis_data->yaw_gyro = gimbal_control_set->gimbal_yaw_motor.motor_gyro;
 }
 
 static void gimbal_set_mode(gimbal_control_t *set_mode)
@@ -328,104 +353,16 @@ static void gimbal_control_loop(gimbal_control_t *control_loop)
 {
   if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_OFF)
   {
-    gimbal_control.gimbal_pitch_motor.gimbal_motor_angle_pid_1.out=0;
+    control_loop->gimbal_pitch_motor.given_current =0;
   }
-  else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO)
+  else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO ||control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_INIT)
   {
-    PID_calc(&control_loop->gimbal_pitch_motor.gimbal_motor_angle_pid_1, control_loop->gimbal_pitch_motor.absolute_angle, control_loop->gimbal_pitch_motor.absolute_angle_set);
-  }
-  else if (control_loop->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_INIT)
-  {
-    PID_calc(&control_loop->gimbal_pitch_motor.gimbal_motor_angle_pid_1, control_loop->gimbal_pitch_motor.absolute_angle, control_loop->gimbal_pitch_motor.absolute_angle_set);
+    PID_calc(&control_loop->gimbal_pitch_motor.gimbal_motor_angle_pid, control_loop->gimbal_pitch_motor.absolute_angle, control_loop->gimbal_pitch_motor.absolute_angle_set);
+    PID_calc(&control_loop->gimbal_pitch_motor.gimbal_motor_gyro_pid, control_loop->gimbal_pitch_motor.motor_gyro, gimbal_control.gimbal_pitch_motor.gimbal_motor_angle_pid.out);
+    control_loop->gimbal_pitch_motor.given_current = (int16_t)(control_loop->gimbal_pitch_motor.gimbal_motor_gyro_pid.out);
   }
 }
 
-static void gimbal_motor_absolute_angle_control(gimbal_motor_t *gimbal_motor)
-{
-  if (gimbal_motor == NULL)
-  {
-    return;
-  }
-  // 角度环，速度环串级pid调试
-  gimbal_motor->motor_gyro_set = gimbal_PID_calc(&gimbal_motor->gimbal_motor_absolute_angle_pid, gimbal_motor->absolute_angle, gimbal_motor->absolute_angle_set, gimbal_motor->motor_gyro);
-  gimbal_motor->current_set = PID_calc(&gimbal_motor->gimbal_motor_gyro_pid, gimbal_motor->motor_gyro, gimbal_motor->motor_gyro_set);
-  // 控制值赋值
-  gimbal_motor->given_current = (int16_t)(gimbal_motor->current_set);
-}
-static void gimbal_PID_init(gimbal_PID_t *pid, fp32 maxout, fp32 max_iout, fp32 kp, fp32 ki, fp32 kd)
-{
-  if (pid == NULL)
-  {
-    return;
-  }
-  pid->kp = kp;
-  pid->ki = ki;
-  pid->kd = kd;
-
-  pid->err = 0.0f;
-  pid->get = 0.0f;
-
-  pid->max_iout = max_iout;
-  pid->max_out = maxout;
-}
-
-static fp32 gimbal_PID_calc(gimbal_PID_t *pid, fp32 get, fp32 set, fp32 error_delta)
-{
-  fp32 err;
-  if (pid == NULL)
-  {
-    return 0.0f;
-  }
-  pid->get = get;
-  pid->set = set;
-
-  err = set - get;
-  pid->err = rad_format(err);
-  pid->Pout = pid->kp * pid->err;
-  pid->Iout += pid->ki * pid->err;
-  pid->Dout = pid->kd * error_delta;
-  abs_limit(pid->Iout, pid->max_iout);
-  pid->out = pid->Pout + pid->Iout + pid->Dout;
-  abs_limit(pid->out, pid->max_out);
-  return pid->out;
-}
-
-
-static void gimbal_PID_clear(gimbal_PID_t *gimbal_pid_clear)
-{
-  if (gimbal_pid_clear == NULL)
-  {
-    return;
-  }
-  gimbal_pid_clear->err = gimbal_pid_clear->set = gimbal_pid_clear->get = 0.0f;
-  gimbal_pid_clear->out = gimbal_pid_clear->Pout = gimbal_pid_clear->Iout = gimbal_pid_clear->Dout = 0.0f;
-}
-void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
-{
-  /* --------------进入函数前提条件------------------ */
-  if (gimbal_control_set == NULL)
-  {
-    return;
-  }
-  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
-  {
-    if ( fabs(gimbal_control_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR)
-    {
-      return;
-    }
-  }
-  //遥控控制
-  rc_control(gimbal_control_set,chassis_data);
-
-  //键盘控制
-  key_control(gimbal_control_set,chassis_data);
-  
-  //yaw轴设置更新
-  yaw_set(gimbal_control_set,chassis_data);
-
-  chassis_data->yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
-  chassis_data->yaw_gyro = gimbal_control_set->gimbal_yaw_motor.motor_gyro;
-}
 
 chassis_data_t *get_chassis_data_point()
 {

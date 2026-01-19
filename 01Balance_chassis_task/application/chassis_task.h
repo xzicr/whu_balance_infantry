@@ -139,11 +139,11 @@
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 500.0f
+#define LEG_SET_PID_KP 460.0f
 #define LEG_SET_PID_KI 4.0f
 #define LEG_SET_PID_KD 350.0f
 #define LEG_SET_PID_OUT 40.0f
-#define LEG_SET_PID_IOUT 20.0f
+#define LEG_SET_PID_IOUT 30.0f
 
 
 // ------------- Limit info ------------- 
@@ -157,7 +157,7 @@
 #define L3 0.27f
 #define L4 0.15f
 #define L5 0.15f
-
+  
 #define WHEEL_PERIMETER  0.446106                         //0.56547
 #define WHEEL_RADIUS 0.071f
 #define LEG_OFFSET       30.0f// 水平位置到上限位的夹角
@@ -167,7 +167,7 @@
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 15.0f
+#define FEED_f 20.0f
 
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET 0.0f

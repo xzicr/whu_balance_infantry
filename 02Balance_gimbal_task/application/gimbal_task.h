@@ -33,32 +33,24 @@
 #include "remote_control.h"
 #include "shoot.h"
 #include "INS_task.h"
-//pitch speed close-loop PID params, max out and max iout
-//pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_SPEED_PID_KP        -1500.0f//-1200
-#define PITCH_SPEED_PID_KI        -30.0f
-#define PITCH_SPEED_PID_KD        0.0f
-#define PITCH_SPEED_PID_MAX_OUT   30000.0f
-#define PITCH_SPEED_PID_MAX_IOUT  1000.0f
-
-//pitch gyro angle close-loop PID params, max out and max iout
-//pitch 角度环 角度由陀螺仪解算 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_ABSOLUTE_PID_KP_1       1000.0f                             //-2.5f//-1.0
-#define PITCH_GYRO_ABSOLUTE_PID_KI_1        0.02f                            //-0.5f
-#define PITCH_GYRO_ABSOLUTE_PID_KD_1       160.0f                             //-50.0f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_OUT_1   1200000.0f        //15.0f
-#define PITCH_GYRO_ABSOLUTE_PID_MAX_IOUT_1     65000.0f     // 0.0f
-
-
-
-
-
+// pitch speed close-loop PID params, max out and max iout
+// pitch 速度环 PID参数以及 PID最大输出，积分输出
+#define PITCH_GYRO_PID_KP 4000.0f
+#define PITCH_GYRO_PID_KI 4.0f
+#define PITCH_GYRO_PID_KD 50.0f
+#define PITCH_GYRO_PID_MAX_OUT 30000.0f
+#define PITCH_GYRO_PID_MAX_IOUT 10000.0f
+#define PITCH_ANGLE_PID_KP 0.4f       //-2.5f//-1.0
+#define PITCH_ANGLE_PID_KI 0.0002f      //-0.5f
+#define PITCH_ANGLE_PID_KD 0.04f       //-50.0f
+#define PITCH_ANGLE_PID_MAX_OUT 3.0f  // 15.0f
+#define PITCH_ANGLE_PID_MAX_IOUT 1.0f // 0.0f
 
 //任务初始化 空闲一段时间
 #define GIMBAL_TASK_INIT_TIME 201
 //yaw,pitch控制通道以及状态开关通道
 #define YAW_CHANNEL   0
-#define PITCH_CHANNEL 7
+#define PITCH_CHANNEL 7//1
 #define HEIGHT_CHANNEL 1
 #define GIMBAL_MODE_CHANNEL 0
 //turn 180°
@@ -191,9 +183,7 @@ typedef struct
 typedef struct
 {
   motor_measure_t *gimbal_motor_measure;
-  gimbal_PID_t gimbal_motor_absolute_angle_pid;
-  pid_type_def gimbal_motor_angle_pid_1;
-  pid_type_def gimbal_motor_angle_pid_2;
+  pid_type_def gimbal_motor_angle_pid;
   pid_type_def gimbal_motor_gyro_pid;
   gimbal_motor_mode_e gimbal_motor_mode;
   gimbal_motor_mode_e last_gimbal_motor_mode;

@@ -12,9 +12,9 @@
 #define YAW_GYRO_PID_KD        50.0f
 #define YAW_GYRO_PID_MAX_OUT   30000.0f
 #define YAW_GYRO_PID_MAX_IOUT  10000.0f
-#define YAW_ANGLE_PID_KP        0.4//-0.8
-#define YAW_ANGLE_PID_KI        0.0//-1
-#define YAW_ANGLE_PID_KD       	0.1//-5
+#define YAW_ANGLE_PID_KP        0.4f//-0.8
+#define YAW_ANGLE_PID_KI        0.0f//-1
+#define YAW_ANGLE_PID_KD       	0.1f//-5
 #define YAW_ANGLE_PID_MAX_OUT   3
 #define YAW_ANGLE_PID_MAX_IOUT  0.5
 #define GIMBAL_CONTROL_TIME 2

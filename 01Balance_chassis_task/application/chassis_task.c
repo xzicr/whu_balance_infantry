@@ -99,8 +99,8 @@ fp32 roll_PID[3] = {45.0f, 22.0f};
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 stand_PD[3] = {36.0f, 40.0f,18.0f} ;
-fp32 jump_stand_PD_L[2] = {450000.0f, 300.0f};
-fp32 jump_stand_PD_R[2] = {450000.0f, 300.0f};
+fp32 jump_stand_PD_L[2] = {800000.0f, 300.0f};
+fp32 jump_stand_PD_R[2] = {800000.0f, 300.0f};
 
 fp32 suspend_stand_PD[2] = {36.0f, 18.0f};
 
@@ -109,7 +109,7 @@ fp32 delta;
 float alpha_dx = 0.10f;
 float alpha_dv = 0.10f;
 
-fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.0f;//0.174532f;
+fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.0872f;
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
 uint8_t robot_level = 1;
 fp32 rotate_speed_list[11] = {0.0, 5.0, 5.3, 5.6, 6.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0};
@@ -653,8 +653,8 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
                 
             case EXTENDING_LEGS:
                 // 腿伸长阶段
-                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.29f && 
-                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.29f)
+                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.30f && 
+                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.30f)
                 {
                     chassis_mode_change->mode.jumping_stage = CONSTACTING_LEGS_2;
                     chassis_mode_change->flag_info.jump_contact_timer = xTaskGetTickCount();
@@ -900,14 +900,14 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		{
 			case PREPARING_STAND_JUMPING:
 				// 跳跃准备阶段：设定较低的腿长用于蓄力
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.12f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.12f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.13f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.13f;
 				break;
 				
 			case EXTENDING_LEGS:
 				// 起跳阶段：快速伸腿  
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.36f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.36f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.50f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.50f;
 				break;
 				
 			case CONSTACTING_LEGS_2:
@@ -1690,7 +1690,7 @@ uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
     
     // 2. 检查腿部角度是否达到准备角度 (4度 ± 1度)
     fp32 leg_angle_tolerance = 0.0175f; // 约1度
-    fp32 target_leg_angle = 0.067f;  //
+    fp32 target_leg_angle = 0.0872f;  //
     leg_angle_ready = 
         (fabs(chassis->chassis_posture_info.leg_angle_L - target_leg_angle) < leg_angle_tolerance) &&
         (fabs(chassis->chassis_posture_info.leg_angle_R - target_leg_angle) < leg_angle_tolerance);
@@ -1719,7 +1719,7 @@ uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
     // 综合判断
     prepare_complete = 
         // leg_length_ready && 
-        // leg_angle_ready && 
+        leg_angle_ready && 
         // leg_gyro_stable && 
         // pitch_stable && 
         // both_feet_on_ground && 
