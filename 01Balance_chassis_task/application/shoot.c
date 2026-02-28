@@ -18,6 +18,11 @@ uint16_t shoot_state;
 uint8_t process_state = 0;
 int8_t shoot_mode;
 
+void ballet_feq_calc(uint8_t fequence)
+{
+	shoot_control.speed_set = (fequence/8)*60*36;
+}
+
 /*重写的播弹盘电机函数*/
 void push_motor_on(void)
 {
@@ -59,7 +64,7 @@ uint16_t shoot_single_control(void)
     }
     else if(single_shoot_state == 1)
     {
-        if (fabs(shoot_control.set_angle - shoot_control.angle) > 1.0f)
+        if (fabs(shoot_control.set_angle - shoot_control.angle) > 2.0f)
         {
 			/* ------位置环PID-------- */
             PID_calc(&shoot_control.trigger_motor_angle_pid, shoot_control.angle, shoot_control.set_angle);
@@ -84,7 +89,7 @@ static void shoot_feedback_update(void)
 	shoot_control.last_press_l=shoot_control.press_l;
 	shoot_control.press_l=(shoot_control.shoot_control_data->shoot_mode_rc >>4) & 0x01;
 	shoot_mode = shoot_control.shoot_control_data->shoot_mode_rc&0x0F;
-	get_power_shooter_output(&shoot_control.shooter_output);
+	// get_power_shooter_output(&shoot_control.shooter_output);
 }
 void shoot_init()
 {
@@ -124,7 +129,7 @@ static void shoot_set_mode(void)
 }
 void shoot_control_set()
 {
-	if(shoot_control.shoot_mode==SHOOT_SINGLE && single_shoot_cnt == 0 &&shoot_state == SHOOT_FINISH)
+	if(shoot_control.shoot_mode==SHOOT_SINGLE  &&shoot_state == SHOOT_FINISH&& single_shoot_cnt == 0)
 	{
 		shoot_state = SHOOT_START_SINGLE;
 	}
@@ -145,7 +150,7 @@ void shoot_control_set()
 	}
 	else if(shoot_state == SHOOT_START_CONTINUE)
 	{
-		push_motor_on();
+		ballet_feq_calc(11);
 		single_shoot_cnt = 0;	//单发的这个标志位置0
 
 		/* -------计算PID速度??-------- */

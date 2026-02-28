@@ -17,7 +17,7 @@
 #define TRIGGER_ANGLE_PID_MAX_OUT  12000.0f
 #define TRIGGER_ANGLE_PID_MAX_IOUT 9000.0f
 
-#define PI_TEN    3600
+#define PI_TEN    1620
 
 
 //电机rmp 变化成 旋转速度的比例
@@ -48,7 +48,7 @@ typedef struct
 	pid_type_def trigger_motor_angle_pid;
 	fp32 trigger_speed_set;
     fp32 speed;
-    fp32 speed_set;
+    fp32 speed_set;		//单位rpm
     fp32 angle;
     fp32 set_angle;
     int16_t given_current;

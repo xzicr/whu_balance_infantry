@@ -35,7 +35,7 @@ void chassis_power_limit(chassis_move_t *chassis_move_control)
 {
 	
 	//get_chassis_power_and_buffer();获取功率缓冲值Power_Buffer数据0-60
-	get_chassis_power_and_buffer(&Power,&Power_Buffer);
+	// get_chassis_power_and_buffer(&Power,&Power_Buffer);
 	Chassis_pidout_max=64000;//can控制电流值范围为-16384~16384 16000*4 =64000 (保守值)
 	Chassis_pidout =
 	(fabs(chassis_move_control->motor_speed_pid[0].set-chassis_move_control->motor_speed_pid[0].fdb)+ 

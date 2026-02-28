@@ -70,3 +70,5 @@ chassis_task\gimbal_task.o: ..\application\remote_control.h
 chassis_task\gimbal_task.o: ../bsp/boards/bsp_rc.h
 chassis_task\gimbal_task.o: ..\application\uart_receive.h
 chassis_task\gimbal_task.o: ../Inc/usart.h
+chassis_task\gimbal_task.o: ..\application\referee.h
+chassis_task\gimbal_task.o: ..\application\protocol.h

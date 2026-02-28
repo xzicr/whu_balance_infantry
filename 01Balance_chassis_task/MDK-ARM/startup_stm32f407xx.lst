@@ -880,12 +880,11 @@ ARM Macro Assembler    Page 14
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=chassis_task\startup_stm32f407xx.d -ochassis_task\startup_stm32
-f407xx.o -I..\\Inc -I../Inc -I../Drivers/CMSIS/Include -I.\RTE\Compiler -I.\RTE
-\_chassis_task -ID:\Keil5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -ID:\Keil5\ARM
-\PACK\Keil\ARM_Compiler\1.3.1\Include -ID:\Keil5\ARM\PACK\Keil\STM32F4xx_DFP\2.
-11.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERSION S
-ETA 524" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=sta
-rtup_stm32f407xx.lst startup_stm32f407xx.s
+f407xx.o -I..\\Inc -I../Inc -I../Drivers/CMSIS/Include -I.\RTE\_chassis_task -I
+D:\Keil5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -ID:\Keil5\ARM\PACK\Keil\STM32F
+4xx_DFP\2.11.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION
+_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" 
+--list=startup_stm32f407xx.lst startup_stm32f407xx.s
 
 
 

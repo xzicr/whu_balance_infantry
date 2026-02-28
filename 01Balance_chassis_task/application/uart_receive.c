@@ -1,11 +1,15 @@
 #include "uart_receive.h"
-
+#include "referee.h"
 
 uint8_t buffer[sizeof(uart_data_t)];//用于存储完整的数据包
 uint8_t Count=0;//接收状态标签
 uint16_t received = 0;//当前接收到的数据长度
 uint8_t Usart_Receive[1];//用于接收单个字节的数据
 uart_data_t uart_data;
+
+shoot_data_t* shoot_data_get;   
+/*发送数据结构体*/
+referee_data_t referee_data;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -61,10 +65,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 void uart_start_task(void const  *pvParameters)
 {
+    referee_data.header.sof1 =0xAA;
+    referee_data.header.sof2 =0xFF;
     HAL_UART_Receive_IT(&huart1, (uint8_t *)Usart_Receive, 1);
     while(1)
     {
-       osDelay(3);
+        get_shoot_speed(&referee_data.shoot_speed);
+        HAL_UART_Transmit_DMA(&huart1,(uint8_t *)&referee_data,sizeof(referee_data_t));
+       osDelay(10);
     }
 }
 

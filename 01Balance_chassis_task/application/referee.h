@@ -36,33 +36,28 @@ typedef __packed struct //0001
     uint8_t game_type : 4;
     uint8_t game_progress : 4;
     uint16_t stage_remain_time;
-} ext_game_state_t;
+    uint64_t SyncTimeStamp;
+} game_status_t;
 
 typedef __packed struct //0002
 {
     uint8_t winner;
-} ext_game_result_t;
+} game_result_t;
 typedef __packed struct
 {
-    uint16_t red_1_robot_HP;
-    uint16_t red_2_robot_HP;
-    uint16_t red_3_robot_HP;
-    uint16_t red_4_robot_HP;
-    uint16_t red_5_robot_HP;
-    uint16_t red_7_robot_HP;
-    uint16_t red_base_HP;
-    uint16_t blue_1_robot_HP;
-    uint16_t blue_2_robot_HP;
-    uint16_t blue_3_robot_HP;
-    uint16_t blue_4_robot_HP;
-    uint16_t blue_5_robot_HP;
-    uint16_t blue_7_robot_HP;
-    uint16_t blue_base_HP;
-} ext_game_robot_HP_t;
+    uint16_t ally_1_robot_HP;
+    uint16_t ally_2_robot_HP;
+    uint16_t ally_3_robot_HP;
+    uint16_t ally_4_robot_HP;
+    uint16_t reserved;
+    uint16_t ally_7_robot_HP;
+    uint16_t ally_outpost_HP;
+    uint16_t ally_base_HP;
+} game_robot_HP_t;
 typedef __packed struct //0101
 {
-    uint32_t event_type;
-} ext_event_data_t;
+    uint32_t event_data;
+} event_data_t;
 
 typedef __packed struct //0x0102
 {
@@ -84,44 +79,48 @@ typedef __packed struct
 {
     uint8_t level;
     uint8_t foul_robot_id;
-} ext_referee_warning_t;
+    uint8_t count;
+} referee_warning_t;
 typedef __packed struct //0x0201
 {
     uint8_t robot_id;
     uint8_t robot_level;
-    uint16_t remain_HP;
-    uint16_t max_HP;
-    uint16_t shooter_heat0_cooling_rate;
-    uint16_t shooter_heat0_cooling_limit;
-    uint16_t shooter_heat1_cooling_rate;
-    uint16_t shooter_heat1_cooling_limit;
-    uint8_t mains_power_gimbal_output : 1;
-    uint8_t mains_power_chassis_output : 1;
-    uint8_t mains_power_shooter_output : 1;
-} ext_game_robot_state_t;
+    uint16_t current_HP;
+    uint16_t maximum_HP;
+    uint16_t shooter_barrel_cooling_value;
+    uint16_t shooter_barrel_heat_limit;
+    uint16_t chassis_power_limit;
+    uint8_t power_management_gimbal_output : 1;
+    uint8_t power_management_chassis_output : 1;
+    uint8_t power_management_shooter_output : 1;
+} robot_status_t;
 
 typedef __packed struct //0x0202
 {
-    uint16_t chassis_volt;
-    uint16_t chassis_current;
-    float chassis_power;
-    uint16_t chassis_power_buffer;
-    uint16_t shooter_heat0;
-    uint16_t shooter_heat1;
-} ext_power_heat_data_t;
+    uint16_t reserved1;
+    uint16_t reserved2;
+    float reserved3;
+    uint16_t buffer_energy;
+    uint16_t shooter_17mm_1_barrel_heat;
+    uint16_t shooter_42mm_barrel_heat;
+} power_heat_data_t;
 
 typedef __packed struct //0x0203
 {
     float x;
     float y;
-    float z;
-    float yaw;
-} ext_game_robot_pos_t;
+    float angle;
+} robot_pos_t;
 
 typedef __packed struct //0x0204
 {
-    uint8_t power_rune_buff;
-} ext_buff_musk_t;
+    uint8_t recovery_buff;
+    uint16_t cooling_buff;
+    uint8_t defence_buff;
+    uint8_t vulnerability_buff;
+    uint16_t attack_buff;
+    uint8_t remaining_energy;
+} buff_t;
 
 typedef __packed struct //0x0205
 {
@@ -131,28 +130,31 @@ typedef __packed struct //0x0205
 
 typedef __packed struct //0x0206
 {
-    uint8_t armor_type : 4;
-    uint8_t hurt_type : 4;
-} ext_robot_hurt_t;
+    uint8_t armor_id: 4;
+    uint8_t HP_deduction_reason : 4;
+} hurt_data_t;
 
 typedef __packed struct //0x0207
 {
     uint8_t bullet_type;
-    uint8_t bullet_freq;
-    float bullet_speed;
-} ext_shoot_data_t;
-typedef __packed struct
+    uint8_t shooter_number;
+    uint8_t launching_frequency;
+    float inital_speed;
+} shoot_data_t;
+typedef __packed struct //0x0208
 {
-    uint8_t bullet_remaining_num;
-} ext_bullet_remaining_t;
+    uint16_t projectile_allowance_17mm;
+    uint16_t projectile_allowance_42mm;
+    uint16_t remaining_gold_coin;
+    uint16_t projectile_allowance_fortress;
+} projectile_allowance_t;
 typedef __packed struct //0x0301
 {
-    uint16_t send_ID;
-    uint16_t receiver_ID;
     uint16_t data_cmd_id;
-    uint16_t data_len;
-    uint8_t *data;
-} ext_student_interactive_data_t;
+    uint16_t sender_id;
+    uint16_t receiver_id;
+    uint8_t user_data[112];
+} robot_interactive_data_t;
 
 typedef __packed struct
 {
@@ -195,11 +197,14 @@ typedef __packed struct
 extern void init_referee_struct_data(void);
 extern void referee_data_solve(uint8_t *frame);
 
-extern void get_chassis_power_and_buffer(fp32 *power, fp32 *buffer);
+extern void get_chassis_buffer(fp32 *buffer);
 
 extern uint8_t get_robot_id(void);
 
 extern void get_shoot_heat0_limit_and_heat0(uint16_t *heat0_limit, uint16_t *heat0);
 extern void get_shoot_heat1_limit_and_heat1(uint16_t *heat1_limit, uint16_t *heat1);
 extern void get_power_shooter_output(uint8_t *shooter_power);
+extern void get_shoot_heat_limit_and_cooling_value(uint16_t *heat_limit, uint16_t *cooling_value);
+extern void get_shoot_speed(float *shoot_speed);
+
 #endif

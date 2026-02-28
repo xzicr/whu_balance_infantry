@@ -79,3 +79,5 @@ chassis_task\chassis_task.o: ../components/filter/balance_filter.h
 chassis_task\chassis_task.o: ../components/algorithm/kalman_filter.h
 chassis_task\chassis_task.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 chassis_task\chassis_task.o: ..\application\uart_receive.h
+chassis_task\chassis_task.o: ..\application\referee.h
+chassis_task\chassis_task.o: ..\application\protocol.h

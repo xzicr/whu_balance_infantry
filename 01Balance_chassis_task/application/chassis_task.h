@@ -130,20 +130,20 @@
 
 
 //底盘旋转跟随PID
-#define CHASSIS_FOLLOW_GIMBAL_PID_KP 0.2f//2.8
-#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.5f//0.5
-#define CHASSIS_FOLLOW_GIMBAL_PID_KD 0.1f
-#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 6.0f//2.8
-#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.5f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KP 0.2f
+#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.0005f//0.5
+#define CHASSIS_FOLLOW_GIMBAL_PID_KD 20.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 10.0f//2.8
+#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 5.0f
 #define MOTOR_ECD_TO_RAD 0.000766990394f 
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 460.0f
-#define LEG_SET_PID_KI 4.0f
-#define LEG_SET_PID_KD 350.0f
-#define LEG_SET_PID_OUT 40.0f
-#define LEG_SET_PID_IOUT 30.0f
+#define LEG_SET_PID_KP 800.0f//460.0f
+#define LEG_SET_PID_KI 1.0f
+#define LEG_SET_PID_KD 600.0f //350.0f
+#define LEG_SET_PID_OUT 200.0f
+#define LEG_SET_PID_IOUT 80.0f
 
 
 // ------------- Limit info ------------- 
@@ -445,51 +445,46 @@ typedef struct {
     PolynomialCoefficients N22;
 } InverseJacobianCoefficients;
 
-
-
 typedef struct
 {
-  
-  mode_t                  mode;
-  flag_info_t             flag_info;
-  chassis_posture_info_t  chassis_posture_info;
-  torque_info_t           torque_info;
-	mapping_info_t          mapping_info; 
-	InverseJacobianCoefficients  InverseJacobianCoefficient;
 
-  const RC_ctrl_t *chassis_RC;               
-  const fp32 *chassis_INS_angle;    
-  const fp32 *chassis_INS_gyro;      
-  const fp32 *chassis_INS_accel;
-	const chassis_data_t *chassis_data_;	 //从云台接受到的底盘数据设定值
+    mode_t mode;
+    flag_info_t flag_info;
+    chassis_posture_info_t chassis_posture_info;
+    torque_info_t torque_info;
+    mapping_info_t mapping_info;
+    InverseJacobianCoefficients InverseJacobianCoefficient;
 
-  chassis_motor_t motor_chassis[4];          //chassis motor data.底盘电机数据
-  pid_type_def motor_speed_pid[4];             //motor speed PID.底盘电机速度pid
-  pid_type_def chassis_yaw_pid;              //follow angle PID.底盘跟随角度pid
-  pid_type_def leg_L_length_pid;               //腿长设定PID
-  pid_type_def leg_R_length_pid;               //腿长设定PID
+    const RC_ctrl_t *chassis_RC;
+    const fp32 *chassis_INS_angle;
+    const fp32 *chassis_INS_gyro;
+    const fp32 *chassis_INS_accel;
+    const chassis_data_t *chassis_data_; // 从云台接受到的底盘数据设定值
 
-  fp32 vx;                          //chassis vertical speed, positive means forward,unit m/s. 底盘速度 前进方向 前为正，单位 m/s
-  fp32 vy;                          //chassis horizontal speed, positive means letf,unit m/s.底盘速度 左右方向 左为正  单位 m/s
-  fp32 wz;                          //chassis rotation speed, positive means counterclockwise,unit rad/s.底盘旋转角速度，逆时针为正 单位 rad/s
-  fp32 vx_set;                      //chassis set vertical speed,positive means forward,unit m/s.底盘设定速度 前进方向 前为正，单位 m/s
-  fp32 vy_set;                      //chassis set horizontal speed,positive means left,unit m/s.底盘设定速度 左右方向 左为正，单位 m/s
-  fp32 wz_set;                      //chassis set rotation speed,positive means counterclockwise,unit rad/s.底盘设定旋转角速度，逆时针为正 单位 rad/s
-  fp32 chassis_yaw_set;             
+    chassis_motor_t motor_chassis[4]; // chassis motor data.底盘电机数据
+    pid_type_def motor_speed_pid[4];  // motor speed PID.底盘电机速度pid
+    pid_type_def chassis_yaw_pid;     // follow angle PID.底盘跟随角度pid
+    pid_type_def leg_L_length_pid;    // 腿长设定PID
+    pid_type_def leg_R_length_pid;    // 腿长设定PID
 
-  fp32 vx_max_speed;  
-  fp32 vx_min_speed;  
-  fp32 vy_max_speed;  
-  fp32 vy_min_speed; 
-  fp32 chassis_yaw;   
-  fp32 chassis_pitch; 
-  fp32 chassis_roll;  
-	gimbal_motor_t gimbal_yaw_motor;
-  joint_motor_t joint_motor_1,joint_motor_2,joint_motor_3,joint_motor_4;
-  foot_motor_t foot_motor_L,foot_motor_R;
+    fp32 vx;     // chassis vertical speed, positive means forward,unit m/s. 底盘速度 前进方向 前为正，单位 m/s
+    fp32 vy;     // chassis horizontal speed, positive means letf,unit m/s.底盘速度 左右方向 左为正  单位 m/s
+    fp32 wz;     // chassis rotation speed, positive means counterclockwise,unit rad/s.底盘旋转角速度，逆时针为正 单位 rad/s
+    fp32 vx_set; // chassis set vertical speed,positive means forward,unit m/s.底盘设定速度 前进方向 前为正，单位 m/s
+    fp32 vy_set; // chassis set horizontal speed,positive means left,unit m/s.底盘设定速度 左右方向 左为正，单位 m/s
+    fp32 wz_set; // chassis set rotation speed,positive means counterclockwise,unit rad/s.底盘设定旋转角速度，逆时针为正 单位 rad/s
+    fp32 chassis_yaw_set;
 
-
-
+    fp32 vx_max_speed;
+    fp32 vx_min_speed;
+    fp32 vy_max_speed;
+    fp32 vy_min_speed;
+    fp32 chassis_yaw;
+    fp32 chassis_pitch;
+    fp32 chassis_roll;
+    gimbal_motor_t gimbal_yaw_motor;
+    joint_motor_t joint_motor_1, joint_motor_2, joint_motor_3, joint_motor_4;
+    foot_motor_t foot_motor_L, foot_motor_R;
 
 } chassis_move_t;
 

@@ -79,3 +79,7 @@ chassis_task\freertos.o: ../application/oled_task.h
 chassis_task\freertos.o: ../application/set_power_task.h
 chassis_task\freertos.o: ../application/uart_receive.h
 chassis_task\freertos.o: ../Inc/usart.h
+chassis_task\freertos.o: ../application/referee.h
+chassis_task\freertos.o: ../application/protocol.h
+chassis_task\freertos.o: ../application/motor_cmd.h
+chassis_task\freertos.o: ../application/iwdg_task.h

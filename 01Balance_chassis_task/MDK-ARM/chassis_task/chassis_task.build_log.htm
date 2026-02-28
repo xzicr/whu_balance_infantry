@@ -21,59 +21,30 @@ Target DLL:      CMSIS_AGDI.dll V1.28.3.0
 Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
-C:\Users\ASUS\Desktop\WHU_balance_V2.1.5\01Balance_chassis_task\MDK-ARM\chassis_task.uvprojx
-Project File Date:  12/14/2025
+C:\Users\ASUS\Desktop\WHU_balance_V2.1.7\01Balance_chassis_task\MDK-ARM\chassis_task.uvprojx
+Project File Date:  02/27/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
-compiling chassis_task.c...
+compiling iwdg_task.c...
+..\application\iwdg_task.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
 ..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
   extern void shoot_init();
-..\application\uart_receive.h(23): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
-  const chassis_data_t *get_Uart_Chassisdata_point();
-..\application\uart_receive.h(25): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\application\chassis_task.c(250): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	chassis_move_init->foot_motor_L.distance_offset = (chassis_move_init->foot_motor_L.position / 360.0f) * 
-HEEL_PERIMETER;
-..\application\chassis_task.c(251): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	chassis_move_init->foot_motor_R.distance_offset = ((360.0f - chassis_move_init->foot_motor_R.position )/ 360.0f) * 
-HEEL_PERIMETER;
-..\application\chassis_task.c(365): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	fdb->foot_motor_L.distance = (fdb->foot_motor_L.position / 360.0f + fdb->foot_motor_L.turns) * 
-HEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
-..\application\chassis_task.c(366): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	fdb->foot_motor_R.distance = ((360.0f - fdb->foot_motor_R.position) / 360.0f + fdb->foot_motor_R.turns) * 
-HEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
-..\application\chassis_task.c(711): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		Moving_High_Offset >= 0.2 &&
-..\application\chassis_task.c(722): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		if (Moving_High_Offset < 0.2)
-..\application\chassis_task.c(828): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  				else if (target_value_set->chassis_data_->wz_set > 
-HASSIS_RC_WZ_DEADLINE)
-..\application\chassis_task.c(1160): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_balancing_torque_L = (
-..\application\chassis_task.c(1166): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_moving_torque_L = (
-..\application\chassis_task.c(1172): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_balancing_torque_R = -(
-..\application\chassis_task.c(1178): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_moving_torque_R = -(
-..\application\chassis_task.c(1414): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  				(detect->chassis_posture_info.leg_length_R>0.33&&detect->torque_info.supportive_force_R <= 20))
-..\application\chassis_task.c(1541): warning:  #177-D: variable "dL0"  was declared but never referenced
-  	fp32 dL0 = 0, L0 = 0, Q0 = 0, S0 = 0;
-..\application\chassis_task.c(1543): warning:  #550-D: variable "S3"  was set but never used
-  	fp32 A0, B0, C0, Q2, Q3, S2, S3;
-..\application\chassis_task.c: 18 warnings, 0 errors
+..\application\iwdg_task.c(10): warning:  #223-D: function "buzzer_on" declared implicitly
+              buzzer_on(50,8399);
+..\application\iwdg_task.c(12): warning:  #223-D: function "buzzer_off" declared implicitly
+              buzzer_off();
+..\application\iwdg_task.c(24): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\iwdg_task.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=88596 RO-data=6300 RW-data=2052 ZI-data=53412  
+Program Size: Code=97328 RO-data=7884 RW-data=2232 ZI-data=55448  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 18 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -84,32 +55,19 @@ Package Vendor: ARM
    * Component: CORE Version: 5.0.1
 
 Package Vendor: Keil
-                http://www.keil.com/pack/Keil.ARM_Compiler.1.3.1.pack
-                Keil.ARM_Compiler.1.3.1
-                Keil ARM Compiler extensions for ARM Compiler 5 and ARM Compiler 6
-   * Component: Event Recorder Variant: DAP Version: 1.1.0
-
-Package Vendor: Keil
                 http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.11.0.pack
                 Keil.STM32F4xx_DFP.2.11.0
                 STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
 
 <h2>Collection of Component include folders:</h2>
-  .\RTE\Compiler
   .\RTE\_chassis_task
   D:\Keil5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include
-  D:\Keil5\ARM\PACK\Keil\ARM_Compiler\1.3.1\Include
   D:\Keil5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: Keil.ARM Compiler::Compiler:Event Recorder:DAP:1.1.0
-      Include file:  Config\EventRecorderConf.h
-      Source file:   Source\EventRecorder.c
-      Include file:  Include\EventRecorder.h
-
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

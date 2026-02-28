@@ -32,7 +32,7 @@ void gimbal_set_mode(gimbal_control_t *gimbal_control)
 	{
 		gimbal_control->gimbal_yaw_motor.gimbal_motor_mode=GIMBAL_MOTOR_OFF;
 	}
-	else if(gimbal_control->yaw_ctrl_data->chassis_mode==CHASSIS_MODE_FOLLOW||gimbal_control->yaw_ctrl_data->chassis_mode==CHASSIS_MODE_NO_FOLLOW)
+	else if(gimbal_control->yaw_ctrl_data->chassis_mode==CHASSIS_MOVE_ON||gimbal_control->yaw_ctrl_data->chassis_mode==CHASSIS_MODE_DEBUG)
 	{
 		gimbal_control->gimbal_yaw_motor.gimbal_motor_mode=GIMBAL_MOTOR_GYRO;
 	}
@@ -67,21 +67,9 @@ void gimbal_control_loop(gimbal_control_t *gimbal_control)
 	{
 		gimbal_control->gimbal_yaw_motor.yaw_given_current;
 	}
-	else if(gimbal_control->gimbal_yaw_motor.gimbal_motor_mode==GIMBAL_MOTOR_GYRO)
+	else if(gimbal_control->gimbal_yaw_motor.gimbal_motor_mode==GIMBAL_MOTOR_GYRO )
 	{
-		// PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid,gimbal_control->gimbal_yaw_motor.absolute_angle,gimbal_control->gimbal_yaw_motor.absolute_angle_set);
-		// PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid,gimbal_control->gimbal_yaw_motor.motor_gyro,gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid.out);
-		// gimbal_control->gimbal_yaw_motor.yaw_given_current= gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid.out;
-		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid,gimbal_control->gimbal_yaw_motor.relative_angle,0.0f);
-		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid,gimbal_control->gimbal_yaw_motor.motor_gyro,gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid.out);
-		gimbal_control->gimbal_yaw_motor.yaw_given_current= gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid.out;
-	}
-	else if(gimbal_control->gimbal_yaw_motor.gimbal_motor_mode==GIMBAL_MOTOR_ROTATE)
-	{
-		// PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid,gimbal_control->gimbal_yaw_motor.absolute_angle,gimbal_control->gimbal_yaw_motor.absolute_angle_set);
-		// PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid,gimbal_control->gimbal_yaw_motor.motor_gyro,gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid.out);
-		// gimbal_control->gimbal_yaw_motor.yaw_given_current=gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid.out;
-		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid,gimbal_control->gimbal_yaw_motor.relative_angle,0.0f);
+		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid,gimbal_control->gimbal_yaw_motor.absolute_angle,gimbal_control->gimbal_yaw_motor.absolute_angle_set);
 		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid,gimbal_control->gimbal_yaw_motor.motor_gyro,gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid.out);
 		gimbal_control->gimbal_yaw_motor.yaw_given_current= gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid.out;
 	}

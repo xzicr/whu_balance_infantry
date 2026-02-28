@@ -1,15 +1,18 @@
 //
-// Created by bismarckkk on 2024/2/17.
+// Created by bismarckkk on 2025/3/22.
+// Dynamic Edition
 //
 
-#ifndef SERIAL_TEST_UI_TYPES_H
-#define SERIAL_TEST_UI_TYPES_H
+#ifndef UI_TYPES_H
+#define UI_TYPES_H
 
-#ifdef __CC_ARM || __GNUC__
+// #define MANUAL_DIRTY
+
+#if defined(__GNUC__) || defined(__CC_ARM)
 #define MESSAGE_PACKED __attribute__((packed))
 #include <stdint.h>
 #else
-#define MESSAGE_PACKED
+#error "MESSAGE_PACKED not defined for this compiler"
 #endif
 
 #define PRIMITIVE_CAT(x, y) x ## y
@@ -18,8 +21,8 @@
 #define DEFINE_MESSAGE(name, p_a, p_b, p_c, p_d, p_e)   \
 typedef struct {                                        \
 uint8_t figure_name[3];                                 \
-uint32_t operate_tpyel:3;                               \
-uint32_t figure_tpye:3;                                 \
+uint32_t operate_type:3;                               \
+uint32_t figure_type:3;                                 \
 uint32_t layer:4;                                       \
 uint32_t color:4;                                       \
 uint32_t PRIMITIVE_CAT(,p_a) :9;                        \
@@ -41,8 +44,8 @@ DEFINE_MESSAGE(arc, start_angle, end_angle, _c, rx, ry);
 
 typedef struct {
     uint8_t figure_name[3];
-    uint32_t operate_tpyel: 3;
-    uint32_t figure_tpye: 3;
+    uint32_t operate_type: 3;
+    uint32_t figure_type: 3;
     uint32_t layer: 4;
     uint32_t color: 4;
     uint32_t font_size: 9;
@@ -55,8 +58,8 @@ typedef struct {
 
 typedef struct {
     uint8_t figure_name[3];
-    uint32_t operate_tpyel: 3;
-    uint32_t figure_tpye: 3;
+    uint32_t operate_type: 3;
+    uint32_t figure_type: 3;
     uint32_t layer: 4;
     uint32_t color: 4;
     uint32_t font_size: 9;
@@ -96,4 +99,17 @@ typedef struct {
     uint16_t crc16;
 } MESSAGE_PACKED ui_string_frame_t;
 
-#endif //SERIAL_TEST_UI_TYPES_H
+typedef struct {
+    ui_frame_header_t header;
+    uint8_t delete_type;
+    uint8_t layer;
+    uint16_t crc16;
+} MESSAGE_PACKED ui_delete_frame_t;
+
+extern ui_string_frame_t _ui_string_frame;
+extern ui_1_frame_t _ui_1_frame;
+extern ui_2_frame_t _ui_2_frame;
+extern ui_5_frame_t _ui_5_frame;
+extern ui_7_frame_t _ui_7_frame;
+
+#endif //UI_TYPES_H

@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : freertos.c
-  * Description        : Code for freertos applications
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : freertos.c
+ * Description        : Code for freertos applications
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -39,6 +39,8 @@
 #include "oled_task.h"
 #include "set_power_task.h"
 #include "uart_receive.h"
+#include "motor_cmd.h"
+#include "iwdg_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,6 +58,8 @@ osThreadId battery_voltage_handle;
 osThreadId oled_handle;
 osThreadId setpower_handle;
 osThreadId uart_receive_handle;
+osThreadId motor_cmd_handle;
+osThreadId iwdg_task_handle;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -76,53 +80,54 @@ osThreadId testHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+
 /* USER CODE END FunctionPrototypes */
 
-void test_task(void const * argument);
+void test_task(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /* GetTimerTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize );
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize);
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
 static StackType_t xIdleStack[configMINIMAL_STACK_SIZE];
-  
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize)
 {
   *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
   *ppxIdleTaskStackBuffer = &xIdleStack[0];
   *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
   /* place for user code */
-}                   
+}
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /* USER CODE BEGIN GET_TIMER_TASK_MEMORY */
 static StaticTask_t xTimerTaskTCBBuffer;
 static StackType_t xTimerStack[configTIMER_TASK_STACK_DEPTH];
-  
-void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize )  
+
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize)
 {
   *ppxTimerTaskTCBBuffer = &xTimerTaskTCBBuffer;
   *ppxTimerTaskStackBuffer = &xTimerStack[0];
   *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
   /* place for user code */
-}                   
+}
 /* USER CODE END GET_TIMER_TASK_MEMORY */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
-       
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -153,9 +158,9 @@ void MX_FREERTOS_Init(void) {
 
   osThreadDef(ChassisTask, chassis_task, osPriorityAboveNormal, 0, 512);
   chassisTaskHandle = osThreadCreate(osThread(ChassisTask), NULL);
-  
-    osThreadDef(gimbalTask, gimbal_task, osPriorityHigh, 0, 512);
-    gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
+
+  osThreadDef(gimbalTask, gimbal_task, osPriorityHigh, 0, 512);
+  gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
 
   // osThreadDef(DETECT, detect_task, osPriorityNormal, 0, 256);
   // detect_handle = osThreadCreate(osThread(DETECT), NULL);
@@ -166,8 +171,8 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(led, led_RGB_flow_task, osPriorityNormal, 0, 256);
   led_RGB_flow_handle = osThreadCreate(osThread(led), NULL);
 
-  // osThreadDef(REFEREE, referee_usart_task, osPriorityNormal, 0, 128);
-  // referee_usart_task_handle = osThreadCreate(osThread(REFEREE), NULL);
+  osThreadDef(REFEREE, referee_usart_task, osPriorityNormal, 0, 128);
+  referee_usart_task_handle = osThreadCreate(osThread(REFEREE), NULL);
 
   // osThreadDef(CAN_TASK, Can_task, osPriorityNormal, 0, 128);
   // can_task_handle = osThreadCreate(osThread(CAN_TASK), NULL);
@@ -178,28 +183,33 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(OLED, oled_task, osPriorityNormal, 0, 256);
   oled_handle = osThreadCreate(osThread(OLED), NULL);
 
-  osThreadDef(SETPOWER,send_setpower_task,osPriorityNormal,0,128);
-  setpower_handle = osThreadCreate(osThread(SETPOWER), NULL);
+  // osThreadDef(SETPOWER,send_setpower_task,osPriorityNormal,0,128);
+  // setpower_handle = osThreadCreate(osThread(SETPOWER), NULL);
 
-  osThreadDef(UART_RECEIVE,uart_start_task,osPriorityNormal,0,128);
+  osThreadDef(UART_RECEIVE, uart_start_task, osPriorityNormal, 0, 128);
   setpower_handle = osThreadCreate(osThread(UART_RECEIVE), NULL);
 
-  /* USER CODE END RTOS_THREADS */
+  osThreadDef(MOTOR_CMD, motor_cmd_task, osPriorityNormal, 0, 128);
+  motor_cmd_handle = osThreadCreate(osThread(MOTOR_CMD), NULL);
 
+  osThreadDef(IWDG_TASK, iwdg_task, osPriorityAboveNormal, 0, 128);
+  iwdg_task_handle = osThreadCreate(osThread(IWDG_TASK), NULL);
+
+  /* USER CODE END RTOS_THREADS */
 }
 
 /* USER CODE BEGIN Header_test_task */
 /**
-  * @brief  Function implementing the test thread.
-  * @param  argument: Not used 
-  * @retval None
-  */
+ * @brief  Function implementing the test thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_test_task */
-__weak void test_task(void const * argument)
+__weak void test_task(void const *argument)
 {
   /* USER CODE BEGIN test_task */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     osDelay(1);
   }
@@ -208,5 +218,5 @@ __weak void test_task(void const * argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+
 /* USER CODE END Application */

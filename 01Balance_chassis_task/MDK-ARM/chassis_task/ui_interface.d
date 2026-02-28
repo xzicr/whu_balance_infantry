@@ -1,9 +1,9 @@
 chassis_task\ui_interface.o: ..\components\UI\ui_interface.c
-chassis_task\ui_interface.o: ..\components\UI\ui_interface.h
+chassis_task\ui_interface.o: D:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 chassis_task\ui_interface.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
+chassis_task\ui_interface.o: ..\components\UI\ui_interface.h
 chassis_task\ui_interface.o: ..\components\UI\ui_types.h
 chassis_task\ui_interface.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
-chassis_task\ui_interface.o: D:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 chassis_task\ui_interface.o: ../Inc/usart.h
 chassis_task\ui_interface.o: ../Inc/main.h
 chassis_task\ui_interface.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h

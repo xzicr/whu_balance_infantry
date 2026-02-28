@@ -7,23 +7,22 @@
 #include "shoot.h"
 #include "user_lib.h"
 // yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_GYRO_PID_KP        5000.0f
-#define YAW_GYRO_PID_KI        5.0f
-#define YAW_GYRO_PID_KD        50.0f
-#define YAW_GYRO_PID_MAX_OUT   30000.0f
-#define YAW_GYRO_PID_MAX_IOUT  10000.0f
-#define YAW_ANGLE_PID_KP        0.4f//-0.8
-#define YAW_ANGLE_PID_KI        0.0f//-1
-#define YAW_ANGLE_PID_KD       	0.1f//-5
-#define YAW_ANGLE_PID_MAX_OUT   3
-#define YAW_ANGLE_PID_MAX_IOUT  0.5
+#define YAW_GYRO_PID_KP        4000.0f
+#define YAW_GYRO_PID_KI        4.0f
+#define YAW_GYRO_PID_KD        0.0f
+#define YAW_GYRO_PID_MAX_OUT   150000.0f
+#define YAW_GYRO_PID_MAX_IOUT  50000.0f
+#define YAW_ANGLE_PID_KP        0.6f
+#define YAW_ANGLE_PID_KI        0.0f
+#define YAW_ANGLE_PID_KD       	0.35f
+#define YAW_ANGLE_PID_MAX_OUT   6
+#define YAW_ANGLE_PID_MAX_IOUT  2.0f
 #define GIMBAL_CONTROL_TIME 2
 #define YAW_SET_NUM 0.2  
 typedef enum
 {
     GIMBAL_MOTOR_OFF = 0, // 电机原始值控制
     GIMBAL_MOTOR_GYRO,    // 电机陀螺仪角度控制
-    GIMBAL_MOTOR_ROTATE,
     GIMBAL_MOTOR_INIT,   
 } gimbal_motor_mode_e;
 typedef struct
@@ -33,7 +32,7 @@ typedef struct
     fp32 kd;
 
     fp32 set;
-    fp32 get;
+    fp32 get; 
     fp32 err;
 
     fp32 max_out;
@@ -54,7 +53,7 @@ typedef struct
     fp32 absolute_angle;     //rad
     fp32 absolute_angle_set; //rad
 	fp32 absolute_angle_set1;
-    fp32 relative_angle;
+    fp32 relative_angle,relative_limit,relative_angle_init;
     fp32 relative_angle_set;
     fp32 motor_gyro;         //rad/s
     fp32 motor_gyro_set;

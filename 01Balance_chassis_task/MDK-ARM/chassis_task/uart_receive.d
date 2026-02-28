@@ -44,3 +44,5 @@ chassis_task\uart_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_u
 chassis_task\uart_receive.o: ../Inc/usart.h
 chassis_task\uart_receive.o: ..\application\CAN_receive.h
 chassis_task\uart_receive.o: ..\application\struct_typedef.h
+chassis_task\uart_receive.o: ..\application\referee.h
+chassis_task\uart_receive.o: ..\application\protocol.h

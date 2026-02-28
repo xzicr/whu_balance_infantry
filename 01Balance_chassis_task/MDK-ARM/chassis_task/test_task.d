@@ -74,13 +74,8 @@ chassis_task\test_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/
 chassis_task\test_task.o: ..\application\shoot.h
 chassis_task\test_task.o: ../components/UI/ui.h
 chassis_task\test_task.o: ../components/UI/ui_interface.h
-chassis_task\test_task.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
 chassis_task\test_task.o: ../components/UI/ui_types.h
-chassis_task\test_task.o: ../components/UI/ui_default_Ungroup_0.h
-chassis_task\test_task.o: ../components/UI/ui_default_Ungroup_1.h
-chassis_task\test_task.o: ../components/UI/ui_default_Ungroup_2.h
-chassis_task\test_task.o: ../components/UI/ui_default_Ungroup_3.h
-chassis_task\test_task.o: ../components/UI/ui_default_Ungroup_4.h
-chassis_task\test_task.o: ../components/UI/ui_default_Ungroup_5.h
+chassis_task\test_task.o: ../components/UI/ui_default.h
+chassis_task\test_task.o: ../components/UI/ui_frame1.h
 chassis_task\test_task.o: ..\application\referee.h
 chassis_task\test_task.o: ..\application\protocol.h
