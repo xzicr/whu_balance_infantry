@@ -183,10 +183,16 @@ void USART6_IRQHandler(void)
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
-                sbus_to_rc(sbus_rx_buf[0], &rc_ctrl);
-                //记录数据接收时间
-                detect_hook(DBUS_TOE);
-                //sbus_to_usart1(sbus_rx_buf[0]);
+                //判断是遥控器的帧头才处理，否则直接丢弃
+                if(sbus_rx_buf[0][0] == 0xA9 && sbus_rx_buf[0][1] == 0x53)
+                {
+                    if(verify_CRC16_check_sum(sbus_rx_buf[0],RC_FRAME_LENGTH))
+                    {
+                        sbus_to_rc(sbus_rx_buf[0], &rc_ctrl);
+                        //记录数据接收时间
+                        detect_hook(DBUS_TOE);
+                    }
+                }
             }
         }
         else
@@ -214,11 +220,16 @@ void USART6_IRQHandler(void)
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
-                //处理遥控器数据
-                sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
-                //记录数据接收时间
-                detect_hook(DBUS_TOE);
-                //sbus_to_usart1(sbus_rx_buf[1]);
+                //判断是遥控器的帧头才处理，否则直接丢弃
+                if(sbus_rx_buf[1][0] == 0xA9 && sbus_rx_buf[1][1] == 0x53)
+                {
+                    if(verify_CRC16_check_sum(sbus_rx_buf[1],RC_FRAME_LENGTH))
+                    {
+                        sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
+                        //记录数据接收时间
+                        detect_hook(DBUS_TOE);
+                    }
+                }
             }
         }
     }
@@ -262,11 +273,11 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->rc.ch[2] = ((sbus_buf[4] >> 6) | (sbus_buf[5] << 2) |          //!< Channel 2
                          (sbus_buf[6] << 10)) &0x07ff;
     rc_ctrl->rc.ch[3] = ((sbus_buf[6] >> 1) | (sbus_buf[7] << 7)) & 0x07ff;  //!< Channel 3
-    rc_ctrl->rc.ch[4] = ((sbus_buf[8] >> 1) | (sbus_buf[9] << 7)) & 0x07ff;  //!< Channel 4
-    rc_ctrl->rc.s[0] = ((sbus_buf[7] >> 4) & 0x0003);                        //!< Switch mode
+    rc_ctrl->rc.s[0] = ((sbus_buf[7]   >> 4) & 0x0003);                        //!< Switch mode
     rc_ctrl->rc.s[1] = ((sbus_buf[7] >> 4) & 0x0004)>>2;                     //!< suspend_key
     rc_ctrl->rc.s[2] = ((sbus_buf[7] >> 4) & 0x0008)>>3;                     //!< left_key
     rc_ctrl->rc.s[3] = (sbus_buf[8] & 0x0001);                               //!< right_key
+    rc_ctrl->rc.ch[4] = ((sbus_buf[8] >> 1) | (sbus_buf[9] << 7)) & 0x07ff;  //!< Channel 4
     rc_ctrl->rc.s[4] = ((sbus_buf[9]>>4) & 0x0001);                               //!< left_key
 
     rc_ctrl->mouse.x = sbus_buf[10] | (sbus_buf[11] << 8);                    //!< Mouse X axis
@@ -283,16 +294,81 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->rc.ch[3] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[4] -= RC_CH_VALUE_OFFSET;
 }
-/**
-  * @brief          send sbus data by usart1, called in usart3_IRQHandle
-  * @param[in]      sbus: sbus data, 18 bytes
-  * @retval         none
-  */
-/**
-  * @brief          通过usart1发送sbus数据,在usart3_IRQHandle调用
-  * @param[in]      sbus: sbus数据, 18字节
-  * @retval         none
-  */
+// 根据说明书重新编写的解析函数
+//void sbus_to_rc(uint8_t* vtm_buf, RC_ctrl_t * rc_ctrl) {
+//    // 1. 验证帧头
+//    if (vtm_buf[0] != 0x09 || vtm_buf[1] != 0x53) {
+//        return; // 帧头错误
+//    }    
+//    // 方法2：手动解析（更可靠）
+//    uint32_t* data = (uint32_t*)(vtm_buf + 1); // 跳过帧头
+//    
+//    // 通道0 (位0-10)
+//    rc_ctrl->rc.ch[0] = (data[0] & 0x07FF);
+//    
+//    // 通道1 (位11-21)
+//    rc_ctrl->rc.ch[1] = ((data[0] >> 11) & 0x07FF);
+//    
+//    // 通道2 (位22-32) - 跨字节边界
+//    rc_ctrl->rc.ch[2] = ((data[0] >> 22) & 0x07FF) | ((data[1] & 0x0003) << 10);
+//    
+//    // 通道3 (位33-43)
+//    rc_ctrl->rc.ch[3] = ((data[1] >> 2) & 0x07FF);
+//    
+//    // 挡位切换开关 (位60-61, 2位)
+//    rc_ctrl->rc.s[0] = ((data[1] >> 13) & 0x03);  // 0:C, 1:N, 2:S
+//    
+//    // 暂停按键 (位62, 1位)
+//    rc_ctrl->rc.s[1] = ((data[1] >> 15) & 0x01);
+//    
+//    // 自定义按键(左) (位63, 1位)
+//    rc_ctrl->rc.s[2] = ((data[1] >> 16) & 0x01);
+//    
+//    // 自定义按键(右) (位64, 1位)
+//    rc_ctrl->rc.s[3] = ((data[1] >> 17) & 0x01);
+//    
+//    // 拨轮 (位65-75, 11位) - 需要跨多个字节
+//    uint32_t dial_low = (data[1] >> 18) & 0x3FFF;  // 低14位
+//    uint32_t dial_high = (data[2] & 0x0007) << 14; // 高3位
+//    rc_ctrl->rc.ch[4] = (dial_low | dial_high) & 0x07FF;
+//    
+//    // 扳机键 (位76, 1位)
+//    rc_ctrl->rc.s[4] = ((data[2] >> 3) & 0x01);
+//    
+//    // 鼠标X轴 (位80-95, 16位，有符号)
+//    // 位偏移：80位 = 10字节 + 0位
+//    int16_t mouse_x = (vtm_buf[10] | (vtm_buf[11] << 8));
+//    rc_ctrl->mouse.x = mouse_x;
+//    
+//    // 鼠标Y轴 (位96-111, 16位，有符号)
+//    int16_t mouse_y = (vtm_buf[12] | (vtm_buf[13] << 8));
+//    rc_ctrl->mouse.y = mouse_y;
+//    
+//    // 鼠标Z轴 (位112-127, 16位，有符号)
+//    int16_t mouse_z = (vtm_buf[14] | (vtm_buf[15] << 8));
+//    rc_ctrl->mouse.z = mouse_z;
+//    
+//    // 鼠标左键 (位128-129, 2位)
+//    rc_ctrl->mouse.press_l = (vtm_buf[16] & 0x03);
+//    
+//    // 鼠标右键 (位130-131, 2位)
+//    rc_ctrl->mouse.press_r = ((vtm_buf[16] >> 2) & 0x03);
+//    
+//    // 鼠标中键 (位132-133, 2位)
+//    rc_ctrl->mouse.press_m = ((vtm_buf[16] >> 4) & 0x03);
+//    
+//    // 键盘 (位136-151, 16位)
+//    rc_ctrl->key.v = (vtm_buf[17] | (vtm_buf[18] << 8));
+//    
+//    // 3. 通道值偏移（根据说明书的364-1024-1684范围）
+//    const uint16_t RC_MIN = 364;
+//    const uint16_t RC_MID = 1024;
+//    const uint16_t RC_MAX = 1684;
+//    
+//    // 注意：这里可能需要减去中间值1024，而不是固定的偏移
+//    // rc_ctrl->rc.ch[0] -= 1024; // 如果需要转换为-660到+660的范围
+//}
+
 void sbus_to_usart1(uint8_t *sbus)
 {
     static uint8_t usart_tx_buf[20];

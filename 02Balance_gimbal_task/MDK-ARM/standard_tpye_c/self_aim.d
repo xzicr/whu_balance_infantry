@@ -87,3 +87,4 @@
 .\standard_tpye_c\self_aim.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 .\standard_tpye_c\self_aim.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 .\standard_tpye_c\self_aim.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+.\standard_tpye_c\self_aim.o: ..\application\UART_task.h

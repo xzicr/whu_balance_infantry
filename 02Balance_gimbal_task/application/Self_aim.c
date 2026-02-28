@@ -8,6 +8,7 @@
 #include "INS_task.h"
 #include "usbd_cdc_if.h"
 #include "CAN_receive.h"
+#include "UART_task.h"
 uint8_t buffer[sizeof(RECEIVE_DATA)];//用于存储完整的数据包
 uint8_t Usart_Receive[40]; //用于接收单个字节的数据
 uint16_t received = 0;//当前接收到的数据长度
@@ -17,6 +18,7 @@ SEND_DATA Send_Data;
 extern __IO uint32_t uwTick;
 uint32_t sendTick =0;
 gimbal_control_t *gimbal_data;
+referee_data_t *referee_data_get;
 
 // uint32_t usb_rx_length = 0;
 extern uint8_t aimflag;
@@ -81,6 +83,7 @@ void data_transition(void)
     Send_Data.frame_header.s = FRAME_HEADER_S; 
     Send_Data.frame_header.p = FRAME_HEADER_P;
     gimbal_data = get_gimbal_data();
+    referee_data_get = get_referee_data();
     Send_Data.output_data.mode = aimflag;
     Send_Data.output_data.q[0] = INS.q[0];
     Send_Data.output_data.q[1] = INS.q[1];
@@ -90,9 +93,10 @@ void data_transition(void)
     Send_Data.output_data.yaw_vel = 0;
     Send_Data.output_data.pitch = gimbal_data->gimbal_pitch_motor.absolute_angle;
     Send_Data.output_data.pitch_vel = 0;
-    if(shoot_bullet_speed != 0)
+    Send_Data.output_data.bullet_speed = referee_data_get->shoot_speed;
+    if(Send_Data.output_data.bullet_speed != 0)
     {
-        Send_Data.output_data.bullet_speed = shoot_bullet_speed;
+        Send_Data.output_data.bullet_speed = referee_data_get->shoot_speed;
     }
     else {Send_Data.output_data.bullet_speed = 19.9;}
 

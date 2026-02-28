@@ -35,23 +35,23 @@
 #include "INS_task.h"
 // pitch speed close-loop PID params, max out and max iout
 // pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_PID_KP 4000.0f
-#define PITCH_GYRO_PID_KI 4.0f
-#define PITCH_GYRO_PID_KD 50.0f
+#define PITCH_GYRO_PID_KP 5000.0f
+#define PITCH_GYRO_PID_KI 10.0f
+#define PITCH_GYRO_PID_KD 0.0f
 #define PITCH_GYRO_PID_MAX_OUT 30000.0f
 #define PITCH_GYRO_PID_MAX_IOUT 10000.0f
-#define PITCH_ANGLE_PID_KP 0.4f       //-2.5f//-1.0
-#define PITCH_ANGLE_PID_KI 0.0002f      //-0.5f
-#define PITCH_ANGLE_PID_KD 0.04f       //-50.0f
-#define PITCH_ANGLE_PID_MAX_OUT 3.0f  // 15.0f
-#define PITCH_ANGLE_PID_MAX_IOUT 1.0f // 0.0f
+#define PITCH_ANGLE_PID_KP 0.3f       
+#define PITCH_ANGLE_PID_KI 0.0f      
+#define PITCH_ANGLE_PID_KD 15.0f       
+#define PITCH_ANGLE_PID_MAX_OUT 12.0f//3.0f  
+#define PITCH_ANGLE_PID_MAX_IOUT 3.0f//1.0f 
 
 //任务初始化 空闲一段时间
 #define GIMBAL_TASK_INIT_TIME 201
 //yaw,pitch控制通道以及状态开关通道
 #define YAW_CHANNEL   0
-#define PITCH_CHANNEL 7//1
-#define HEIGHT_CHANNEL 1
+#define PITCH_CHANNEL  1
+#define HEIGHT_CHANNEL 
 #define GIMBAL_MODE_CHANNEL 0
 //turn 180°
 //掉头180 按键
@@ -66,11 +66,11 @@
 #define RC_DEADBAND   10
 
 
-#define YAW_RC_SEN    0.0001f
+#define YAW_RC_SEN    0.0003f
 #define PITCH_RC_SEN  -0.0001f //0.005
 
-#define YAW_MOUSE_SEN   0.0003f
-#define PITCH_MOUSE_SEN 0.0002f
+#define YAW_MOUSE_SEN   0.001f
+#define PITCH_MOUSE_SEN -0.001f
 
 #define HIGH_SEN 0.0000005f
 
@@ -156,7 +156,7 @@ typedef enum
 {
     GIMBAL_MOTOR_OFF = 0, //电机原始值控制
     GIMBAL_MOTOR_GYRO,    //电机陀螺仪角度控制
-    GIMBAL_MOTOR_ENCONDE, //电机编码值角度控制
+    GIMBAL_MOTOR_DEBUG,  //专门调试云台，底盘电机失能
     GIMBAL_INIT,          //电机初始化
 } gimbal_motor_mode_e;
 
@@ -221,6 +221,7 @@ typedef struct
   bool_t last_press_l;
   uint16_t keyboard;
   uint16_t lastkeyboard;
+  uint8_t aim_press,aim_last_press;
 
   float vx_set;
 } gimbal_control_t;
@@ -234,10 +235,11 @@ typedef struct
 	float yaw_angle_set;//yaw轴角度设定值
 	float yaw_angle;//yaw轴角度实时值
 	float yaw_gyro;//yaw轴角速度实时值
+  float pitch_angle;//pitch轴实时角度
 	chassis_mode_e chassis_mode;//底盘模式
 	shoot_mode_e shoot_mode;//射击模式
   uint8_t spin_flag;//小陀螺标志位
-  uint8_t tk_flag,jump_flag,cap_flag,fly_flag,sit_flag,high_flag;
+  uint8_t tk_flag,jump_flag,cap_flag,sit_flag,high_flag,fric_flag,auto_flag,ui_init_flag,reset_flag;
 }chassis_data_t;
 
 /**

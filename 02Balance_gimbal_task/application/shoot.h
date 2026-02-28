@@ -6,13 +6,13 @@
 
 #define FRICTION_SPEED_PID_KP        7.0f
 #define FRICTION_SPEED_PID_KI        0.0001f
-#define FRICTION_SPEED_PID_KD        2.0f
+#define FRICTION_SPEED_PID_KD        4.0f
 #define FRICTION_SPEED_PID_MAX_OUT   30000.0f
 #define FRICTION_SPEED_PID_MAX_IOUT  5000.0f
 
 #define FRICTION_CURRENT_PID_KP        0.8f     //0.6
 #define FRICTION_CURRENT_PID_KI        0.15f    //0.2
-#define FRICTION_CURRENT_PID_KD        0.6f     //0.2
+#define FRICTION_CURRENT_PID_KD        5.0f     //0.2
 #define FRICTION_CURRENT_PID_MAX_OUT   30000.0f
 #define FRICTION_CURRENT_PID_MAX_IOUT  10000.0f
 
@@ -83,7 +83,7 @@ typedef struct
 	bool_t press_l,last_press_l;
     bool_t press_r,last_press_r;
     bool_t press_fric,last_press_fric;
-    bool_t press_back,last_press_back;  //退弹按键
+    bool_t press_shoot,last_press_shoot;
     uint16_t press_l_time;
     uint16_t press_r_time;
 	uint16_t rc_s_time;
@@ -95,8 +95,7 @@ const shoot_control_t *shoot_control_loop(void);
 extern shoot_control_t shoot_control;
 extern void shoot_Init(void);
 
-extern uint8_t shoot_bullet_fre;
-extern float shoot_bullet_speed;
+
 
 
 #endif

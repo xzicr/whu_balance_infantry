@@ -12,13 +12,23 @@ typedef struct  {
 } frameHeader;
 
 
-
+/*发送数据结构体*/
 typedef struct
 {
     frameHeader header;
     chassis_data_t send_chassis_data;
 }uart_data_t;
 
+
+
+typedef struct 
+{
+    frameHeader header;
+    float shoot_speed;    
+}referee_data_t;
+
+
 void uart_task(void const *pvParameters);
 
+extern referee_data_t* get_referee_data();
 #endif

@@ -21,123 +21,13 @@ Target DLL:      CMSIS_AGDI.dll V1.28.3.0
 Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
-C:\Users\ASUS\Desktop\WHU_balance_V2.1.5\02Balance_gimbal_task\MDK-ARM\standard_robot.uvprojx
-Project File Date:  11/22/2025
+C:\Users\ASUS\Desktop\WHU_balance_V2.1.7\02Balance_gimbal_task\MDK-ARM\standard_robot.uvprojx
+Project File Date:  01/27/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'standard_robot'
-compiling shoot.c...
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\shoot.c(17): warning:  #550-D: variable "Self_aim_data"  was set but never used
-  static InputData *Self_aim_data;
-..\application\shoot.c: 4 warnings, 0 errors
-compiling CAN_receive.c...
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\CAN_receive.c(164): warning:  #9-D: nested comment is not allowed
-  /**
-..\application\CAN_receive.c: 4 warnings, 0 errors
-compiling UART_task.c...
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\UART_task.h(24): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\application\UART_task.c: 4 warnings, 0 errors
-compiling usbd_cdc_if.c...
-../application/INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-../application/gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-../application/gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-../Src/usbd_cdc_if.c: 3 warnings, 0 errors
-compiling freertos.c...
-../application/INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-../application/gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-../application/gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-../application/UART_task.h(24): warning:  #1-D: last line of file ends without a newline
-  #endif
-../Src/freertos.c(196): warning:  #550-D: variable "s"  was set but never used
-    float s[3] = {0};
-../Src/freertos.c: 5 warnings, 0 errors
-compiling gimbal_task.c...
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\gimbal_task.c(181): warning:  #188-D: enumerated type mixed with another type
-    chassis_data.shoot_mode = 0;
-..\application\gimbal_task.c(182): warning:  #188-D: enumerated type mixed with another type
-    chassis_data.chassis_mode = 0;
-..\application\gimbal_task.c(300): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-    feedback_update->gimbal_pitch_motor.self_aim_pitch_angle = Self_aim_data->pitch / 3.14 * 180;
-..\application\gimbal_task.c(302): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-    feedback_update->gimbal_yaw_motor.self_aim_yaw_angle = sliding_average(Self_aim_data->yaw / 3.14 * 180);
-..\application\gimbal_task.c(311): warning:  #175-D: subscript out of range
-    
-c_deadband_limit(set_control->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
-..\application\gimbal_task.c(311): warning:  #175-D: subscript out of range
-    
-c_deadband_limit(set_control->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
-..\application\gimbal_task.c(311): warning:  #175-D: subscript out of range
-    
-c_deadband_limit(set_control->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
-..\application\gimbal_task.c(314): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      set_control->gimbal_pitch_motor.absolute_angle_set += pitch_channel * 
-ITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * 
-ITCH_MOUSE_SEN * 0.5;
-..\application\gimbal_task.c(104): warning:  #177-D: variable "chassis_self_aim_yaw_filter"  was declared but never referenced
-  const static fp32 chassis_self_aim_yaw_filter[1] = {CHASSIS_ACCEL_Y_NUM};
-..\application\gimbal_task.c: 12 warnings, 0 errors
-compiling main.c...
-../application/INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-../application/gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-../application/gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-../Src/main.c: 3 warnings, 0 errors
-compiling calibrate_task.c...
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\calibrate_task.c: 3 warnings, 0 errors
-compiling Self_aim.c...
-..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
-  extern INS_t *get_INS();
-..\application\gimbal_task.h(289): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
-  extern chassis_data_t *get_chassis_data_point();
-..\application\gimbal_task.h(290): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
-  extern gimbal_control_t *get_gimbal_data();
-..\application\Self_aim.c(89): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      Send_Data.output_data.yaw = gimbal_data->gimbal_yaw_motor.absolute_angle / 180 * 3.1415926;
-..\application\Self_aim.c: 4 warnings, 0 errors
-linking...
-Program Size: Code=77132 RO-data=4436 RW-data=1892 ZI-data=54940  
-FromELF: creating hex file...
-".\standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 42 Warning(s).
+".\standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -160,7 +50,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
