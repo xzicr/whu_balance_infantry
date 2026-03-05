@@ -107,7 +107,7 @@ fp32 suspend_stand_PD[2] = {300.0f, 200.0f};
 /* ------------------------平步数据------------------------ */
 fp32 delta;
 float alpha_dx = 0.10f;
-float alpha_dv = 0.10f;
+float alpha_dv = 0.08f;
 
 fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.174532f;//0.0872f;
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
@@ -425,10 +425,26 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	//腿部角度 角速度 腿长 腿长速度 更新
 	fdb->chassis_posture_info.leg_angle_L -= fdb->chassis_posture_info.pitch_angle;
 	fdb->chassis_posture_info.leg_angle_R -= fdb->chassis_posture_info.pitch_angle;
-	fdb->chassis_posture_info.leg_dlength_L = (fdb->chassis_posture_info.leg_length_L- fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_dlength_R = (fdb->chassis_posture_info.leg_length_R- fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_dlength_L = (fdb->chassis_posture_info.leg_length_L- fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_dlength_R = (fdb->chassis_posture_info.leg_length_R- fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
+	fp32 temp_v_L = (fdb->chassis_posture_info.leg_dlength_L - fdb->chassis_posture_info.last_leg_dlength_L) / CHASSIS_CONTROL_TIME;
+	fdb->chassis_posture_info.leg_dlength_L = alpha_dv * temp_v_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_L;
+	fp32 temp_v_R = (fdb->chassis_posture_info.leg_dlength_R - fdb->chassis_posture_info.last_leg_dlength_R) / CHASSIS_CONTROL_TIME;
+	fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
+	if(fabs(fdb->chassis_posture_info.leg_dlength_L) > 16.0f)
+	{
+		fdb->chassis_posture_info.leg_dlength_L = 0.0f;
+	}
+	if(fabs(fdb->chassis_posture_info.leg_dlength_R) > 16.0f)
+	{
+		fdb->chassis_posture_info.leg_dlength_R = 0.0f;
+	}
 	Leg_dlength_Kalman_Update(fdb);
 	
+	if (fabsf(fdb->chassis_posture_info.leg_dlength_L_kf) < 0.01f)
+        fdb->chassis_posture_info.leg_dlength_L_kf = 0;
+    if (fabsf(fdb->chassis_posture_info.leg_dlength_R_kf) < 0.01f)
+        fdb->chassis_posture_info.leg_dlength_R_kf = 0;
 	// 计算加速度
 	// fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L - fdb->chassis_posture_info.last_leg_dlength_L) / CHASSIS_CONTROL_TIME;
 	// fdb->chassis_posture_info.leg_ddlength_L = alpha_dv * temp_a_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_L;
@@ -1726,31 +1742,12 @@ uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
 }
 
 
-fp32 yaw_comp;
 void Jump_Wheel_Control(chassis_move_t *chassis)
 {
     if (chassis->mode.jumping_stage == EXTENDING_LEGS)
     {
-        // 跳跃专用轮毂控制策略
-        // 1. 确保左右轮扭矩基本对称
-        // fp32 avg_torque = (chassis->torque_info.foot_moving_torque_L + 
-        //                   chassis->torque_info.foot_moving_torque_R) / 2.0f;
-        
-        // 2. 添加动态偏航补偿（基于实时偏航角速度）
-        static fp32 yaw_integral = 0;
-        fp32 yaw_error = 0 - chassis->chassis_posture_info.yaw_gyro;
-        yaw_integral += yaw_error * CHASSIS_CONTROL_TIME;
-        
-        // 偏航补偿PID（简单P控制即可）
-         yaw_comp = 3000.0f * yaw_error; // 比例系数需要调整
-        
-        // 3. 应用对称控制和偏航补偿
         chassis->torque_info.foot_balancing_torque_L= chassis->torque_info.foot_balancing_torque_L;
         chassis->torque_info.foot_balancing_torque_R = -chassis->torque_info.foot_balancing_torque_R;
-        
-		// chassis->torque_info.foot_moving_torque_L = -suspend_foot_speed_Kp * (0.0f - chassis->foot_motor_L.speed);
-		// chassis->torque_info.foot_moving_torque_R = -suspend_foot_speed_Kp * (0.0f - chassis->foot_motor_R.speed);
-        // 4. 限制最大输出，避免过度补偿
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
     }
