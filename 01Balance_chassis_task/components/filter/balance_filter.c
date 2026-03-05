@@ -134,7 +134,7 @@ void Leg_dlength_Kalman_Init(chassis_move_t *chassis)
 
 
     Kalman_Filter_Init(&leg_kf_L.kf, 2, 1, 1); // 2状态(速度,加速度), 1控制量, 1观测量
-    foot_motor_kf_L.kf.UseAutoAdjustment = 0;
+    leg_kf_L.kf.UseAutoAdjustment = 0;
     memcpy(leg_kf_L.kf.P_data, P_Init, sizeof(P_Init));
     memcpy(leg_kf_L.kf.F_data, F_Init, sizeof(F_Init));
     memcpy(leg_kf_L.kf.Q_data, Q_Init, sizeof(Q_Init));
