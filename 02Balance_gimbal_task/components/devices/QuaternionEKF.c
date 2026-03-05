@@ -190,6 +190,22 @@ void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, 
     // 调用kalman_filter.c封装好的函数,注意几个User_Funcx_f的调用
     Kalman_Filter_Update(&QEKF_INS.IMU_QuaternionEKF);
 
+    // 在获取 GyroBias 前，添加静止检测和Yaw零偏估计
+    float gyro_z = QEKF_INS.IMU_QuaternionEKF.FilteredValue[2];
+    float accel_norm = sqrtf(QEKF_INS.Accel[0] * QEKF_INS.Accel[0] + 
+                            QEKF_INS.Accel[1] * QEKF_INS.Accel[1] + 
+                            QEKF_INS.Accel[2] * QEKF_INS.Accel[2]);
+
+    // 静止检测: 加速度模值接近g且角速度很小
+    if (fabsf(accel_norm - 9.8f) < 1.0f && fabsf(gyro_z) < 1.0f)  // 阈值可调
+    {
+        // 用低通滤波缓慢估计零偏
+        QEKF_INS.GyroBias[2] = QEKF_INS.GyroBias[2] * 0.99f + gyro_z * 0.01f;
+    }
+    else
+    {
+        QEKF_INS.GyroBias[2] = QEKF_INS.GyroBias[2] * 0.99999f;  // 几乎不变;  
+    }
     // 获取融合后的数据,包括四元数和xy零飘值
     QEKF_INS.q[0] = QEKF_INS.IMU_QuaternionEKF.FilteredValue[0];
     QEKF_INS.q[1] = QEKF_INS.IMU_QuaternionEKF.FilteredValue[1];
