@@ -430,10 +430,13 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	Leg_dlength_Kalman_Update(fdb);
 	
 	// 计算加速度
-	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L - fdb->chassis_posture_info.last_leg_dlength_L) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_ddlength_L = alpha_dv * temp_a_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_L;
-	fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R - fdb->chassis_posture_info.last_leg_dlength_R) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_ddlength_R = alpha_dv * temp_a_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_R;
+	// fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L - fdb->chassis_posture_info.last_leg_dlength_L) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_ddlength_L = alpha_dv * temp_a_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_L;
+	// fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R - fdb->chassis_posture_info.last_leg_dlength_R) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_ddlength_R = alpha_dv * temp_a_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_ddlength_R;
+	fdb->chassis_posture_info.leg_ddlength_L = (fdb->chassis_posture_info.leg_dlength_L_kf - fdb->chassis_posture_info.last_leg_dlength_L_kf) / CHASSIS_CONTROL_TIME;
+	fdb->chassis_posture_info.leg_ddlength_R = (fdb->chassis_posture_info.leg_dlength_R_kf - fdb->chassis_posture_info.last_leg_dlength_R_kf) / CHASSIS_CONTROL_TIME;
+
 	fdb->chassis_posture_info.last_leg_angle_L = fdb->chassis_posture_info.leg_angle_L;
 	fdb->chassis_posture_info.last_leg_angle_R = fdb->chassis_posture_info.leg_angle_R;
 	fdb->chassis_posture_info.last_leg_length_L = fdb->chassis_posture_info.leg_length_L;
@@ -442,7 +445,8 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.last_leg_dlength_R = fdb->chassis_posture_info.leg_dlength_R;
 	fdb->chassis_posture_info.last_leg_ddlength_L = fdb->chassis_posture_info.leg_ddlength_L;
 	fdb->chassis_posture_info.last_leg_ddlength_R = fdb->chassis_posture_info.leg_ddlength_R;
-
+	fdb->chassis_posture_info.last_leg_dlength_L_kf = fdb->chassis_posture_info.leg_dlength_L_kf;
+	fdb->chassis_posture_info.last_leg_dlength_R_kf = fdb->chassis_posture_info.leg_dlength_R_kf;
 	//云台相对角度更新
 	fdb->gimbal_yaw_motor.relative_angle = theta_format(fdb->gimbal_yaw_motor.gimbal_motor_measure->angle);
 	// fdb->gimbal_yaw_motor.relative_angle = theta_format(180.0f+theta_format(fdb->chassis_data_->yaw_angle)-fdb->chassis_posture_info.yaw_angle*180/PI);
@@ -1607,14 +1611,14 @@ void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 
 	detect->chassis_posture_info.foot_accel_L=
 	+detect->chassis_posture_info.chassis_accel
-	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L);
+	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L)
 	+2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
 	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
 	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
 
 	detect->chassis_posture_info.foot_accel_R=
 	+detect->chassis_posture_info.chassis_accel
-	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R);
+	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R)
 	+2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
 	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
 	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
