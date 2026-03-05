@@ -1390,32 +1390,32 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 	{
 		if (detect->mode.sport_mode == JUMPING_MODE)
 		{
-			if (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
-				detect->chassis_posture_info.leg_length_R > 0.13f)
-				detect->flag_info.suspend_flag_R = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_L = ON_GROUND;
-			if (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
-				detect->chassis_posture_info.leg_length_L > 0.13f)
-				detect->flag_info.suspend_flag_L = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_R = ON_GROUND;
+//			if (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
+//				detect->chassis_posture_info.leg_length_R > 0.13f)
+//				detect->flag_info.suspend_flag_R = OFF_GROUND;
+//			else
+//				detect->flag_info.suspend_flag_L = ON_GROUND;
+//			if (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
+//				detect->chassis_posture_info.leg_length_L > 0.13f)
+//				detect->flag_info.suspend_flag_L = OFF_GROUND;
+//			else
+//				detect->flag_info.suspend_flag_R = ON_GROUND;
 		}
 		else
 		{
-			if( (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
-				detect->chassis_posture_info.leg_length_R > 0.13f )||
-				(detect->chassis_posture_info.leg_length_R>0.33&&detect->torque_info.supportive_force_R <= 20))
-				detect->flag_info.suspend_flag_R = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_L = ON_GROUND;
-			if(( detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
-				detect->chassis_posture_info.leg_length_L > 0.13f )||
-				(detect->chassis_posture_info.leg_length_L>0.33f&&detect->torque_info.supportive_force_R <= 20.0f))
+//			if( (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
+//				detect->chassis_posture_info.leg_length_R > 0.13f )||
+//				(detect->chassis_posture_info.leg_length_R>0.33&&detect->torque_info.supportive_force_R <= 20))
+//				detect->flag_info.suspend_flag_R = OFF_GROUND;
+//			else
+//				detect->flag_info.suspend_flag_L = ON_GROUND;
+//			if(( detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
+//				detect->chassis_posture_info.leg_length_L > 0.13f )||
+//				(detect->chassis_posture_info.leg_length_L>0.33f&&detect->torque_info.supportive_force_R <= 20.0f))
 
-				detect->flag_info.suspend_flag_L = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_R = ON_GROUND;
+//				detect->flag_info.suspend_flag_L = OFF_GROUND;
+//			else
+//				detect->flag_info.suspend_flag_R = ON_GROUND;
 		}
 	}
 
