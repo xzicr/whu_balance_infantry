@@ -99,10 +99,10 @@ fp32 roll_PID[3] = {45.0f, 22.0f};
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 stand_PD[3] = {36.0f, 40.0f,18.0f} ;
-fp32 jump_stand_PD_L[2] = {1600000.0f, 300.0f};
-fp32 jump_stand_PD_R[2] = {1600000.0f, 300.0f};
+fp32 jump_stand_PD_L[2] = {1600000.0f, 200.0f};
+fp32 jump_stand_PD_R[2] = {1600000.0f, 200.0f};
 
-fp32 suspend_stand_PD[2] = {300.0f, 200.0f};
+fp32 suspend_stand_PD[2] = {200.0f, 100.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
