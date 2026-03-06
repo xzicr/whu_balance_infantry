@@ -106,9 +106,9 @@ fp32 suspend_stand_PD[2] = {300.0f, 200.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
-float alpha_dx = 0.08f;
-float alpha_dv = 0.08f;
-float alpha_da = 0.06f;
+float alpha_dx = 1.0f;
+float alpha_dv = 1.0f;
+float alpha_da = 1.0f;
 
 fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.174532f;//0.0872f;
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
@@ -1633,16 +1633,16 @@ void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 	detect->chassis_posture_info.foot_accel_L=
 	+detect->chassis_posture_info.chassis_accel
 	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L);
-	+2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
-	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
-	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
+	// +2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
+	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
+	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
 
 	detect->chassis_posture_info.foot_accel_R=
 	+detect->chassis_posture_info.chassis_accel
 	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R);
-	+2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
-	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
-	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
+	// +2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
+	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
+	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
 
 }
 

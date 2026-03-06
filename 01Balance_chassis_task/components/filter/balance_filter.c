@@ -168,7 +168,7 @@ void Leg_dlength_Kalman_Update(chassis_move_t *chassis)
     
     if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
     {
-        leg_kf_L.kf.MeasuredVector[0] = 0;
+        leg_kf_L.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_L;
         leg_kf_L.kf.ControlVector[0] = 0;
     }
     else 
@@ -185,7 +185,7 @@ void Leg_dlength_Kalman_Update(chassis_move_t *chassis)
 
     if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
     {
-        leg_kf_R.kf.MeasuredVector[0] = 0;
+        leg_kf_R.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_R;
         leg_kf_R.kf.ControlVector[0] = 0;
     }
     else 
