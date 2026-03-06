@@ -370,18 +370,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->foot_motor_L.distance = (fdb->foot_motor_L.position / 360.0f + fdb->foot_motor_L.turns) * WHEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
 	fdb->foot_motor_R.distance = ((360.0f - fdb->foot_motor_R.position) / 360.0f + fdb->foot_motor_R.turns) * WHEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
 	fdb->chassis_posture_info.foot_distance = (fdb->foot_motor_L.distance + fdb->foot_motor_R.distance) / 2.0f;
-	//发疯之后遥控失能保证距离记录值清零
-	// if(fdb->chassis_data_->chassis_mode == CHASSIS_MODE_OFF)
-	// {
-	// 	fdb->foot_motor_L.turns =0;
-	// 	fdb->foot_motor_R.turns =0;
-	// 	fdb->foot_motor_L.distance_offset = (fdb->foot_motor_L.position / 360.0f) * WHEEL_PERIMETER;
-	// 	fdb->foot_motor_R.distance_offset = ((360.0f - fdb->foot_motor_R.position )/ 360.0f) * WHEEL_PERIMETER;
-	// 	// 重置累积距离
-	// 	fdb->foot_motor_L.distance = 0.0f;
-	// 	fdb->foot_motor_R.distance = 0.0f;
-	// 	fdb->chassis_posture_info.foot_distance = 0.0f;
-	// }
+
 
 	fdb->foot_motor_L.speed = fdb->foot_motor_L.motor_measure->speed * PI2 * WHEEL_RADIUS / 10.0f / 60.0f; // rpm -> m/s
 	fdb->foot_motor_R.speed = -fdb->foot_motor_R.motor_measure->speed * PI2 * WHEEL_RADIUS / 10.0f / 60.0f;
@@ -425,12 +414,15 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	//腿部角度 角速度 腿长 腿长速度 更新
 	fdb->chassis_posture_info.leg_angle_L -= fdb->chassis_posture_info.pitch_angle;
 	fdb->chassis_posture_info.leg_angle_R -= fdb->chassis_posture_info.pitch_angle;
-	// fdb->chassis_posture_info.leg_dlength_L = (fdb->chassis_posture_info.leg_length_L- fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
-	// fdb->chassis_posture_info.leg_dlength_R = (fdb->chassis_posture_info.leg_length_R- fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
-	fp32 temp_v_L = (fdb->chassis_posture_info.leg_dlength_L - fdb->chassis_posture_info.last_leg_dlength_L) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_dlength_L = alpha_dv * temp_v_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_L;
-	fp32 temp_v_R = (fdb->chassis_posture_info.leg_dlength_R - fdb->chassis_posture_info.last_leg_dlength_R) / CHASSIS_CONTROL_TIME;
-	fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
+
+	//这一步是为了防止初始化的时候腿长速度过大，导致控制器输出过大，导致卡尔曼滤波失效
+	if(fdb->flag_info.init_flag != 1)
+	{
+		fp32 temp_v_L = (fdb->chassis_posture_info.leg_length_L - fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
+		fdb->chassis_posture_info.leg_dlength_L = alpha_dv * temp_v_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_L;
+		fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
+		fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
+	}
 	if(fabs(fdb->chassis_posture_info.leg_dlength_L) > 16.0f)
 	{
 		fdb->chassis_posture_info.leg_dlength_L = 0.0f;
@@ -465,8 +457,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.last_leg_dlength_R_kf = fdb->chassis_posture_info.leg_dlength_R_kf;
 	//云台相对角度更新
 	fdb->gimbal_yaw_motor.relative_angle = theta_format(fdb->gimbal_yaw_motor.gimbal_motor_measure->angle);
-	// fdb->gimbal_yaw_motor.relative_angle = theta_format(180.0f+theta_format(fdb->chassis_data_->yaw_angle)-fdb->chassis_posture_info.yaw_angle*180/PI);
-	// 云台速度设置转换成底盘速度
+
 	rc_sign = 1.0f;
 	X_speed = fdb->chassis_data_->vx_set;
 	Y_speed = fdb->chassis_data_->vy_set;
@@ -964,6 +955,19 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 }
 void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 {
+	// 在函数开头判断
+	if (bl_ctrl->mode.chassis_mode == DISABLE_CHASSIS) {
+		// 所有力矩清零
+		bl_ctrl->torque_info.joint_stand_torque_L = 0;
+		bl_ctrl->torque_info.joint_stand_torque_R = 0;
+		bl_ctrl->torque_info.joint_balancing_torque_L = 0;
+		bl_ctrl->torque_info.joint_balancing_torque_R = 0;
+		bl_ctrl->torque_info.joint_moving_torque_L = 0;
+		bl_ctrl->torque_info.joint_moving_torque_R = 0;
+		
+	// 直接返回，不进行后续计算
+	return;
+    }
 	//LQR拟合矩阵数据更新
 	LQR_Data_Update(bl_ctrl);
 
