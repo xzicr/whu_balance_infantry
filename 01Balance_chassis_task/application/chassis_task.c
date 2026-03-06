@@ -101,7 +101,7 @@ fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 jump_stand_PD_L[2] = {1600000.0f, 200.0f};
 fp32 jump_stand_PD_R[2] = {1600000.0f, 200.0f};
 
-fp32 suspend_stand_PD[2] = {800.0f, 600.0f};
+fp32 suspend_stand_PD[2] = {200.0f, 100.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
@@ -1037,9 +1037,9 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	{
 		if( bl_ctrl->flag_info.suspend_flag_L == 1 )
 		{
-			bl_ctrl->torque_info.joint_stand_torque_L =0;
-				// + suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_L_set - bl_ctrl->chassis_posture_info.leg_length_L )
-				// + suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_L );
+			bl_ctrl->torque_info.joint_stand_torque_L =
+				+ suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_L_set - bl_ctrl->chassis_posture_info.leg_length_L )
+				+ suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_L );
 		}
 		else{
 			PID_calc(&bl_ctrl->leg_L_length_pid, bl_ctrl->chassis_posture_info.leg_length_L,bl_ctrl->chassis_posture_info.leg_length_L_set);
@@ -1048,9 +1048,9 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 
 		if( bl_ctrl->flag_info.suspend_flag_R == 1 )
 		{
-			bl_ctrl->torque_info.joint_stand_torque_R = 0;
-				// + suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_R_set - bl_ctrl->chassis_posture_info.leg_length_R )
-				// + suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_R );
+			bl_ctrl->torque_info.joint_stand_torque_R = 
+				+ suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_R_set - bl_ctrl->chassis_posture_info.leg_length_R )
+				+ suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_R );
 		} else {
 			PID_calc(&bl_ctrl->leg_R_length_pid, bl_ctrl->chassis_posture_info.leg_length_R,bl_ctrl->chassis_posture_info.leg_length_R_set);
 			bl_ctrl->torque_info.joint_stand_torque_R = FEED_f+bl_ctrl->leg_R_length_pid.out;
@@ -1381,35 +1381,19 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 		detect->flag_info.suspend_flag_L = detect->flag_info.suspend_flag_R = ON_GROUND;
 	else
 	{
-		if (detect->mode.sport_mode == JUMPING_MODE)
-		{
-			if (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
-				detect->chassis_posture_info.leg_length_R > 0.13f)
-				detect->flag_info.suspend_flag_R = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_L = ON_GROUND;
-			if (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE_FOR_JUMP &&
-				detect->chassis_posture_info.leg_length_L > 0.13f)
-				detect->flag_info.suspend_flag_L = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_R = ON_GROUND;
-		}
+		if( (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
+			detect->chassis_posture_info.leg_length_L > 0.13f )||
+			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_R <= 20))
+			detect->flag_info.suspend_flag_R = OFF_GROUND;
 		else
-		{
-			if( (detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
-				detect->chassis_posture_info.leg_length_R > 0.13f )||
-				(detect->chassis_posture_info.leg_length_R>0.33&&detect->torque_info.supportive_force_R <= 20))
-				detect->flag_info.suspend_flag_R = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_L = ON_GROUND;
-			if(( detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
-				detect->chassis_posture_info.leg_length_L > 0.13f )||
-				(detect->chassis_posture_info.leg_length_L>0.33f&&detect->torque_info.supportive_force_R <= 20.0f))
+			detect->flag_info.suspend_flag_L = ON_GROUND;
+		if(( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
+			detect->chassis_posture_info.leg_length_R > 0.13f )||
+			(detect->chassis_posture_info.leg_length_L>0.33f&&detect->torque_info.supportive_force_R <= 20))
 
-				detect->flag_info.suspend_flag_L = OFF_GROUND;
-			else
-				detect->flag_info.suspend_flag_R = ON_GROUND;
-		}
+			detect->flag_info.suspend_flag_L = OFF_GROUND;
+		else
+			detect->flag_info.suspend_flag_R = ON_GROUND;
 	}
 
 	if (detect->flag_info.abnormal_flag == 1 &&
@@ -1625,12 +1609,13 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	detect->torque_info.forque_R=
 	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R)
 	+fabs(detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R));
-
+	fp32 temp_L = fp32_constrain(detect->torque_info.forque_L, 0.0f, 100.0f);
+	fp32 temp_R = fp32_constrain(detect->torque_info.forque_R, 0.0f, 100.0f);
 	//计算加速度环节
 	calculate_wheel_vertical_acceleration(detect);
 	//支持力计算环节
-	detect->torque_info.supportive_force_L=detect->torque_info.forque_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
-	detect->torque_info.supportive_force_R=detect->torque_info.forque_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
+	detect->torque_info.supportive_force_L=temp_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
+	detect->torque_info.supportive_force_R=temp_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
 
 }
 
