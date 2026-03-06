@@ -98,11 +98,10 @@ fp32 suspend_LQR[2][6] = {
 fp32 roll_PID[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 stand_PD[3] = {36.0f, 40.0f,18.0f} ;
 fp32 jump_stand_PD_L[2] = {1600000.0f, 200.0f};
 fp32 jump_stand_PD_R[2] = {1600000.0f, 200.0f};
 
-fp32 suspend_stand_PD[2] = {200.0f, 100.0f};
+fp32 suspend_stand_PD[2] = {800.0f, 600.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
@@ -154,6 +153,7 @@ void chassis_set_mode(chassis_move_t *chassis_move_mode);
 void chassis_mode_change_control_transit(chassis_move_t *chassis_move_transit);
 void Target_Value_Set(chassis_move_t *target_value_set);
 void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl);
+void handle_airborne_state(chassis_move_t *bl_ctrl);
 void Chassis_Torque_Combine(chassis_move_t *bl_ctrl);
 void Motor_CMD_Send(chassis_move_t *CMD_Send);
 uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis);
@@ -1037,27 +1037,23 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	{
 		if( bl_ctrl->flag_info.suspend_flag_L == 1 )
 		{
-			bl_ctrl->torque_info.joint_stand_torque_L =
-				+ suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_L_set - bl_ctrl->chassis_posture_info.leg_length_L )
-				+ suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_L );
+			bl_ctrl->torque_info.joint_stand_torque_L =0;
+				// + suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_L_set - bl_ctrl->chassis_posture_info.leg_length_L )
+				// + suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_L );
 		}
 		else{
-			bl_ctrl->torque_info.joint_stand_torque_L =
-				FEED_f
-				+ stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_L_set - bl_ctrl->chassis_posture_info.leg_length_L )
-				+ stand_PD[2] * ( 0 - bl_ctrl->chassis_posture_info.leg_dlength_L );
+			PID_calc(&bl_ctrl->leg_L_length_pid, bl_ctrl->chassis_posture_info.leg_length_L,bl_ctrl->chassis_posture_info.leg_length_L_set);
+			bl_ctrl->torque_info.joint_stand_torque_L = FEED_f+bl_ctrl->leg_L_length_pid.out;
 		}
 
 		if( bl_ctrl->flag_info.suspend_flag_R == 1 )
 		{
-			bl_ctrl->torque_info.joint_stand_torque_R =
-				+ suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_R_set - bl_ctrl->chassis_posture_info.leg_length_R )
-				+ suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_R );
+			bl_ctrl->torque_info.joint_stand_torque_R = 0;
+				// + suspend_stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_R_set - bl_ctrl->chassis_posture_info.leg_length_R )
+				// + suspend_stand_PD[1] * ( 0.0f - bl_ctrl->chassis_posture_info.leg_dlength_R );
 		} else {
-			bl_ctrl->torque_info.joint_stand_torque_R =
-				FEED_f
-				+ stand_PD[0] * ( bl_ctrl->chassis_posture_info.leg_length_R_set - bl_ctrl->chassis_posture_info.leg_length_R )
-				+ stand_PD[2] * ( 0 - bl_ctrl->chassis_posture_info.leg_dlength_R );
+			PID_calc(&bl_ctrl->leg_R_length_pid, bl_ctrl->chassis_posture_info.leg_length_R,bl_ctrl->chassis_posture_info.leg_length_R_set);
+			bl_ctrl->torque_info.joint_stand_torque_R = FEED_f+bl_ctrl->leg_R_length_pid.out;
 		}
 	}
 	else if( bl_ctrl->mode.chassis_balancing_mode == JOINT_REDUCING )
@@ -1081,22 +1077,6 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	}
 
 
-	//不同情况下的平衡力矩控制
-	//腿部控制
-	// if (bl_ctrl->mode.jumping_stage == CONSTACTING_LEGS_2)
-	// {
-	// 	bl_ctrl->torque_info.joint_balancing_torque_L =
-	// 		-suspend_LQR[0][0] * (0 - bl_ctrl->chassis_posture_info.leg_angle_L) 
-	// 		- suspend_LQR[0][1] * (0 - bl_ctrl->chassis_posture_info.leg_gyro_L);
-	// 	bl_ctrl->torque_info.joint_balancing_torque_R = 
-	// 		-suspend_LQR[0][0] * ( 0 - bl_ctrl->chassis_posture_info.leg_angle_R )
-	// 		-suspend_LQR[0][1] * ( 0 - bl_ctrl->chassis_posture_info.leg_gyro_R );
-
-	// 	bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
-	// 	bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
-	// }
-
-	//FZX的改版
 	//添加被动的检测到离地的相应操作
 	if (bl_ctrl->mode.jumping_stage == CONSTACTING_LEGS_2)
 	{
@@ -1211,35 +1191,24 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	b2=+ (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF);
 	c2=- ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total);
 	d2=- ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  );
+    
 
 
-//	FZX的改版
-	  Jump_Wheel_Control(bl_ctrl);
-	
-	if (bl_ctrl->flag_info.suspend_flag_R == 1)
-	{
-		bl_ctrl->torque_info.joint_balancing_torque_L = (
-			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-		);
-		bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
-		
-		bl_ctrl->torque_info.foot_balancing_torque_R = 0.0f;
-		bl_ctrl->torque_info.foot_moving_torque_R = 0;
-			// -suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_R.speed);
-	}
-	if (bl_ctrl->flag_info.suspend_flag_L == 1)
-	{
-		bl_ctrl->torque_info.joint_balancing_torque_L = (
-			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-		);
-		bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
-		
-		bl_ctrl->torque_info.foot_balancing_torque_L = 0.0f;
-		bl_ctrl->torque_info.foot_moving_torque_L = 0;
-			// +suspend_foot_speed_Kp * (0.0f - bl_ctrl->foot_motor_L.speed);
-	}
+Jump_Wheel_Control(bl_ctrl);
+
+// 统一的离地处理函数
+if (bl_ctrl->flag_info.suspend_flag_R == 1 || bl_ctrl->flag_info.suspend_flag_L == 1)
+{
+    // 离地状态统一处理
+    handle_airborne_state(bl_ctrl);
+}
+else
+{
+    // 双足着地，正常控制
+    // 保持原有计算结果
+}
+
+// 离地处理函数
 
 
 	LimitMax( bl_ctrl->torque_info.foot_moving_torque_L,  MAX_ACCL );
@@ -1247,7 +1216,6 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	LimitMax(bl_ctrl->torque_info.joint_moving_torque_L, MAX_ACCL_JOINT);
 	LimitMax(bl_ctrl->torque_info.joint_moving_torque_R, MAX_ACCL_JOINT);
 }
-
 void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 {
 	/* ----------------------求解出J矩阵  J1->N11  J2->N21  J3->N12  J4->N22--------------------------------- */
@@ -1758,5 +1726,54 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
     }
 }
 
+void handle_airborne_state(chassis_move_t *bl_ctrl)
+{
+    // 1. 处理 joint_stand_torque（站立力矩）
+    // if (bl_ctrl->flag_info.suspend_flag_L == 1)
+    // {
+    //     // 左腿离地：减小站立力矩，避免抵抗重力下落
+    //     bl_ctrl->torque_info.joint_stand_torque_L *= 0.6f;  // 衰减到60%
+    //     // 或者直接清零
+    //     // bl_ctrl->torque_info.joint_stand_torque_L = 0.0f;
+    // }
+    
+    // if (bl_ctrl->flag_info.suspend_flag_R == 1)
+    // {
+    //     bl_ctrl->torque_info.joint_stand_torque_R *= 0.6f;
+    //     // bl_ctrl->torque_info.joint_stand_torque_R = 0.0f;
+    // }
+    
+    // 2. 处理 joint_balancing_torque（平衡力矩）
+    if (bl_ctrl->flag_info.suspend_flag_R == 1)
+    {
+        bl_ctrl->torque_info.joint_balancing_torque_L = (
+            + LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+            - LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+        );
+        bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
+    }
+    
+    if (bl_ctrl->flag_info.suspend_flag_L == 1)
+    {
+        bl_ctrl->torque_info.joint_balancing_torque_L = (
+            + LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+            - LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+        );
+        bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
+    }
+    
+    // 3. 处理 foot 相关力矩
+    if (bl_ctrl->flag_info.suspend_flag_R == 1)
+    {
+        bl_ctrl->torque_info.foot_balancing_torque_R = 0.0f;
+        bl_ctrl->torque_info.foot_moving_torque_R = 0;
+    }
+    
+    if (bl_ctrl->flag_info.suspend_flag_L == 1)
+    {
+        bl_ctrl->torque_info.foot_balancing_torque_L = 0.0f;
+        bl_ctrl->torque_info.foot_moving_torque_L = 0;
+    }
+}
 
 
