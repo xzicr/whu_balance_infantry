@@ -101,7 +101,7 @@ fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 jump_stand_PD_L[2] = {1600000.0f, 200.0f};
 fp32 jump_stand_PD_R[2] = {1600000.0f, 200.0f};
 
-fp32 suspend_stand_PD[2] = {200.0f, 100.0f};
+fp32 suspend_stand_PD[2] = {35.0f, 20.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
@@ -1609,8 +1609,8 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	detect->torque_info.forque_R=
 	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R)
 	+fabs(detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R));
-	fp32 temp_L = fp32_constrain(detect->torque_info.forque_L, 0.0f, 100.0f);
-	fp32 temp_R = fp32_constrain(detect->torque_info.forque_R, 0.0f, 100.0f);
+	fp32 temp_L = fp32_constrain(detect->torque_info.forque_L, -100.0f, 100.0f);
+	fp32 temp_R = fp32_constrain(detect->torque_info.forque_R, -100.0f, 100.0f);
 	//计算加速度环节
 	calculate_wheel_vertical_acceleration(detect);
 	//支持力计算环节
@@ -1713,21 +1713,7 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
 
 void handle_airborne_state(chassis_move_t *bl_ctrl)
 {
-    // 1. 处理 joint_stand_torque（站立力矩）
-    // if (bl_ctrl->flag_info.suspend_flag_L == 1)
-    // {
-    //     // 左腿离地：减小站立力矩，避免抵抗重力下落
-    //     bl_ctrl->torque_info.joint_stand_torque_L *= 0.6f;  // 衰减到60%
-    //     // 或者直接清零
-    //     // bl_ctrl->torque_info.joint_stand_torque_L = 0.0f;
-    // }
-    
-    // if (bl_ctrl->flag_info.suspend_flag_R == 1)
-    // {
-    //     bl_ctrl->torque_info.joint_stand_torque_R *= 0.6f;
-    //     // bl_ctrl->torque_info.joint_stand_torque_R = 0.0f;
-    // }
-    
+
     // 2. 处理 joint_balancing_torque（平衡力矩）
     if (bl_ctrl->flag_info.suspend_flag_R == 1)
     {
