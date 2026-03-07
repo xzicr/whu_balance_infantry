@@ -1635,13 +1635,13 @@ uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
 
 void Jump_Wheel_Control(chassis_move_t *chassis)
 {
-    // if (chassis->mode.jumping_stage == EXTENDING_LEGS)
-    // {
+    if (chassis->mode.jumping_stage == EXTENDING_LEGS)
+    {
         chassis->torque_info.foot_balancing_torque_L= chassis->torque_info.foot_balancing_torque_L;
         chassis->torque_info.foot_balancing_torque_R = -chassis->torque_info.foot_balancing_torque_R;
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
-    // }
+    }
 }
 
 void handle_airborne_state(chassis_move_t *bl_ctrl)
