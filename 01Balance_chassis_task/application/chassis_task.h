@@ -162,7 +162,7 @@
 #define WHEEL_RADIUS 0.071f
 #define LEG_OFFSET       30.0f// 水平位置到上限位的夹角
 #define LOWER_SUPPORT_FORCE_FOR_JUMP 5.0f
-#define LOWER_SUPPORT_FORCE 10.0f
+#define LOWER_SUPPORT_FORCE 15.0f
 #define MOVE_LOWER_BOUND 0.5f
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f

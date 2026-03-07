@@ -530,10 +530,6 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 	}
 	else
 		chassis_move_mode->mode.sport_mode = NONE;
-
-
-
-
 }
 
 uint8_t reduce_flag = 0;
@@ -694,8 +690,6 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
 
 
 }
-
-fp32 HIGH_SWITCH = 36.0f;
 
 void Target_Value_Set(chassis_move_t *target_value_set)
 {
@@ -1033,8 +1027,6 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		PID_calc(&bl_ctrl->leg_R_length_pid, bl_ctrl->chassis_posture_info.leg_length_R,bl_ctrl->chassis_posture_info.leg_length_R_set);
 		bl_ctrl->torque_info.joint_stand_torque_R = FEED_f+bl_ctrl->leg_R_length_pid.out;
 	}
-
-
 	//添加被动的检测到离地的相应操作
 	if (bl_ctrl->mode.jumping_stage == CONSTACTING_LEGS_2)
 	{
@@ -1140,18 +1132,6 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		) *TORQ_K;
 	}
 
-	a1=-  (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET)  ;
-	b1=+  (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF);
-	c1=- ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total);
-	d1=- ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  );
-
-	a2=-  (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K + NORMAL_MODE_WEIGHT_DISTANCE_OFFSET) ;
-	b2=+ (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF);
-	c2=- ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total);
-	d2=- ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  );
-    
-
-
 Jump_Wheel_Control(bl_ctrl);
 
 // 统一的离地处理函数
@@ -1165,9 +1145,6 @@ else
     // 双足着地，正常控制
     // 保持原有计算结果
 }
-
-// 离地处理函数
-
 
 	LimitMax( bl_ctrl->torque_info.foot_moving_torque_L,  MAX_ACCL );
 	LimitMax( bl_ctrl->torque_info.foot_moving_torque_R,  MAX_ACCL );
@@ -1317,7 +1294,6 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	LimitOutput(bl_ctrl->joint_motor_3.torque_out, -400.0f, 400.0f); // bl_ctrl->joint_motor_3.min_torque, bl_ctrl->joint_motor_3.max_torque);
 	LimitOutput(bl_ctrl->joint_motor_4.torque_out, -400.0f, 400.0f); // bl_ctrl->joint_motor_4.min_torque, bl_ctrl->joint_motor_4.max_torque);
 }
-
 
 void Chassis_Status_Detect(chassis_move_t *detect)
 {
@@ -1534,7 +1510,6 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	}
 }
 
-
 /* -----------------计算腿部支持力----------------- */
 void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 {
@@ -1557,7 +1532,6 @@ void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 }
 
 //F_N = P + M_w*a + M_w*g 
-
 void Supportive_Force_Cal(chassis_move_t * detect)
 {
 	//计算腿部支持力
@@ -1574,12 +1548,11 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	//支持力计算环节
 	detect->torque_info.supportive_force_L=temp_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
 	detect->torque_info.supportive_force_R=temp_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
-	// detect->torque_info.supportive_force_L = 0.8f*detect->torque_info.supportive_force_L + 0.2f * detect->torque_info.last_supportive_force_L;
-	// detect->torque_info.supportive_force_R = 0.8f*detect->torque_info.supportive_force_R + 0.2f * detect->torque_info.last_supportive_force_R;
+	detect->torque_info.supportive_force_L = 0.8f*detect->torque_info.supportive_force_L + 0.2f * detect->torque_info.last_supportive_force_L;
+	detect->torque_info.supportive_force_R = 0.8f*detect->torque_info.supportive_force_R + 0.2f * detect->torque_info.last_supportive_force_R;
 	detect->torque_info.last_supportive_force_L=detect->torque_info.supportive_force_L;
 	detect->torque_info.last_supportive_force_R=detect->torque_info.supportive_force_R;
 }
-
 
 // 计算多项式值
 float evaluate_polynomial(float L0, float Q0, PolynomialCoefficients coeffs)
@@ -1659,7 +1632,6 @@ uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
     
     return prepare_complete;
 }
-
 
 void Jump_Wheel_Control(chassis_move_t *chassis)
 {
