@@ -107,7 +107,7 @@ fp32 suspend_stand_PD[2] = {35.0f, 20.0f};
 fp32 delta;
 float alpha_dx = 1.0f;
 float alpha_dv = 1.0f;
-float alpha_da = 1.0f;
+float alpha_da = 0.8f;
 
 fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.174532f;//0.0872f;
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
@@ -414,31 +414,26 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.leg_angle_R -= fdb->chassis_posture_info.pitch_angle;
 	
 	//这一步是为了防止初始化的时候腿长速度过大，导致控制器输出过大，导致卡尔曼滤波失效
-	if(fdb->flag_info.init_flag != 1)
-	{
-		fp32 temp_v_L = (fdb->chassis_posture_info.leg_length_L - fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
-		fdb->chassis_posture_info.leg_dlength_L = alpha_dv * temp_v_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_L;
-		fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
-		fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
-	}
+
+	fp32 temp_v_L = (fdb->chassis_posture_info.leg_length_L - fdb->chassis_posture_info.last_leg_length_L) / CHASSIS_CONTROL_TIME;
+	fdb->chassis_posture_info.leg_dlength_L = alpha_dv * temp_v_L + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_L;
+	fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
+	fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
+
 	fdb->mapping_info.J1_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 1); 
 	fdb->mapping_info.J2_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 2); 
 	fdb->mapping_info.J1_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 1); 
 	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2); 
-	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity*(2*PI/60) + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity*(2*PI/60) ;
-	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity*(2*PI/60) + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity*(2*PI/60) ;
+	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity*(2*PI/60)  + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity*(2*PI/60) ;
+	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity*(2*PI/60)  + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity*(2*PI/60);
 
-	Leg_dlength_Kalman_Update(fdb);
+	// Leg_dlength_Kalman_Update(fdb);
 	
 	// 计算加速度
-	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_kf - fdb->chassis_posture_info.last_leg_dlength_L_kf) / CHASSIS_CONTROL_TIME;
+	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_jacobian - fdb->chassis_posture_info.last_leg_dlength_L_jacobian) / CHASSIS_CONTROL_TIME;
 	fdb->chassis_posture_info.leg_ddlength_L = alpha_da * temp_a_L + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_L;
-	fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R_kf - fdb->chassis_posture_info.last_leg_dlength_R_kf) / CHASSIS_CONTROL_TIME;
+	fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R_jacobian - fdb->chassis_posture_info.last_leg_dlength_R_jacobian) / CHASSIS_CONTROL_TIME;
 	fdb->chassis_posture_info.leg_ddlength_R = alpha_da * temp_a_R + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_R;
-	// fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_jacobian - fdb->chassis_posture_info.last_leg_dlength_L_jacobian) / CHASSIS_CONTROL_TIME;
-	// fdb->chassis_posture_info.leg_ddlength_L = alpha_da * temp_a_L + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_L;
-	// fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R_jacobian - fdb->chassis_posture_info.last_leg_dlength_R_jacobian) / CHASSIS_CONTROL_TIME;
-	// fdb->chassis_posture_info.leg_ddlength_R = alpha_da * temp_a_R + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_R;
 	
 	fdb->chassis_posture_info.last_leg_angle_L = fdb->chassis_posture_info.leg_angle_L;
 	fdb->chassis_posture_info.last_leg_angle_R = fdb->chassis_posture_info.leg_angle_R;
@@ -1579,7 +1574,10 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	//支持力计算环节
 	detect->torque_info.supportive_force_L=temp_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
 	detect->torque_info.supportive_force_R=temp_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
-
+	detect->torque_info.supportive_force_L = 0.8f*detect->torque_info.supportive_force_L + 0.2f * detect->torque_info.last_supportive_force_L;
+	detect->torque_info.supportive_force_R = 0.8f*detect->torque_info.supportive_force_R + 0.2f * detect->torque_info.last_supportive_force_R;
+	detect->torque_info.last_supportive_force_L=detect->torque_info.supportive_force_L;
+	detect->torque_info.last_supportive_force_R=detect->torque_info.supportive_force_R;
 }
 
 

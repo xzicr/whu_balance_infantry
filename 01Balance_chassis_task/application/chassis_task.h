@@ -162,7 +162,7 @@
 #define WHEEL_RADIUS 0.071f
 #define LEG_OFFSET       30.0f// 水平位置到上限位的夹角
 #define LOWER_SUPPORT_FORCE_FOR_JUMP 5.0f
-#define LOWER_SUPPORT_FORCE 0.0f
+#define LOWER_SUPPORT_FORCE 10.0f
 #define MOVE_LOWER_BOUND 0.5f
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f
@@ -347,7 +347,7 @@ typedef struct
     fp32 joint_vertical_torque_temp1_L, joint_vertical_torque_temp2_L;
 
     fp32 forque_L, forque_R;
-    fp32 supportive_force_L, supportive_force_R;
+    fp32 supportive_force_L, supportive_force_R,last_supportive_force_L, last_supportive_force_R;
     fp32 balance_force_L, balance_force_R;
 
 } torque_info_t;

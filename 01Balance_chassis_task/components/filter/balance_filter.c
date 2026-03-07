@@ -165,17 +165,9 @@ void Leg_dlength_Kalman_Init(chassis_move_t *chassis)
 void Leg_dlength_Kalman_Update(chassis_move_t *chassis)
 {
     if (chassis == NULL) return;
-    
-    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
-    {
-        leg_kf_L.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_L;
-        leg_kf_L.kf.ControlVector[0] = 0;
-    }
-    else 
-    {
-        leg_kf_L.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_L;
-        leg_kf_L.kf.ControlVector[0] = chassis->torque_info.last_control_torque_L;
-    }
+
+    leg_kf_L.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_L_jacobian;
+    leg_kf_L.kf.ControlVector[0] = chassis->torque_info.last_control_torque_L;
     
     float *filtered_state = Kalman_Filter_Update(&leg_kf_L.kf);
     if (filtered_state != NULL) {
@@ -183,16 +175,8 @@ void Leg_dlength_Kalman_Update(chassis_move_t *chassis)
     }
     chassis->chassis_posture_info.leg_dlength_L_kf = leg_kf_L.filtered_dlength;
 
-    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
-    {
-        leg_kf_R.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_R;
-        leg_kf_R.kf.ControlVector[0] = 0;
-    }
-    else 
-    {
-        leg_kf_R.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_R;
-        leg_kf_R.kf.ControlVector[0] = chassis->torque_info.last_control_torque_R;
-    }
+    leg_kf_R.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_dlength_R_jacobian;
+    leg_kf_R.kf.ControlVector[0] = chassis->torque_info.last_control_torque_R;
     
     filtered_state = Kalman_Filter_Update(&leg_kf_R.kf);
     if (filtered_state != NULL) {
