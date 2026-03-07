@@ -98,8 +98,8 @@ fp32 suspend_LQR[2][6] = {
 fp32 roll_PID[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 jump_stand_PD_L[2] = {1600000.0f, 200.0f};
-fp32 jump_stand_PD_R[2] = {1600000.0f, 200.0f};
+fp32 jump_stand_PD_L[2] = {1600000.0f, 300.0f};
+fp32 jump_stand_PD_R[2] = {1600000.0f, 300.0f};
 
 fp32 suspend_stand_PD[2] = {35.0f, 20.0f};
 
@@ -125,11 +125,8 @@ fp32 stepp = 0.02;
 fp32 rc_sign;
 fp32 normal_move_scale = 0.2f;
 fp32 suspend_foot_speed_Kp=200.0f;
-
-fp32 Moving_High_Offset = 0.0f;
-fp32 HIGH_HIGH = 0.34f;
 fp32 SIT_HIGH = 0.12f;
-fp32 High_Offset = 0.0f;
+
 
 
 
@@ -426,11 +423,11 @@ void chassis_feedback_update(chassis_move_t *fdb)
 		fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
 		fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
 	}
-	if(fabs(fdb->chassis_posture_info.leg_dlength_L) > 2.0f)
+	if(fabs(fdb->chassis_posture_info.leg_dlength_L) > 6.0f)
 	{
 		fdb->chassis_posture_info.leg_dlength_L = 0.0f;
 	}
-	if(fabs(fdb->chassis_posture_info.leg_dlength_R) > 2.0f)
+	if(fabs(fdb->chassis_posture_info.leg_dlength_R) > 6.0f)
 	{
 		fdb->chassis_posture_info.leg_dlength_R = 0.0f;
 	}
@@ -721,23 +718,14 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
         chassis_mode_change->mode.jumping_stage = FINISHED;
     }
 
-	if (chassis_mode_change->flag_info.stablize_high_flag == 1 &&
-		Moving_High_Offset >= 0.2 &&
-		chassis_mode_change->chassis_posture_info.yaw_gyro <= (stablize_yaw_speed_threshold - 0.5f))
-		chassis_mode_change->flag_info.stablize_high_flag = 0;
+
 }
 
 fp32 HIGH_SWITCH = 36.0f;
 
 void Target_Value_Set(chassis_move_t *target_value_set)
 {
-	/*------------------------------------定腿高判断----------------------------------*/
-	if (target_value_set->flag_info.stablize_high_flag == 1)
-		if (Moving_High_Offset < 0.2)
-			Moving_High_Offset += 0.001f;
 
-	if (target_value_set->flag_info.stablize_high_flag == 0)
-		Moving_High_Offset = 0.0f;
 
 	//底盘正方向速度控制
 	if (target_value_set->mode.sport_mode != NONE &&
@@ -877,8 +865,6 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->mode.chassis_high_mode = HIGH_MODE;
 	else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS)
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
-	else if (target_value_set->mode.jumping_stage == EXTENDING_LEGS)
-		target_value_set->mode.chassis_high_mode = HIGH_MODE;
 	else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS_2)
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else if (target_value_set->mode.jumping_stage == PREPARING_LANDING)
@@ -891,8 +877,6 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->chassis_posture_info.ideal_high = SIT_HIGH;
 	else if (target_value_set->mode.chassis_high_mode == NORMAL_MODE)
 		target_value_set->chassis_posture_info.ideal_high = fp32_constrain(target_value_set->chassis_data_->high_set,0.1,0.34);
-	else if (target_value_set->mode.chassis_high_mode == HIGH_MODE)
-		target_value_set->chassis_posture_info.ideal_high = HIGH_HIGH + High_Offset - Moving_High_Offset;
 	else if (target_value_set->mode.chassis_high_mode == CHANGING_HIGH)
 	{
 		reduce_high = reduce_high * debug_1;
@@ -1377,21 +1361,21 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 
 	Supportive_Force_Cal(detect);
 
-	if (detect->mode.jumping_stage == CONSTACTING_LEGS)
+	if (detect->mode.jumping_stage == CONSTACTING_LEGS_2||detect->mode.jumping_stage == EXTENDING_LEGS)
 		detect->flag_info.suspend_flag_L = detect->flag_info.suspend_flag_R = ON_GROUND;
 	else
 	{
 		if( (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
 			detect->chassis_posture_info.leg_length_L > 0.13f )||
-			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_R <= 20))
-			detect->flag_info.suspend_flag_R = OFF_GROUND;
+			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
+			detect->flag_info.suspend_flag_L = OFF_GROUND;
 		else
 			detect->flag_info.suspend_flag_L = ON_GROUND;
 		if(( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
 			detect->chassis_posture_info.leg_length_R > 0.13f )||
-			(detect->chassis_posture_info.leg_length_L>0.33f&&detect->torque_info.supportive_force_R <= 20))
+			(detect->chassis_posture_info.leg_length_R>0.33f&&detect->torque_info.supportive_force_R <= 20))
 
-			detect->flag_info.suspend_flag_L = OFF_GROUND;
+			detect->flag_info.suspend_flag_R = OFF_GROUND;
 		else
 			detect->flag_info.suspend_flag_R = ON_GROUND;
 	}
