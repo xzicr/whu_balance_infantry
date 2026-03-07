@@ -120,7 +120,7 @@ fp32 rotate_move_scale_list[11] = {0.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 
 
 uint8_t lock;
 fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01f, leg_dlength_deadband = 0.0f;
-fp32 rc_angle, rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
+fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.02;
 fp32 rc_sign;
 fp32 normal_move_scale = 0.2f;
@@ -338,10 +338,10 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_3.position = (fdb->joint_motor_3.motor_measure->ecd - fdb->joint_motor_3.position_offset) - LEG_OFFSET;
 	fdb->joint_motor_4.position = (fdb->joint_motor_4.motor_measure->ecd - fdb->joint_motor_4.position_offset) + LEG_OFFSET;
 
-	fdb->joint_motor_1.velocity = fdb->joint_motor_1.motor_measure->speed_rpm;
-	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm;
-	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm;
-	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm;
+	fdb->joint_motor_1.velocity = fdb->joint_motor_1.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
 
 	//更新力矩反馈
 	fdb->joint_motor_1.torque_get = 0.95f * fdb->joint_motor_1.torque_get + 0.05f * fdb->joint_motor_1.motor_measure->real_torque;
@@ -459,20 +459,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	rc_sign = 1.0f;
 	X_speed = fdb->chassis_data_->vx_set;
 	Y_speed = fdb->chassis_data_->vy_set;
-
-	if (X_speed == 0){
-		if (Y_speed > 0)
-			rc_angle_temp = PI/2;
-		else if (Y_speed < 0)
-			rc_angle_temp = -PI/2;
-		else
-			rc_angle_temp = 0;
-	}
-	else
-	{
-		rc_angle_temp = atan2(Y_speed,X_speed);
-	}
-
 	if(X_speed>=0)
 	{
 		normalized_speed = fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-10,10);
@@ -482,15 +468,15 @@ void chassis_feedback_update(chassis_move_t *fdb)
 		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-10,10);
 	}
 	normalized_speed = normalized_speed*rc_sign;
-	//限幅
-	while (rc_angle_temp>PI/2) {
-		rc_angle_temp -= PI;
-	}
-	while (rc_angle_temp<-PI/2){
-		rc_angle_temp += PI;
-	} 
-	//角度转换	
-	rc_angle = rc_angle_temp * 180.0f / PI;
+
+
+	//3.7尝试通过雅克比矩阵的逆矩阵计算腿长速度
+	fdb->mapping_info.J1_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 1); 
+	fdb->mapping_info.J2_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 2); 
+	fdb->mapping_info.J1_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 1); 
+	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2); 
+	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity ;
+	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity ;
 
 }
 
@@ -1204,14 +1190,14 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 {
 	/* ----------------------求解出J矩阵  J1->N11  J2->N21  J3->N12  J4->N22--------------------------------- */
 	/* ---------J1 J2 对应支持力分解成关节扭矩     J3 J4 对应平衡扭矩分解成关节扭矩------------------------------ */
-	bl_ctrl->mapping_info.J1_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 1); // N11
-	bl_ctrl->mapping_info.J2_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 3); // N21
-	bl_ctrl->mapping_info.J3_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 2); // N12
-	bl_ctrl->mapping_info.J4_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 4); // N22
-	bl_ctrl->mapping_info.J1_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 1);
-	bl_ctrl->mapping_info.J2_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 3);
-	bl_ctrl->mapping_info.J3_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 2);
-	bl_ctrl->mapping_info.J4_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 4);
+	bl_ctrl->mapping_info.invJ1_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 1); // N11
+	bl_ctrl->mapping_info.invJ2_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 3); // N21
+	bl_ctrl->mapping_info.invJ3_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 2); // N12
+	bl_ctrl->mapping_info.invJ4_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 4); // N22
+	bl_ctrl->mapping_info.invJ1_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 1);
+	bl_ctrl->mapping_info.invJ2_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 3);
+	bl_ctrl->mapping_info.invJ3_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 2);
+	bl_ctrl->mapping_info.invJ4_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 4);
 
 	bl_ctrl->torque_info.foot_horizontal_torque_L =
 		bl_ctrl->torque_info.foot_balancing_torque_L + bl_ctrl->torque_info.foot_moving_torque_L;
@@ -1236,23 +1222,23 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 
 	/* 左视图：假设此时需要一个逆时针扭矩那么：1 2 号电机顺时针   右视图：根据上文此时计算出需要顺时针扭矩那么： 3 4 号电机 逆时针 下文又将3 4 号电机扭矩反向，所以是顺时针 */
 	bl_ctrl->torque_info.joint_horizontal_torque_temp1_L =
-		(bl_ctrl->torque_info.joint_horizontal_torque_L) * (-bl_ctrl->mapping_info.J3_L);
+		(bl_ctrl->torque_info.joint_horizontal_torque_L) * (-bl_ctrl->mapping_info.invJ3_L);
 	bl_ctrl->torque_info.joint_horizontal_torque_temp2_L =
-		(bl_ctrl->torque_info.joint_horizontal_torque_L) * (bl_ctrl->mapping_info.J4_L);
+		(bl_ctrl->torque_info.joint_horizontal_torque_L) * (bl_ctrl->mapping_info.invJ4_L);
 	bl_ctrl->torque_info.joint_horizontal_torque_temp1_R =
-		(bl_ctrl->torque_info.joint_horizontal_torque_R) * (-bl_ctrl->mapping_info.J3_R);
+		(bl_ctrl->torque_info.joint_horizontal_torque_R) * (-bl_ctrl->mapping_info.invJ3_R);
 	bl_ctrl->torque_info.joint_horizontal_torque_temp2_R =
-		(bl_ctrl->torque_info.joint_horizontal_torque_R) * (bl_ctrl->mapping_info.J4_R);
+		(bl_ctrl->torque_info.joint_horizontal_torque_R) * (bl_ctrl->mapping_info.invJ4_R);
 
 	/* 以1 2 号电机举例：向下支持力1号电机逆时针，2号电机顺时针    3 4 号电机：3号电机顺时针 4号电机逆时针 */
 	bl_ctrl->torque_info.joint_vertical_torque_temp1_L =
-		(bl_ctrl->torque_info.joint_vertical_torque_L) * bl_ctrl->mapping_info.J1_L;
+		(bl_ctrl->torque_info.joint_vertical_torque_L) * (bl_ctrl->mapping_info.invJ1_L);
 	bl_ctrl->torque_info.joint_vertical_torque_temp2_L =
-		(bl_ctrl->torque_info.joint_vertical_torque_L) * (-bl_ctrl->mapping_info.J2_L);
+		(bl_ctrl->torque_info.joint_vertical_torque_L) * (-bl_ctrl->mapping_info.invJ2_L);
 	bl_ctrl->torque_info.joint_vertical_torque_temp1_R =
-		(bl_ctrl->torque_info.joint_vertical_torque_R) * (-bl_ctrl->mapping_info.J1_R);
+		(bl_ctrl->torque_info.joint_vertical_torque_R) * (-bl_ctrl->mapping_info.invJ1_R);
 	bl_ctrl->torque_info.joint_vertical_torque_temp2_R =
-		(bl_ctrl->torque_info.joint_vertical_torque_R) * (bl_ctrl->mapping_info.J2_R);
+		(bl_ctrl->torque_info.joint_vertical_torque_R) * (bl_ctrl->mapping_info.invJ2_R);
 	
 	/****************************************/
 
@@ -1589,10 +1575,10 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	//计算腿部支持力
 	detect->torque_info.forque_L=
 	detect->torque_info.joint_vertical_torque_L*cos(detect->chassis_posture_info.leg_angle_L)
-	+fabs(detect->torque_info.joint_horizontal_torque_L*sin(detect->chassis_posture_info.leg_angle_L));
+	+detect->torque_info.joint_horizontal_torque_L*sin(detect->chassis_posture_info.leg_angle_L)/detect->chassis_posture_info.leg_length_L;
 	detect->torque_info.forque_R=
 	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R)
-	+fabs(detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R));
+	+detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R)/detect->chassis_posture_info.leg_length_R;
 	fp32 temp_L = fp32_constrain(detect->torque_info.forque_L, -100.0f, 100.0f);
 	fp32 temp_R = fp32_constrain(detect->torque_info.forque_R, -100.0f, 100.0f);
 	//计算加速度环节

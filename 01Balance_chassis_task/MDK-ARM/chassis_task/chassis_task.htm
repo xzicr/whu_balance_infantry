@@ -3,7 +3,7 @@
 <title>Static Call Graph - [chassis_task\chassis_task.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image chassis_task\chassis_task.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Fri Mar 06 22:07:06 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sat Mar 07 13:14:34 2026
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1674,7 +1674,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
-<P><STRONG><a name="[127]"></a>Chassis_Status_Detect</STRONG> (Thumb, 380 bytes, Stack size 32 bytes, chassis_task.o(i.Chassis_Status_Detect))
+<P><STRONG><a name="[127]"></a>Chassis_Status_Detect</STRONG> (Thumb, 384 bytes, Stack size 32 bytes, chassis_task.o(i.Chassis_Status_Detect))
 <BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = Chassis_Status_Detect &rArr; Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
@@ -1686,7 +1686,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[12d]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1874 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
+<P><STRONG><a name="[12d]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1870 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = Chassis_Torque_Calculation &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
@@ -3158,16 +3158,16 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INS_task
 </UL>
 
-<P><STRONG><a name="[12c]"></a>Supportive_Force_Cal</STRONG> (Thumb, 328 bytes, Stack size 24 bytes, chassis_task.o(i.Supportive_Force_Cal))
+<P><STRONG><a name="[12c]"></a>Supportive_Force_Cal</STRONG> (Thumb, 340 bytes, Stack size 24 bytes, chassis_task.o(i.Supportive_Force_Cal))
 <BR><BR>[Stack]<UL><LI>Max Depth = 232<LI>Call Chain = Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
 </UL>
 <BR>[Calls]<UL><LI><a href="#[202]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 <LI><a href="#[203]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
-<LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
@@ -3218,7 +3218,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PWM_ConfigChannel
 </UL>
 
-<P><STRONG><a name="[207]"></a>Target_Value_Set</STRONG> (Thumb, 1172 bytes, Stack size 40 bytes, chassis_task.o(i.Target_Value_Set))
+<P><STRONG><a name="[207]"></a>Target_Value_Set</STRONG> (Thumb, 1002 bytes, Stack size 40 bytes, chassis_task.o(i.Target_Value_Set))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Target_Value_Set &rArr; __aeabi_cdcmpeq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[202]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
@@ -3324,8 +3324,7 @@ Global Symbols
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 <LI><a href="#[218]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan2
 </UL>
-<BR>[Called By]<UL><LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
+<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 </UL>
 
 <P><STRONG><a name="[fa]"></a>__hardfp_atan2f</STRONG> (Thumb, 502 bytes, Stack size 16 bytes, atan2f.o(i.__hardfp_atan2f))
@@ -3361,7 +3360,6 @@ Global Symbols
 <LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_single_control
 <LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
 <LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Target_Value_Set
-<LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Check_Jump_Preparation_Complete
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
@@ -3859,7 +3857,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[251]"></a>chassis_feedback_update</STRONG> (Thumb, 1852 bytes, Stack size 56 bytes, chassis_task.o(i.chassis_feedback_update))
+<P><STRONG><a name="[251]"></a>chassis_feedback_update</STRONG> (Thumb, 1824 bytes, Stack size 56 bytes, chassis_task.o(i.chassis_feedback_update))
 <BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
 </UL>
 <BR>[Calls]<UL><LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;theta_format
@@ -3867,10 +3865,10 @@ Global Symbols
 <LI><a href="#[202]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 <LI><a href="#[1d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Leg_dlength_Kalman_Update
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FootMotor_Kalman_Update
+<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_jacobian_element
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
-<LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -4039,7 +4037,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;evaluate_polynomial
 </UL>
-<BR>[Called By]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
+<BR>[Called By]<UL><LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
+<LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
 </UL>
 
 <P><STRONG><a name="[2ca]"></a>get_shoot_speed</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, referee.o(i.get_shoot_speed))
@@ -5228,7 +5227,8 @@ Global Symbols
 <P><STRONG><a name="[144]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, ddiv_clz.o(x$fpl$ddiv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_ddiv
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
+<BR>[Called By]<UL><LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
+<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
@@ -5587,7 +5587,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[25c]"></a>chassis_mode_change_control_transit</STRONG> (Thumb, 560 bytes, Stack size 40 bytes, chassis_task.o(i.chassis_mode_change_control_transit))
+<P><STRONG><a name="[25c]"></a>chassis_mode_change_control_transit</STRONG> (Thumb, 502 bytes, Stack size 40 bytes, chassis_task.o(i.chassis_mode_change_control_transit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = chassis_mode_change_control_transit &rArr; Check_Jump_Preparation_Complete &rArr; __aeabi_cdcmple
 </UL>
 <BR>[Calls]<UL><LI><a href="#[25d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
