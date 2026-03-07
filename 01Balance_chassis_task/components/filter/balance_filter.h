@@ -29,9 +29,9 @@ typedef struct {
 #define KF_F_MEASURE_NOISE 0.8f
 
 // dlength卡尔曼滤波参数
-#define KF_L_ESTIMATE_ERROR 0.08f
+#define KF_L_ESTIMATE_ERROR 0.1f
 #define KF_L_PROCESS_NOISE 0.1f
-#define KF_L_MEASURE_NOISE 1200.0f
+#define KF_L_MEASURE_NOISE 2.0f
 
 // angle卡尔曼滤波参数
 #define KF_A_ESTIMATE_ERROR 2.4f

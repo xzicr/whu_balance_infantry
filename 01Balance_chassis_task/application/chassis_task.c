@@ -338,10 +338,10 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_3.position = (fdb->joint_motor_3.motor_measure->ecd - fdb->joint_motor_3.position_offset) - LEG_OFFSET;
 	fdb->joint_motor_4.position = (fdb->joint_motor_4.motor_measure->ecd - fdb->joint_motor_4.position_offset) + LEG_OFFSET;
 
-	fdb->joint_motor_1.velocity = fdb->joint_motor_1.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
-	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
-	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
-	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_1.velocity = fdb->joint_motor_1.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
+	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
+	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
+	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
 
 	//更新力矩反馈
 	fdb->joint_motor_1.torque_get = 0.95f * fdb->joint_motor_1.torque_get + 0.05f * fdb->joint_motor_1.motor_measure->real_torque;
@@ -412,9 +412,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	//腿部角度 角速度 腿长 腿长速度 更新
 	fdb->chassis_posture_info.leg_angle_L -= fdb->chassis_posture_info.pitch_angle;
 	fdb->chassis_posture_info.leg_angle_R -= fdb->chassis_posture_info.pitch_angle;
-
-	fdb->chassis_posture_info.leg_length_L = alpha_dx*fdb->chassis_posture_info.leg_length_L + (1-alpha_dx)*fdb->chassis_posture_info.last_leg_length_L;
-	fdb->chassis_posture_info.leg_length_R = alpha_dx*fdb->chassis_posture_info.leg_length_R + (1-alpha_dx)*fdb->chassis_posture_info.last_leg_length_R;
+	
 	//这一步是为了防止初始化的时候腿长速度过大，导致控制器输出过大，导致卡尔曼滤波失效
 	if(fdb->flag_info.init_flag != 1)
 	{
@@ -423,26 +421,25 @@ void chassis_feedback_update(chassis_move_t *fdb)
 		fp32 temp_v_R = (fdb->chassis_posture_info.leg_length_R - fdb->chassis_posture_info.last_leg_length_R) / CHASSIS_CONTROL_TIME;
 		fdb->chassis_posture_info.leg_dlength_R = alpha_dv * temp_v_R + (1-alpha_dv) * fdb->chassis_posture_info.last_leg_dlength_R;
 	}
-	if(fabs(fdb->chassis_posture_info.leg_dlength_L) > 6.0f)
-	{
-		fdb->chassis_posture_info.leg_dlength_L = 0.0f;
-	}
-	if(fabs(fdb->chassis_posture_info.leg_dlength_R) > 6.0f)
-	{
-		fdb->chassis_posture_info.leg_dlength_R = 0.0f;
-	}
+	fdb->mapping_info.J1_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 1); 
+	fdb->mapping_info.J2_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 2); 
+	fdb->mapping_info.J1_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 1); 
+	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2); 
+	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity*(2*PI/60) + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity*(2*PI/60) ;
+	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity*(2*PI/60) + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity*(2*PI/60) ;
+
 	Leg_dlength_Kalman_Update(fdb);
 	
-	if (fabsf(fdb->chassis_posture_info.leg_dlength_L_kf) < 0.01f)
-        fdb->chassis_posture_info.leg_dlength_L_kf = 0;
-    if (fabsf(fdb->chassis_posture_info.leg_dlength_R_kf) < 0.01f)
-        fdb->chassis_posture_info.leg_dlength_R_kf = 0;
 	// 计算加速度
 	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_kf - fdb->chassis_posture_info.last_leg_dlength_L_kf) / CHASSIS_CONTROL_TIME;
 	fdb->chassis_posture_info.leg_ddlength_L = alpha_da * temp_a_L + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_L;
 	fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R_kf - fdb->chassis_posture_info.last_leg_dlength_R_kf) / CHASSIS_CONTROL_TIME;
 	fdb->chassis_posture_info.leg_ddlength_R = alpha_da * temp_a_R + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_R;
-
+	// fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_jacobian - fdb->chassis_posture_info.last_leg_dlength_L_jacobian) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_ddlength_L = alpha_da * temp_a_L + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_L;
+	// fp32 temp_a_R = (fdb->chassis_posture_info.leg_dlength_R_jacobian - fdb->chassis_posture_info.last_leg_dlength_R_jacobian) / CHASSIS_CONTROL_TIME;
+	// fdb->chassis_posture_info.leg_ddlength_R = alpha_da * temp_a_R + (1-alpha_da) * fdb->chassis_posture_info.last_leg_ddlength_R;
+	
 	fdb->chassis_posture_info.last_leg_angle_L = fdb->chassis_posture_info.leg_angle_L;
 	fdb->chassis_posture_info.last_leg_angle_R = fdb->chassis_posture_info.leg_angle_R;
 	fdb->chassis_posture_info.last_leg_length_L = fdb->chassis_posture_info.leg_length_L;
@@ -453,6 +450,8 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.last_leg_ddlength_R = fdb->chassis_posture_info.leg_ddlength_R;
 	fdb->chassis_posture_info.last_leg_dlength_L_kf = fdb->chassis_posture_info.leg_dlength_L_kf;
 	fdb->chassis_posture_info.last_leg_dlength_R_kf = fdb->chassis_posture_info.leg_dlength_R_kf;
+	fdb->chassis_posture_info.last_leg_dlength_L_jacobian = fdb->chassis_posture_info.leg_dlength_L_jacobian;
+	fdb->chassis_posture_info.last_leg_dlength_R_jacobian = fdb->chassis_posture_info.leg_dlength_R_jacobian;
 	//云台相对角度更新
 	fdb->gimbal_yaw_motor.relative_angle = theta_format(fdb->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
@@ -471,12 +470,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 
 
 	//3.7尝试通过雅克比矩阵的逆矩阵计算腿长速度
-	fdb->mapping_info.J1_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 1); 
-	fdb->mapping_info.J2_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 2); 
-	fdb->mapping_info.J1_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 1); 
-	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2); 
-	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity ;
-	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity ;
 
 }
 
