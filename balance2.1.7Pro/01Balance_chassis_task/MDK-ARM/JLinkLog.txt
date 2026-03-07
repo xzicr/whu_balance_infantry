@@ -1,0 +1,165 @@
+T8BE8 000:270.784   SEGGER J-Link V8.90 Log File
+T8BE8 000:271.032   DLL Compiled: Nov 26 2025 17:20:53
+T8BE8 000:271.050   Logging started @ 2025-12-02 07:51
+T8BE8 000:271.065   Process: D:\Keil5\UV4\UV4.exe
+T8BE8 000:271.093 - 271.080ms 
+T8BE8 000:271.121 JLINK_SetWarnOutHandler(...)
+T8BE8 000:271.138 - 0.019ms 
+T8BE8 000:271.160 JLINK_OpenEx(...)
+T8BE8 000:278.379   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T8BE8 000:278.919   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T8BE8 000:279.144   Decompressing FW timestamp took 183 us
+T8BE8 000:284.623   Hardware: V9.70
+T8BE8 000:284.663   S/N: 602712368
+T8BE8 000:284.687   OEM: SEGGER
+T8BE8 000:284.710   Feature(s): GDB, RDI, FlashBP, FlashDL, JFlash
+T8BE8 000:285.333   Bootloader: (FW returned invalid version)
+T8BE8 000:286.137   TELNET listener socket opened on port 19021
+T8BE8 000:286.329   WEBSRV WEBSRV_Init(): Starting webserver thread(s)
+T8BE8 000:286.664   WEBSRV Webserver running on local port 19080
+T8BE8 000:286.804   Looking for J-Link GUI Server exe at: D:\Keil5\ARM\Segger\JLinkGUIServer.exe
+T8BE8 000:287.068   Looking for J-Link GUI Server exe at: C:\Program Files\SEGGER\JLink\JLinkGUIServer.exe
+T8BE8 000:287.173   Forking J-Link GUI Server: C:\Program Files\SEGGER\JLink\JLinkGUIServer.exe
+T8BE8 000:328.375   J-Link GUI Server info: "J-Link GUI server V8.90 "
+T8BE8 000:333.839 - 62.666ms returns "O.K."
+T8BE8 000:333.910 JLINK_GetEmuCaps()
+T8BE8 000:333.932 - 0.018ms returns 0xB9FF7BBF
+T8BE8 000:333.960 JLINK_TIF_GetAvailable(...)
+T8BE8 000:334.164 - 0.206ms 
+T8BE8 000:334.193 JLINK_SetErrorOutHandler(...)
+T8BE8 000:334.210 - 0.017ms 
+T8BE8 000:334.281 JLINK_ExecCommand("ProjectFile = "C:\Users\ASUS\Desktop\WHU_balance_V2.1.1\01Balance_chassis_task\MDK-ARM\JLinkSettings.ini"", ...). 
+T8BE8 000:356.933   Ref file found at: D:\Keil5\ARM\Segger\JLinkDevices.ref
+T8BE8 000:357.161   REF file references invalid XML file: C:\Program Files\SEGGER\JLink\JLinkDevices.xml
+T8BE8 000:359.125 - 24.852ms returns 0x00
+T8BE8 000:359.183 JLINK_ExecCommand("Device = STM32F407IGHx", ...). 
+T8BE8 000:360.107   Device "STM32F407IG" selected.
+T8BE8 000:360.602 - 1.398ms returns 0x00
+T8BE8 000:360.633 JLINK_ExecCommand("DisableConnectionTimeout", ...). 
+T8BE8 000:360.666   ERROR: Unknown command
+T8BE8 000:360.696 - 0.043ms returns 0x01
+T8BE8 000:360.721 JLINK_GetHardwareVersion()
+T8BE8 000:360.737 - 0.016ms returns 97000
+T8BE8 000:360.753 JLINK_GetDLLVersion()
+T8BE8 000:360.769 - 0.016ms returns 89000
+T8BE8 000:360.786 JLINK_GetOEMString(...)
+T8BE8 000:360.805 JLINK_GetFirmwareString(...)
+T8BE8 000:360.821 - 0.015ms 
+T8BE8 000:360.845 JLINK_GetDLLVersion()
+T8BE8 000:360.860 - 0.014ms returns 89000
+T8BE8 000:360.878 JLINK_GetCompileDateTime()
+T8BE8 000:360.893 - 0.015ms 
+T8BE8 000:360.913 JLINK_GetFirmwareString(...)
+T8BE8 000:360.928 - 0.015ms 
+T8BE8 000:360.946 JLINK_GetHardwareVersion()
+T8BE8 000:360.961 - 0.015ms returns 97000
+T8BE8 000:360.979 JLINK_GetSN()
+T8BE8 000:360.994 - 0.015ms returns 602712368
+T8BE8 000:361.011 JLINK_GetOEMString(...)
+T8BE8 000:361.035 JLINK_TIF_Select(JLINKARM_TIF_JTAG)
+T8BE8 000:361.914 - 0.882ms returns 0x00
+T8BE8 000:361.962 JLINK_HasError()
+T8BE8 000:362.001 JLINK_SetSpeed(5000)
+T8BE8 000:362.080 - 0.082ms 
+T8BE8 000:362.846 JLINK_HasError()
+T8BE8 000:362.891 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T8BE8 000:362.910 - 0.018ms returns JLINKARM_RESET_TYPE_NORMAL
+T8BE8 000:362.929 JLINK_Reset()
+T8BE8 000:363.128   InitTarget() start
+T8BE8 000:363.155    J-Link Script File: Executing InitTarget()
+T8BE8 000:363.349   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:364.339   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:364.696   Error: Scanning JTAG chain failed.
+T8BE8 000:364.740   Can not attach to CPU. Trying connect under reset.
+T8BE8 000:415.244   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:416.375   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:416.629   Error: Scanning JTAG chain failed.
+T8BE8 000:416.655   Connecting to CPU via connect under reset failed.
+T8BE8 000:467.583   
+  ***** Error: 
+T8BE8 000:467.629   J-Link script file function InitTarget() returned with error code -1
+T8BE8 000:467.660   InitTarget() end - Took 104ms
+T8BE8 000:467.720   Connect failed. Resetting via Reset pin and trying again.
+T8BE8 000:529.715   InitTarget() start
+T8BE8 000:529.767    J-Link Script File: Executing InitTarget()
+T8BE8 000:529.990   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:530.885   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:531.137   Error: Scanning JTAG chain failed.
+T8BE8 000:531.164   Can not attach to CPU. Trying connect under reset.
+T8BE8 000:582.398   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:583.385   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:583.641   Error: Scanning JTAG chain failed.
+T8BE8 000:583.666   Connecting to CPU via connect under reset failed.
+T8BE8 000:634.290   
+  ***** Error: 
+T8BE8 000:634.354   J-Link script file function InitTarget() returned with error code -1
+T8BE8 000:634.386   InitTarget() end - Took 104ms
+T8BE8 000:634.413 - 271.484ms 
+T8BE8 000:634.451 JLINK_GetIdData(pIdData)
+T8BE8 000:634.661   InitTarget() start
+T8BE8 000:634.705    J-Link Script File: Executing InitTarget()
+T8BE8 000:635.029   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:636.057   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:636.386   Error: Scanning JTAG chain failed.
+T8BE8 000:636.429   Can not attach to CPU. Trying connect under reset.
+T8BE8 000:686.807   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:687.894   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:688.172   Error: Scanning JTAG chain failed.
+T8BE8 000:688.222   Connecting to CPU via connect under reset failed.
+T8BE8 000:739.070   
+  ***** Error: 
+T8BE8 000:739.212   J-Link script file function InitTarget() returned with error code -1
+T8BE8 000:739.242   InitTarget() end - Took 104ms
+T8BE8 000:739.266   Connect failed. Resetting via Reset pin and trying again.
+T8BE8 000:801.913   InitTarget() start
+T8BE8 000:801.980    J-Link Script File: Executing InitTarget()
+T8BE8 000:802.374   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:803.470   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:803.865   Error: Scanning JTAG chain failed.
+T8BE8 000:803.898   Can not attach to CPU. Trying connect under reset.
+T8BE8 000:854.497   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:855.823   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:856.364   Error: Scanning JTAG chain failed.
+T8BE8 000:856.406   Connecting to CPU via connect under reset failed.
+T8BE8 000:907.376   
+  ***** Error: 
+T8BE8 000:907.439   J-Link script file function InitTarget() returned with error code -1
+T8BE8 000:907.473   InitTarget() end - Took 105ms
+T8BE8 000:907.497 - 273.046ms 
+T8BE8 000:907.532 JLINK_GetIdData(pIdData)
+T8BE8 000:907.743   InitTarget() start
+T8BE8 000:907.779    J-Link Script File: Executing InitTarget()
+T8BE8 000:907.988   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:909.022   TotalIRLen = ?, IRPrint = 0x..FFFFFFFFFFFFFFFFFFFFE000
+T8BE8 000:909.290   Error: Scanning JTAG chain failed.
+T8BE8 000:909.331   Can not attach to CPU. Trying connect under reset.
+T8BE8 000:959.808   JTAG selected. Identifying JTAG Chain...
+T8BE8 000:960.987   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 000:961.497   Error: Scanning JTAG chain failed.
+T8BE8 000:961.540   Connecting to CPU via connect under reset failed.
+T8BE8 001:011.764   
+  ***** Error: 
+T8BE8 001:011.816   J-Link script file function InitTarget() returned with error code -1
+T8BE8 001:011.852   InitTarget() end - Took 103ms
+T8BE8 001:011.877   Connect failed. Resetting via Reset pin and trying again.
+T8BE8 001:072.830   InitTarget() start
+T8BE8 001:072.891    J-Link Script File: Executing InitTarget()
+T8BE8 001:073.070   JTAG selected. Identifying JTAG Chain...
+T8BE8 001:074.074   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 001:074.440   Error: Scanning JTAG chain failed.
+T8BE8 001:074.482   Can not attach to CPU. Trying connect under reset.
+T8BE8 001:125.024   JTAG selected. Identifying JTAG Chain...
+T8BE8 001:126.135   TotalIRLen = ?, IRPrint = 0x..000000000000000000000000
+T8BE8 001:126.483   Error: Scanning JTAG chain failed.
+T8BE8 001:126.530   Connecting to CPU via connect under reset failed.
+T8BE8 001:177.314   
+  ***** Error: 
+T8BE8 001:177.376   J-Link script file function InitTarget() returned with error code -1
+T8BE8 001:177.407   InitTarget() end - Took 104ms
+T8BE8 001:177.430 - 269.897ms 
+T8BE8 001:195.151 JLINK_GetFirmwareString(...)
+T8BE8 001:195.197 - 0.045ms 
+T8BE8 011:364.458 JLINK_Close()
+T8BE8 011:372.722 - 8.264ms
+T8BE8 011:372.781   
+T8BE8 011:372.798   Closed

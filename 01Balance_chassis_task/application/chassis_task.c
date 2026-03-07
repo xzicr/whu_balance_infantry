@@ -638,8 +638,8 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
                 
             case EXTENDING_LEGS:
                 // 腿伸长阶段
-                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.34f && 
-                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.34f)
+                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.32f && 
+                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.32f)
                 {
                     chassis_mode_change->mode.jumping_stage = CONSTACTING_LEGS_2;
                     chassis_mode_change->flag_info.jump_contact_timer = xTaskGetTickCount();
@@ -882,8 +882,8 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				
 			case PREPARING_LANDING:
 				// 落地准备阶段：保持较低腿长
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.15f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.15f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.16f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.16f;
 				break;
 				
 			default:
@@ -976,11 +976,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	{
 		bl_ctrl->torque_info.joint_stand_torque_L =
 			+ jump_stand_PD_L[0] * ( bl_ctrl->chassis_posture_info.leg_length_L_set - bl_ctrl->chassis_posture_info.leg_length_L )
-			+ jump_stand_PD_L[1] * ( 0 - bl_ctrl->chassis_posture_info.leg_dlength_L );
+			+ jump_stand_PD_L[1] * ( 0 - bl_ctrl->chassis_posture_info.leg_dlength_L_jacobian );
 
 		bl_ctrl->torque_info.joint_stand_torque_R =
 			+ jump_stand_PD_R[0] * ( bl_ctrl->chassis_posture_info.leg_length_R_set - bl_ctrl->chassis_posture_info.leg_length_R )
-			+ jump_stand_PD_R[1] * ( 0 - bl_ctrl->chassis_posture_info.leg_dlength_R );
+			+ jump_stand_PD_R[1] * ( 0 - bl_ctrl->chassis_posture_info.leg_dlength_R_jacobian );
 	}
 	else if( bl_ctrl->mode.sport_mode == ABNORMAL_MOVING_MODE )
 	{
