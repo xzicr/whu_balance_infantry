@@ -27,16 +27,24 @@ Project File Date:  02/27/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
-compiling LQR.c...
-../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+compiling iwdg_task.c...
+..\application\iwdg_task.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
-../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
   extern void shoot_init();
-..\components\algorithm\LQR.c: 2 warnings, 0 errors
+..\application\iwdg_task.c(13): warning:  #223-D: function "buzzer_on" declared implicitly
+              buzzer_on(50,8399);
+..\application\iwdg_task.c(15): warning:  #223-D: function "buzzer_off" declared implicitly
+              buzzer_off();
+..\application\iwdg_task.c(40): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\iwdg_task.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=96848 RO-data=7884 RW-data=2164 ZI-data=55484  
+Program Size: Code=96936 RO-data=7884 RW-data=2164 ZI-data=55484  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 2 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -59,7 +67,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
