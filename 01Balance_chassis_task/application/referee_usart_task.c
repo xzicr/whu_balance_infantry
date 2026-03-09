@@ -174,14 +174,7 @@ void referee_usart_task(void const * argument)
         // ui_default_DynamicLeftGroup_PowerArc->start_angle = 
         // 225.0+fp32_constrain( uart_data.receive_chassis_data.vy_set,0,55);
         ui_update_default_DynamicLeftGroup();
-        // osDelay(ui_period);
-        // ui_update_default_DynamicLeftGroup();
-        //pitch轴角度变换
-        //待更新...
-        // ui_default_DynamicRightGroup_ChassisArc->start_angle = 200+chassis_move.gimbal_yaw_motor.relative_angle;
-        // ui_default_DynamicRightGroup_ChassisArc->end_angle = 160+chassis_move.gimbal_yaw_motor.relative_angle;
-        // ui_default_DynamicRightGroup_DynamicPitchArc->start_angle = 90;
-        // ui_default_DynamicRightGroup_DynamicPitchArc->end_angle = 91;
+
         ui_default_DynamicRightGroup_ChassisArc->start_angle = 200-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
         ui_default_DynamicRightGroup_ChassisArc->end_angle = 160-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
         ui_default_DynamicRightGroup_DynamicPitchArc->start_angle = 90-chassis_move.chassis_posture_info.pitch_angle*180/PI;
