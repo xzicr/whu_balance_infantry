@@ -69,3 +69,4 @@ chassis_task\iwdg_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_
 chassis_task\iwdg_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 chassis_task\iwdg_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 chassis_task\iwdg_task.o: ..\application\shoot.h
+chassis_task\iwdg_task.o: ../bsp/boards/bsp_buzzer.h

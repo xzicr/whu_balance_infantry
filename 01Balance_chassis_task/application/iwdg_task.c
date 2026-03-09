@@ -2,6 +2,7 @@
 #include "cmsis_os.h"
 #include "chassis_task.h"
 #include "CAN_receive.h"
+#include "bsp_buzzer.h"
 void iwdg_task(void const *pvParamter)
 {
     while(1)

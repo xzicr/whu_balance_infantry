@@ -117,19 +117,19 @@ void shoot_set_mode()
 			continue_flag = 0;
 		}
 		//关于自瞄的开播弹盘
-		if(aimflag == 1)
-		{
-			if(Self_aim_data->mode == 2)
-			{
-				// continue_flag=0;
-				shoot_control.shoot_mode=SHOOT_CONTINUE;
-			}
-			else if(Self_aim_data->mode != 2)
-			{
-				continue_flag=0;
-				shoot_control.shoot_mode=SHOOT_STOP;
-			}
-		}
+		// if(aimflag == 1)
+		// {
+		// 	if(Self_aim_data->mode == 2)
+		// 	{
+		// 		// continue_flag=0;
+		// 		shoot_control.shoot_mode=SHOOT_CONTINUE;
+		// 	}
+		// 	else if(Self_aim_data->mode != 2)
+		// 	{
+		// 		continue_flag=0;
+		// 		shoot_control.shoot_mode=SHOOT_STOP;
+		// 	}
+		// }
 	}
 	else if(fric_flag == 0)
 	{
