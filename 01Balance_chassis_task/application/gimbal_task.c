@@ -61,7 +61,7 @@ void gimbal_set_control(gimbal_control_t *gimbal_control)
 	{
 	}	
 }
-void gimbal_control_loop(gimbal_control_t *gimbal_control)
+void gimbal_control_loop(gimbal_control_t *gimbal_control,chassis_move_t *chassis_move)
 {
 	if(gimbal_control->gimbal_yaw_motor.gimbal_motor_mode==GIMBAL_MOTOR_OFF)
 	{
@@ -87,10 +87,10 @@ void gimbal_task(void const *pvParameters)
 		gimbal_set_mode(&gimbal_control);
 		gimbal_feedback_update(&gimbal_control);
 		gimbal_set_control(&gimbal_control);
-		gimbal_control_loop(&gimbal_control);
+		gimbal_control_loop(&gimbal_control,&chassis_move);
 		gimbal_control.shoot=shoot();
 		if(gimbal_control.gimbal_yaw_motor.gimbal_motor_mode==GIMBAL_MOTOR_OFF)
-		{
+		{ 
 			CAN_cmd_gimbal(0,0,0,0);
 		}
 		else
