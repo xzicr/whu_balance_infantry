@@ -95,7 +95,7 @@ void gimbal_task(void const *pvParameters)
 		}
 		else
 		{
-			CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.yaw_given_current,0,gimbal_control.shoot->given_current,0);
+			CAN_cmd_gimbal(gimbal_control.gimbal_yaw_motor.gimbal_motor_angle_pid.out,0,gimbal_control.shoot->given_current,0);
 		}
 		vTaskDelay(GIMBAL_CONTROL_TIME);
 	}
