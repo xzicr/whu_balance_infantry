@@ -7,9 +7,9 @@
 #include "shoot.h"
 #include "user_lib.h"
 // yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_ANGLE_PID_KP       800.0f// 1500
+#define YAW_ANGLE_PID_KP       500.0f// 1500
 #define YAW_ANGLE_PID_KI        0.1f//0.5f
-#define YAW_ANGLE_PID_KD       	2000.0f//10000
+#define YAW_ANGLE_PID_KD       	3000.0f//10000
 #define YAW_ANGLE_PID_MAX_OUT   25000.0f//2.0f
 #define YAW_ANGLE_PID_MAX_IOUT  20000.0f
 
