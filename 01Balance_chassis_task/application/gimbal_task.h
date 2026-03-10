@@ -10,7 +10,7 @@
 #define YAW_ANGLE_PID_KP        0.5f//0.4f
 #define YAW_ANGLE_PID_KI        0.0f
 #define YAW_ANGLE_PID_KD       	6.0f//20.0f//0.35f   //3.8  ”¶–¬’≈ΩÙ
-#define YAW_ANGLE_PID_MAX_OUT   20.0f//2.0f
+#define YAW_ANGLE_PID_MAX_OUT   100.0f//2.0f
 #define YAW_ANGLE_PID_MAX_IOUT  2.0f
 #define YAW_GYRO_PID_KP        2000.0f//2000.0f
 #define YAW_GYRO_PID_KI        2.0f//1.0f
