@@ -37,12 +37,12 @@
 // pitch 速度环 PID参数以及 PID最大输出，积分输出
 #define PITCH_GYRO_PID_KP 4000.0f//5000.0f
 #define PITCH_GYRO_PID_KI 5.0f//10.0f
-#define PITCH_GYRO_PID_KD 7.0f
+#define PITCH_GYRO_PID_KD 0.0f
 #define PITCH_GYRO_PID_MAX_OUT 30000.0f
 #define PITCH_GYRO_PID_MAX_IOUT 10000.0f
 #define PITCH_ANGLE_PID_KP 0.9f//0.3f       
 #define PITCH_ANGLE_PID_KI 0.0f      
-#define PITCH_ANGLE_PID_KD 15.0f       
+#define PITCH_ANGLE_PID_KD 30.0f       
 #define PITCH_ANGLE_PID_MAX_OUT 12.0f//3.0f  
 #define PITCH_ANGLE_PID_MAX_IOUT 3.0f//1.0f 
 

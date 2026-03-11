@@ -17,7 +17,7 @@ Library Manager: ArmAr.exe V5.06 update 5 (build 528)
 Hex Converter:   FromElf.exe V5.06 update 5 (build 528)
 CPU DLL:         SARMCM3.DLL V5.24.1
 Dialog DLL:      DCM.DLL V1.16.0.0
-Target DLL:      CMSIS_AGDI.dll V1.28.3.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.1.0
 Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
@@ -27,7 +27,116 @@ Project File Date:  01/27/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'standard_robot'
-".\standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 0 Warning(s).
+compiling QuaternionEKF.c...
+..\components\devices\QuaternionEKF.c(194): warning:  #177-D: variable "gyro_z"  was declared but never referenced
+      float gyro_z = QEKF_INS.IMU_QuaternionEKF.FilteredValue[2];
+..\components\devices\QuaternionEKF.c: 1 warning, 0 errors
+compiling INS_task.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\INS_task.c: 1 warning, 0 errors
+compiling shoot.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+..\application\gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+..\application\shoot.c: 3 warnings, 0 errors
+compiling usbd_cdc_if.c...
+../application/INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+../application/gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+../application/gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+../Src/usbd_cdc_if.c: 3 warnings, 0 errors
+compiling CAN_receive.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+..\application\gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+..\application\CAN_receive.c(164): warning:  #9-D: nested comment is not allowed
+  /**
+..\application\CAN_receive.c: 4 warnings, 0 errors
+compiling main.c...
+../application/INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+../application/gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+../application/gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+../Src/main.c: 3 warnings, 0 errors
+compiling UART_task.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+..\application\gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+..\application\UART_task.h(33): warning:  #1295-D: Deprecated declaration get_referee_data - give arg types
+  extern referee_data_t* get_referee_data();
+..\application\UART_task.h(34): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\application\UART_task.c(84): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\UART_task.c: 6 warnings, 0 errors
+compiling Self_aim.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+..\application\gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+..\application\UART_task.h(33): warning:  #1295-D: Deprecated declaration get_referee_data - give arg types
+  extern referee_data_t* get_referee_data();
+..\application\UART_task.h(34): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\application\Self_aim.c(92): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      Send_Data.output_data.yaw = gimbal_data->gimbal_yaw_motor.absolute_angle / 180 * 3.1415926;
+..\application\Self_aim.c: 6 warnings, 0 errors
+compiling gimbal_task.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+..\application\gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+..\application\gimbal_task.c(162): warning:  #188-D: enumerated type mixed with another type
+    chassis_data.shoot_mode = 0;
+..\application\gimbal_task.c(163): warning:  #188-D: enumerated type mixed with another type
+    chassis_data.chassis_mode = 0;
+..\application\gimbal_task.c(94): warning:  #177-D: variable "chassis_self_aim_yaw_filter"  was declared but never referenced
+  const static fp32 chassis_self_aim_yaw_filter[1] = {CHASSIS_ACCEL_Y_NUM};
+..\application\gimbal_task.c: 6 warnings, 0 errors
+compiling freertos.c...
+../application/INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+../application/gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+../application/gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+../application/UART_task.h(33): warning:  #1295-D: Deprecated declaration get_referee_data - give arg types
+  extern referee_data_t* get_referee_data();
+../application/UART_task.h(34): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Src/freertos.c(196): warning:  #550-D: variable "s"  was set but never used
+    float s[3] = {0};
+../Src/freertos.c: 6 warnings, 0 errors
+compiling calibrate_task.c...
+..\application\INS_task.h(85): warning:  #1295-D: Deprecated declaration get_INS - give arg types
+  extern INS_t *get_INS();
+..\application\gimbal_task.h(291): warning:  #1295-D: Deprecated declaration get_chassis_data_point - give arg types
+  extern chassis_data_t *get_chassis_data_point();
+..\application\gimbal_task.h(292): warning:  #1295-D: Deprecated declaration get_gimbal_data - give arg types
+  extern gimbal_control_t *get_gimbal_data();
+..\application\calibrate_task.c: 3 warnings, 0 errors
+linking...
+Program Size: Code=75528 RO-data=4436 RW-data=1904 ZI-data=54992  
+FromELF: creating hex file...
+".\standard_tpye_c\standard_tpye_c.axf" - 0 Error(s), 42 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -50,7 +159,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>
