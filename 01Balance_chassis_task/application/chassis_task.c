@@ -101,7 +101,7 @@ fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 jump_stand_PD_L[2] = {1600000.0f, 300.0f};
 fp32 jump_stand_PD_R[2] = {1600000.0f, 300.0f};
 
-fp32 suspend_stand_PD[2] = {35.0f, 20.0f};
+fp32 suspend_stand_PD[2] = {100.0f, 40.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
