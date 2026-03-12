@@ -301,7 +301,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init = -177.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =147.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
 
 }
@@ -876,8 +876,8 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				
 			case PREPARING_LANDING:
 				// 落地准备阶段：保持较低腿长
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.16f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.16f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.24f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.24f;
 				break;
 				
 			default:
