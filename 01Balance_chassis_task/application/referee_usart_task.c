@@ -98,7 +98,7 @@ void referee_usart_task(void const * argument)
 
     while(1)
     {
-        ui_self_id =1 ;//robot_state.robot_id;        
+        ui_self_id =robot_state.robot_id;        
         referee_unpack_fifo_data();
         osDelay(10);
 
