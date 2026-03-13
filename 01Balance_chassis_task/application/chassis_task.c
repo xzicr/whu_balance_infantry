@@ -123,7 +123,7 @@ fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01
 fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.02;
 fp32 rc_sign;
-fp32 normal_move_scale = 0.4f;
+fp32 normal_move_scale = 0.5f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
 
@@ -455,11 +455,11 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	Y_speed = fdb->chassis_data_->vy_set;
 	if(X_speed>=0)
 	{
-		normalized_speed = fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-5,5);
+		normalized_speed = fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-8.0f,8.0f);
 	}
 	else
 	{
-		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-5,5);
+		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-8.0f,8.0f);
 	}
 	normalized_speed = normalized_speed*rc_sign;
 
@@ -1638,8 +1638,8 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
 {
     if (chassis->mode.jumping_stage == EXTENDING_LEGS)
     {
-        chassis->torque_info.foot_balancing_torque_L= -0.6*chassis->torque_info.foot_balancing_torque_L;
-        chassis->torque_info.foot_balancing_torque_R = 0.6*chassis->torque_info.foot_balancing_torque_R;
+        chassis->torque_info.foot_balancing_torque_L= 0.6*chassis->torque_info.foot_balancing_torque_L;
+        chassis->torque_info.foot_balancing_torque_R =-0.6*chassis->torque_info.foot_balancing_torque_R;
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
     }
