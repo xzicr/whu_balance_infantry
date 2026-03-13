@@ -664,7 +664,8 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
             case PREPARING_LANDING:
                 // 等待落地检测
                 if (chassis_mode_change->flag_info.suspend_flag_R == ON_GROUND &&
-                    chassis_mode_change->flag_info.suspend_flag_L == ON_GROUND)
+                    chassis_mode_change->flag_info.suspend_flag_L == ON_GROUND&&
+					(xTaskGetTickCount() - chassis_mode_change->flag_info.jump_contact_timer) > pdMS_TO_TICKS(1500))
                 {
                     chassis_mode_change->mode.jumping_stage = FINISHED;
                 }
@@ -864,8 +865,8 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				
 			case EXTENDING_LEGS:
 				// 起跳阶段：快速伸腿  
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.60f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.60f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.35f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.35f;
 				break;
 				
 			case CONSTACTING_LEGS_2:
@@ -876,8 +877,8 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				
 			case PREPARING_LANDING:
 				// 落地准备阶段：保持较低腿长
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.24f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.24f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.15f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.15f;
 				break;
 				
 			default:
