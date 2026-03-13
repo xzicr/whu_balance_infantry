@@ -98,8 +98,8 @@ fp32 suspend_LQR[2][6] = {
 fp32 roll_PID[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 jump_stand_PD_L[2] = {1600000.0f, 300.0f};
-fp32 jump_stand_PD_R[2] = {1600000.0f, 300.0f};
+fp32 jump_stand_PD_L[2] = {1000000.0f, 300.0f};
+fp32 jump_stand_PD_R[2] = {1000000.0f, 300.0f};
 
 fp32 suspend_stand_PD[2] = {100.0f, 40.0f};
 
@@ -123,7 +123,7 @@ fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01
 fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.02;
 fp32 rc_sign;
-fp32 normal_move_scale = 0.2f;
+fp32 normal_move_scale = 0.6f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
 
@@ -208,7 +208,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
 	/*----------------------- Set HT Zero Point ---------------------- */
 	
-	vTaskDelay(2000);
+	vTaskDelay(500);
 	HT_Motor_zero_set();
 	Motor_Zero_CMD_Send();
 	vTaskDelay(1);
