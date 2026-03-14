@@ -98,8 +98,8 @@ fp32 suspend_LQR[2][6] = {
 fp32 roll_PID[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 jump_stand_PD_L[2] = {900000.0f, 250.0f};
-fp32 jump_stand_PD_R[2] = {900000.0f, 250.0f};
+fp32 jump_stand_PD_L[2] = {1000000.0f, 250.0f};
+fp32 jump_stand_PD_R[2] = {1000000.0f, 250.0f};
 
 fp32 suspend_stand_PD[2] = {100.0f, 40.0f};
 
@@ -634,8 +634,8 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
                 
             case EXTENDING_LEGS:
                 // 腿伸长阶段
-                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.32f && 
-                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.32f)
+                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.30f && 
+                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.30f)
                 {
                     chassis_mode_change->mode.jumping_stage = CONSTACTING_LEGS_2;
                     chassis_mode_change->flag_info.jump_contact_timer = xTaskGetTickCount();
@@ -877,8 +877,8 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				
 			case PREPARING_LANDING:
 				// 落地准备阶段：保持较低腿长
-				target_value_set->chassis_posture_info.leg_length_L_set = 0.18f;
-				target_value_set->chassis_posture_info.leg_length_R_set = 0.18f;
+				target_value_set->chassis_posture_info.leg_length_L_set = 0.15f;
+				target_value_set->chassis_posture_info.leg_length_R_set = 0.15f;
 				break;
 				
 			default:
@@ -1638,8 +1638,8 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
 {
     if (chassis->mode.jumping_stage == EXTENDING_LEGS)
     {
-        chassis->torque_info.foot_balancing_torque_L= 0.2*chassis->torque_info.foot_balancing_torque_L;
-        chassis->torque_info.foot_balancing_torque_R =-0.2*chassis->torque_info.foot_balancing_torque_R;
+        chassis->torque_info.foot_balancing_torque_L= 0.1*chassis->torque_info.foot_balancing_torque_L;
+        chassis->torque_info.foot_balancing_torque_R =-0.1*chassis->torque_info.foot_balancing_torque_R;
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
     }
