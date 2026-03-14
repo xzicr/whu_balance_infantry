@@ -98,8 +98,8 @@ fp32 suspend_LQR[2][6] = {
 fp32 roll_PID[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 jump_stand_PD_L[2] = {1000000.0f, 300.0f};
-fp32 jump_stand_PD_R[2] = {1000000.0f, 300.0f};
+fp32 jump_stand_PD_L[2] = {900000.0f, 250.0f};
+fp32 jump_stand_PD_R[2] = {900000.0f, 250.0f};
 
 fp32 suspend_stand_PD[2] = {100.0f, 40.0f};
 
@@ -1638,8 +1638,8 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
 {
     if (chassis->mode.jumping_stage == EXTENDING_LEGS)
     {
-        chassis->torque_info.foot_balancing_torque_L= 0.6*chassis->torque_info.foot_balancing_torque_L;
-        chassis->torque_info.foot_balancing_torque_R =-0.6*chassis->torque_info.foot_balancing_torque_R;
+        chassis->torque_info.foot_balancing_torque_L= 0.2*chassis->torque_info.foot_balancing_torque_L;
+        chassis->torque_info.foot_balancing_torque_R =-0.2*chassis->torque_info.foot_balancing_torque_R;
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
     }
