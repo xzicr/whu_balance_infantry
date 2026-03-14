@@ -123,7 +123,7 @@ fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01
 fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.02;
 fp32 rc_sign;
-fp32 normal_move_scale = 0.5f;
+fp32 normal_move_scale = 0.6f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
 
