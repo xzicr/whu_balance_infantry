@@ -367,20 +367,7 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   {
     chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
   }
-  else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 1)
-  {
-    if(gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle==0||Self_aim_data->mode==0)
-    {
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
-    }
-    else
-    {
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle;
-    }
-    
-  }
-  if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && turnflag == 1)
-  {
+   {
     chassis_data->yaw_angle_set += 180;
     turnflag = 0;
   }
