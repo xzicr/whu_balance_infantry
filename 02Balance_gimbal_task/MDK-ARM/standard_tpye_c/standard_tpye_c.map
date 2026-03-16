@@ -5238,62 +5238,62 @@ Image Symbol Table
     i.xTimerCreateTimerTask                  0x08011840   Section        0  timers.o(i.xTimerCreateTimerTask)
     i.xTimerGenericCommand                   0x080118a8   Section        0  timers.o(i.xTimerGenericCommand)
     i.yaw_set                                0x0801191c   Section        0  gimbal_task.o(i.yaw_set)
-    x$fpl$d2f                                0x08011a2c   Section      708  d2f_clz.o(x$fpl$d2f)
-    $v0                                      0x08011a2c   Number         0  d2f_clz.o(x$fpl$d2f)
-    x$fpl$dcmpinf                            0x08011cf0   Section       24  dcmpi.o(x$fpl$dcmpinf)
-    $v0                                      0x08011cf0   Number         0  dcmpi.o(x$fpl$dcmpinf)
-    x$fpl$dfltn                              0x08011d08   Section       26  dflt_clz.o(x$fpl$dfltn)
-    $v0                                      0x08011d08   Number         0  dflt_clz.o(x$fpl$dfltn)
-    x$fpl$dleqf                              0x08011d24   Section      120  dleqf.o(x$fpl$dleqf)
-    $v0                                      0x08011d24   Number         0  dleqf.o(x$fpl$dleqf)
-    x$fpl$dmul                               0x08011d9c   Section      448  dmul_clz.o(x$fpl$dmul)
-    $v0                                      0x08011d9c   Number         0  dmul_clz.o(x$fpl$dmul)
-    x$fpl$dnaninf                            0x08011f5c   Section      258  dnaninf.o(x$fpl$dnaninf)
-    $v0                                      0x08011f5c   Number         0  dnaninf.o(x$fpl$dnaninf)
-    x$fpl$drenorm                            0x0801205e   Section      112  drenorm_clz.o(x$fpl$drenorm)
-    $v0                                      0x0801205e   Number         0  drenorm_clz.o(x$fpl$drenorm)
-    x$fpl$dretinf                            0x080120ce   Section       12  dretinf.o(x$fpl$dretinf)
-    $v0                                      0x080120ce   Number         0  dretinf.o(x$fpl$dretinf)
-    x$fpl$drleqf                             0x080120da   Section       98  drleqf.o(x$fpl$drleqf)
-    $v0                                      0x080120da   Number         0  drleqf.o(x$fpl$drleqf)
-    x$fpl$dunder                             0x0801213c   Section      378  dunder_clz.o(x$fpl$dunder)
-    $v0                                      0x0801213c   Number         0  dunder_clz.o(x$fpl$dunder)
-    x$fpl$exception                          0x080122b8   Section      492  except.o(x$fpl$exception)
-    $v0                                      0x080122b8   Number         0  except.o(x$fpl$exception)
-    x$fpl$f2d                                0x080124a4   Section      122  f2d.o(x$fpl$f2d)
-    $v0                                      0x080124a4   Number         0  f2d.o(x$fpl$f2d)
-    x$fpl$fnaninf                            0x0801251e   Section      242  fnaninf.o(x$fpl$fnaninf)
-    $v0                                      0x0801251e   Number         0  fnaninf.o(x$fpl$fnaninf)
-    x$fpl$fpinit                             0x08012610   Section       10  fpinit.o(x$fpl$fpinit)
-    $v0                                      0x08012610   Number         0  fpinit.o(x$fpl$fpinit)
-    x$fpl$fretinf                            0x0801261a   Section       10  fretinf.o(x$fpl$fretinf)
-    $v0                                      0x0801261a   Number         0  fretinf.o(x$fpl$fretinf)
-    x$fpl$funder                             0x08012624   Section      316  funder_clz.o(x$fpl$funder)
-    $v0                                      0x08012624   Number         0  funder_clz.o(x$fpl$funder)
-    x$fpl$retnan                             0x08012760   Section      178  retnan.o(x$fpl$retnan)
-    $v0                                      0x08012760   Number         0  retnan.o(x$fpl$retnan)
-    x$fpl$trapveneer                         0x08012812   Section      126  trapv.o(x$fpl$trapveneer)
-    $v0                                      0x08012812   Number         0  trapv.o(x$fpl$trapveneer)
-    .constdata                               0x08012890   Section      224  freertos.o(.constdata)
-    x$fpl$usenofp                            0x08012890   Section        0  usenofp.o(x$fpl$usenofp)
-    .constdata                               0x08012970   Section       24  system_stm32f4xx.o(.constdata)
-    .constdata                               0x08012988   Section       84  detect_task.o(.constdata)
-    .constdata                               0x080129dc   Section       28  gimbal_task.o(.constdata)
-    Pitch_angle_pid                          0x080129dc   Data          12  gimbal_task.o(.constdata)
-    Pitch_gyro_pid                           0x080129e8   Data          12  gimbal_task.o(.constdata)
-    chassis_self_aim_yaw_filter              0x080129f4   Data           4  gimbal_task.o(.constdata)
-    .constdata                               0x080129f8   Section       15  calibrate_task.o(.constdata)
-    cali_name                                0x080129f8   Data          15  calibrate_task.o(.constdata)
-    .constdata                               0x08012a08   Section       48  ins_task.o(.constdata)
-    .constdata                               0x08012a38   Section       24  shoot.o(.constdata)
-    friction_speed_pid                       0x08012a38   Data          12  shoot.o(.constdata)
-    friction_current_pid                     0x08012a44   Data          12  shoot.o(.constdata)
-    .constdata                               0x08012a50   Section      144  quaternionekf.o(.constdata)
-    .constdata                               0x08012ae0   Section     1282  crc8_crc16.o(.constdata)
-    .constdata                               0x08012fe2   Section        8  stm32f4xx_hal_dma.o(.constdata)
-    flagBitshiftOffset                       0x08012fe2   Data           8  stm32f4xx_hal_dma.o(.constdata)
-    .constdata                               0x08012fec   Section     2052  arm_common_tables.o(.constdata)
-    .conststring                             0x080137f0   Section       73  freertos.o(.conststring)
+    x$fpl$d2f                                0x08011a88   Section      708  d2f_clz.o(x$fpl$d2f)
+    $v0                                      0x08011a88   Number         0  d2f_clz.o(x$fpl$d2f)
+    x$fpl$dcmpinf                            0x08011d4c   Section       24  dcmpi.o(x$fpl$dcmpinf)
+    $v0                                      0x08011d4c   Number         0  dcmpi.o(x$fpl$dcmpinf)
+    x$fpl$dfltn                              0x08011d64   Section       26  dflt_clz.o(x$fpl$dfltn)
+    $v0                                      0x08011d64   Number         0  dflt_clz.o(x$fpl$dfltn)
+    x$fpl$dleqf                              0x08011d80   Section      120  dleqf.o(x$fpl$dleqf)
+    $v0                                      0x08011d80   Number         0  dleqf.o(x$fpl$dleqf)
+    x$fpl$dmul                               0x08011df8   Section      448  dmul_clz.o(x$fpl$dmul)
+    $v0                                      0x08011df8   Number         0  dmul_clz.o(x$fpl$dmul)
+    x$fpl$dnaninf                            0x08011fb8   Section      258  dnaninf.o(x$fpl$dnaninf)
+    $v0                                      0x08011fb8   Number         0  dnaninf.o(x$fpl$dnaninf)
+    x$fpl$drenorm                            0x080120ba   Section      112  drenorm_clz.o(x$fpl$drenorm)
+    $v0                                      0x080120ba   Number         0  drenorm_clz.o(x$fpl$drenorm)
+    x$fpl$dretinf                            0x0801212a   Section       12  dretinf.o(x$fpl$dretinf)
+    $v0                                      0x0801212a   Number         0  dretinf.o(x$fpl$dretinf)
+    x$fpl$drleqf                             0x08012136   Section       98  drleqf.o(x$fpl$drleqf)
+    $v0                                      0x08012136   Number         0  drleqf.o(x$fpl$drleqf)
+    x$fpl$dunder                             0x08012198   Section      378  dunder_clz.o(x$fpl$dunder)
+    $v0                                      0x08012198   Number         0  dunder_clz.o(x$fpl$dunder)
+    x$fpl$exception                          0x08012314   Section      492  except.o(x$fpl$exception)
+    $v0                                      0x08012314   Number         0  except.o(x$fpl$exception)
+    x$fpl$f2d                                0x08012500   Section      122  f2d.o(x$fpl$f2d)
+    $v0                                      0x08012500   Number         0  f2d.o(x$fpl$f2d)
+    x$fpl$fnaninf                            0x0801257a   Section      242  fnaninf.o(x$fpl$fnaninf)
+    $v0                                      0x0801257a   Number         0  fnaninf.o(x$fpl$fnaninf)
+    x$fpl$fpinit                             0x0801266c   Section       10  fpinit.o(x$fpl$fpinit)
+    $v0                                      0x0801266c   Number         0  fpinit.o(x$fpl$fpinit)
+    x$fpl$fretinf                            0x08012676   Section       10  fretinf.o(x$fpl$fretinf)
+    $v0                                      0x08012676   Number         0  fretinf.o(x$fpl$fretinf)
+    x$fpl$funder                             0x08012680   Section      316  funder_clz.o(x$fpl$funder)
+    $v0                                      0x08012680   Number         0  funder_clz.o(x$fpl$funder)
+    x$fpl$retnan                             0x080127bc   Section      178  retnan.o(x$fpl$retnan)
+    $v0                                      0x080127bc   Number         0  retnan.o(x$fpl$retnan)
+    x$fpl$trapveneer                         0x0801286e   Section      126  trapv.o(x$fpl$trapveneer)
+    $v0                                      0x0801286e   Number         0  trapv.o(x$fpl$trapveneer)
+    .constdata                               0x080128ec   Section      224  freertos.o(.constdata)
+    x$fpl$usenofp                            0x080128ec   Section        0  usenofp.o(x$fpl$usenofp)
+    .constdata                               0x080129cc   Section       24  system_stm32f4xx.o(.constdata)
+    .constdata                               0x080129e4   Section       84  detect_task.o(.constdata)
+    .constdata                               0x08012a38   Section       28  gimbal_task.o(.constdata)
+    Pitch_angle_pid                          0x08012a38   Data          12  gimbal_task.o(.constdata)
+    Pitch_gyro_pid                           0x08012a44   Data          12  gimbal_task.o(.constdata)
+    chassis_self_aim_yaw_filter              0x08012a50   Data           4  gimbal_task.o(.constdata)
+    .constdata                               0x08012a54   Section       15  calibrate_task.o(.constdata)
+    cali_name                                0x08012a54   Data          15  calibrate_task.o(.constdata)
+    .constdata                               0x08012a64   Section       48  ins_task.o(.constdata)
+    .constdata                               0x08012a94   Section       24  shoot.o(.constdata)
+    friction_speed_pid                       0x08012a94   Data          12  shoot.o(.constdata)
+    friction_current_pid                     0x08012aa0   Data          12  shoot.o(.constdata)
+    .constdata                               0x08012aac   Section      144  quaternionekf.o(.constdata)
+    .constdata                               0x08012b3c   Section     1282  crc8_crc16.o(.constdata)
+    .constdata                               0x0801303e   Section        8  stm32f4xx_hal_dma.o(.constdata)
+    flagBitshiftOffset                       0x0801303e   Data           8  stm32f4xx_hal_dma.o(.constdata)
+    .constdata                               0x08013048   Section     2052  arm_common_tables.o(.constdata)
+    .conststring                             0x0801384c   Section       73  freertos.o(.conststring)
     .data                                    0x20000000   Section       36  freertos.o(.data)
     .data                                    0x20000024   Section        4  can.o(.data)
     HAL_RCC_CAN1_CLK_ENABLED                 0x20000024   Data           4  can.o(.data)
@@ -6168,51 +6168,51 @@ Image Symbol Table
     xTaskResumeAll                           0x08011775   Thumb Code   190  tasks.o(i.xTaskResumeAll)
     xTimerCreateTimerTask                    0x08011841   Thumb Code    86  timers.o(i.xTimerCreateTimerTask)
     xTimerGenericCommand                     0x080118a9   Thumb Code   112  timers.o(i.xTimerGenericCommand)
-    yaw_set                                  0x0801191d   Thumb Code   242  gimbal_task.o(i.yaw_set)
-    __aeabi_d2f                              0x08011a2d   Thumb Code     0  d2f_clz.o(x$fpl$d2f)
-    _d2f                                     0x08011a2d   Thumb Code   700  d2f_clz.o(x$fpl$d2f)
-    __fpl_dcmp_Inf                           0x08011cf1   Thumb Code    24  dcmpi.o(x$fpl$dcmpinf)
-    __dflt_normalise                         0x08011d09   Thumb Code    26  dflt_clz.o(x$fpl$dfltn)
-    __aeabi_cdcmple                          0x08011d25   Thumb Code     0  dleqf.o(x$fpl$dleqf)
-    _dcmple                                  0x08011d25   Thumb Code   120  dleqf.o(x$fpl$dleqf)
-    __fpl_dcmple_InfNaN                      0x08011d7d   Thumb Code     0  dleqf.o(x$fpl$dleqf)
-    __aeabi_dmul                             0x08011d9d   Thumb Code     0  dmul_clz.o(x$fpl$dmul)
-    _dmul                                    0x08011d9d   Thumb Code   440  dmul_clz.o(x$fpl$dmul)
-    __fpl_dnaninf                            0x08011f5d   Thumb Code   258  dnaninf.o(x$fpl$dnaninf)
-    __fpl_drenorm2                           0x0801205f   Thumb Code   106  drenorm_clz.o(x$fpl$drenorm)
-    __fpl_drenorm1                           0x080120c9   Thumb Code     6  drenorm_clz.o(x$fpl$drenorm)
-    __fpl_dretinf                            0x080120cf   Thumb Code    12  dretinf.o(x$fpl$dretinf)
-    __aeabi_cdrcmple                         0x080120db   Thumb Code     0  drleqf.o(x$fpl$drleqf)
-    _drcmple                                 0x080120db   Thumb Code    98  drleqf.o(x$fpl$drleqf)
-    __dunder                                 0x0801213d   Thumb Code   314  dunder_clz.o(x$fpl$dunder)
-    __dunder_d                               0x08012277   Thumb Code    64  dunder_clz.o(x$fpl$dunder)
-    __fpl_exception                          0x080122b9   Thumb Code   454  except.o(x$fpl$exception)
-    __aeabi_f2d                              0x080124a5   Thumb Code     0  f2d.o(x$fpl$f2d)
-    _f2d                                     0x080124a5   Thumb Code   122  f2d.o(x$fpl$f2d)
-    __fpl_fnaninf                            0x0801251f   Thumb Code   242  fnaninf.o(x$fpl$fnaninf)
-    _fp_init                                 0x08012611   Thumb Code    10  fpinit.o(x$fpl$fpinit)
-    __fplib_config_fpu_vfp                   0x08012619   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fplib_config_pureend_doubles           0x08012619   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fpl_fretinf                            0x0801261b   Thumb Code    10  fretinf.o(x$fpl$fretinf)
-    __funder                                 0x08012625   Thumb Code   254  funder_clz.o(x$fpl$funder)
-    __funder_d                               0x08012723   Thumb Code    62  funder_clz.o(x$fpl$funder)
-    __fpl_return_NaN                         0x08012761   Thumb Code   178  retnan.o(x$fpl$retnan)
-    _fp_trapveneer                           0x08012813   Thumb Code    36  trapv.o(x$fpl$trapveneer)
-    __fpl_cmpreturn                          0x08012837   Thumb Code    90  trapv.o(x$fpl$trapveneer)
-    __I$use$fp                               0x08012890   Number         0  usenofp.o(x$fpl$usenofp)
-    AHBPrescTable                            0x08012970   Data          16  system_stm32f4xx.o(.constdata)
-    APBPrescTable                            0x08012980   Data           8  system_stm32f4xx.o(.constdata)
-    xb                                       0x08012a08   Data          12  ins_task.o(.constdata)
-    yb                                       0x08012a14   Data          12  ins_task.o(.constdata)
-    zb                                       0x08012a20   Data          12  ins_task.o(.constdata)
-    IMU_QuaternionEKF_F                      0x08012a50   Data         144  quaternionekf.o(.constdata)
-    CRC8_INIT                                0x08012ae0   Data           1  crc8_crc16.o(.constdata)
-    CRC8_table                               0x08012ae1   Data         256  crc8_crc16.o(.constdata)
-    wCRC_Table                               0x08012be2   Data         512  crc8_crc16.o(.constdata)
-    wCRC_table                               0x08012de2   Data         512  crc8_crc16.o(.constdata)
-    sinTable_f32                             0x08012fec   Data        2052  arm_common_tables.o(.constdata)
-    Region$$Table$$Base                      0x0801383c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x0801385c   Number         0  anon$$obj.o(Region$$Table)
+    yaw_set                                  0x0801191d   Thumb Code   326  gimbal_task.o(i.yaw_set)
+    __aeabi_d2f                              0x08011a89   Thumb Code     0  d2f_clz.o(x$fpl$d2f)
+    _d2f                                     0x08011a89   Thumb Code   700  d2f_clz.o(x$fpl$d2f)
+    __fpl_dcmp_Inf                           0x08011d4d   Thumb Code    24  dcmpi.o(x$fpl$dcmpinf)
+    __dflt_normalise                         0x08011d65   Thumb Code    26  dflt_clz.o(x$fpl$dfltn)
+    __aeabi_cdcmple                          0x08011d81   Thumb Code     0  dleqf.o(x$fpl$dleqf)
+    _dcmple                                  0x08011d81   Thumb Code   120  dleqf.o(x$fpl$dleqf)
+    __fpl_dcmple_InfNaN                      0x08011dd9   Thumb Code     0  dleqf.o(x$fpl$dleqf)
+    __aeabi_dmul                             0x08011df9   Thumb Code     0  dmul_clz.o(x$fpl$dmul)
+    _dmul                                    0x08011df9   Thumb Code   440  dmul_clz.o(x$fpl$dmul)
+    __fpl_dnaninf                            0x08011fb9   Thumb Code   258  dnaninf.o(x$fpl$dnaninf)
+    __fpl_drenorm2                           0x080120bb   Thumb Code   106  drenorm_clz.o(x$fpl$drenorm)
+    __fpl_drenorm1                           0x08012125   Thumb Code     6  drenorm_clz.o(x$fpl$drenorm)
+    __fpl_dretinf                            0x0801212b   Thumb Code    12  dretinf.o(x$fpl$dretinf)
+    __aeabi_cdrcmple                         0x08012137   Thumb Code     0  drleqf.o(x$fpl$drleqf)
+    _drcmple                                 0x08012137   Thumb Code    98  drleqf.o(x$fpl$drleqf)
+    __dunder                                 0x08012199   Thumb Code   314  dunder_clz.o(x$fpl$dunder)
+    __dunder_d                               0x080122d3   Thumb Code    64  dunder_clz.o(x$fpl$dunder)
+    __fpl_exception                          0x08012315   Thumb Code   454  except.o(x$fpl$exception)
+    __aeabi_f2d                              0x08012501   Thumb Code     0  f2d.o(x$fpl$f2d)
+    _f2d                                     0x08012501   Thumb Code   122  f2d.o(x$fpl$f2d)
+    __fpl_fnaninf                            0x0801257b   Thumb Code   242  fnaninf.o(x$fpl$fnaninf)
+    _fp_init                                 0x0801266d   Thumb Code    10  fpinit.o(x$fpl$fpinit)
+    __fplib_config_fpu_vfp                   0x08012675   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fplib_config_pureend_doubles           0x08012675   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fpl_fretinf                            0x08012677   Thumb Code    10  fretinf.o(x$fpl$fretinf)
+    __funder                                 0x08012681   Thumb Code   254  funder_clz.o(x$fpl$funder)
+    __funder_d                               0x0801277f   Thumb Code    62  funder_clz.o(x$fpl$funder)
+    __fpl_return_NaN                         0x080127bd   Thumb Code   178  retnan.o(x$fpl$retnan)
+    _fp_trapveneer                           0x0801286f   Thumb Code    36  trapv.o(x$fpl$trapveneer)
+    __fpl_cmpreturn                          0x08012893   Thumb Code    90  trapv.o(x$fpl$trapveneer)
+    __I$use$fp                               0x080128ec   Number         0  usenofp.o(x$fpl$usenofp)
+    AHBPrescTable                            0x080129cc   Data          16  system_stm32f4xx.o(.constdata)
+    APBPrescTable                            0x080129dc   Data           8  system_stm32f4xx.o(.constdata)
+    xb                                       0x08012a64   Data          12  ins_task.o(.constdata)
+    yb                                       0x08012a70   Data          12  ins_task.o(.constdata)
+    zb                                       0x08012a7c   Data          12  ins_task.o(.constdata)
+    IMU_QuaternionEKF_F                      0x08012aac   Data         144  quaternionekf.o(.constdata)
+    CRC8_INIT                                0x08012b3c   Data           1  crc8_crc16.o(.constdata)
+    CRC8_table                               0x08012b3d   Data         256  crc8_crc16.o(.constdata)
+    wCRC_Table                               0x08012c3e   Data         512  crc8_crc16.o(.constdata)
+    wCRC_table                               0x08012e3e   Data         512  crc8_crc16.o(.constdata)
+    sinTable_f32                             0x08013048   Data        2052  arm_common_tables.o(.constdata)
+    Region$$Table$$Base                      0x08013898   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x080138b8   Number         0  anon$$obj.o(Region$$Table)
     calibrate_tast_handle                    0x20000000   Data           4  freertos.o(.data)
     detect_handle                            0x20000004   Data           4  freertos.o(.data)
     gimbalTaskHandle                         0x20000008   Data           4  freertos.o(.data)
@@ -6345,9 +6345,9 @@ Memory Map of the image
 
   Image Entry point : 0x08000189
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00013fcc, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x00013a08])
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00014028, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x00013a64])
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x0001385c, Max: 0x00100000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000138b8, Max: 0x00100000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -7011,47 +7011,47 @@ Memory Map of the image
     0x08011774   0x08011774   0x000000cc   Code   RO        10882    i.xTaskResumeAll    tasks.o
     0x08011840   0x08011840   0x00000068   Code   RO        11191    i.xTimerCreateTimerTask  timers.o
     0x080118a8   0x080118a8   0x00000074   Code   RO        11192    i.xTimerGenericCommand  timers.o
-    0x0801191c   0x0801191c   0x00000110   Code   RO         2879    i.yaw_set           gimbal_task.o
-    0x08011a2c   0x08011a2c   0x000002c4   Code   RO        12636    x$fpl$d2f           g_wm.l(d2f_clz.o)
-    0x08011cf0   0x08011cf0   0x00000018   Code   RO        12815    x$fpl$dcmpinf       g_wm.l(dcmpi.o)
-    0x08011d08   0x08011d08   0x0000001a   Code   RO        12644    x$fpl$dfltn         g_wm.l(dflt_clz.o)
-    0x08011d22   0x08011d22   0x00000002   PAD
-    0x08011d24   0x08011d24   0x00000078   Code   RO        12648    x$fpl$dleqf         g_wm.l(dleqf.o)
-    0x08011d9c   0x08011d9c   0x000001c0   Code   RO        12650    x$fpl$dmul          g_wm.l(dmul_clz.o)
-    0x08011f5c   0x08011f5c   0x00000102   Code   RO        12817    x$fpl$dnaninf       g_wm.l(dnaninf.o)
-    0x0801205e   0x0801205e   0x00000070   Code   RO        12819    x$fpl$drenorm       g_wm.l(drenorm_clz.o)
-    0x080120ce   0x080120ce   0x0000000c   Code   RO        12821    x$fpl$dretinf       g_wm.l(dretinf.o)
-    0x080120da   0x080120da   0x00000062   Code   RO        12652    x$fpl$drleqf        g_wm.l(drleqf.o)
-    0x0801213c   0x0801213c   0x0000017a   Code   RO        12825    x$fpl$dunder        g_wm.l(dunder_clz.o)
-    0x080122b6   0x080122b6   0x00000002   PAD
-    0x080122b8   0x080122b8   0x000001ec   Code   RO        12827    x$fpl$exception     g_wm.l(except.o)
-    0x080124a4   0x080124a4   0x0000007a   Code   RO        12654    x$fpl$f2d           g_wm.l(f2d.o)
-    0x0801251e   0x0801251e   0x000000f2   Code   RO        12829    x$fpl$fnaninf       g_wm.l(fnaninf.o)
-    0x08012610   0x08012610   0x0000000a   Code   RO        12903    x$fpl$fpinit        g_wm.l(fpinit.o)
-    0x0801261a   0x0801261a   0x0000000a   Code   RO        12831    x$fpl$fretinf       g_wm.l(fretinf.o)
-    0x08012624   0x08012624   0x0000013c   Code   RO        12833    x$fpl$funder        g_wm.l(funder_clz.o)
-    0x08012760   0x08012760   0x000000b2   Code   RO        12905    x$fpl$retnan        g_wm.l(retnan.o)
-    0x08012812   0x08012812   0x0000007e   Code   RO        12835    x$fpl$trapveneer    g_wm.l(trapv.o)
-    0x08012890   0x08012890   0x00000000   Code   RO        12837    x$fpl$usenofp       g_wm.l(usenofp.o)
-    0x08012890   0x08012890   0x000000e0   Data   RO          513    .constdata          freertos.o
-    0x08012970   0x08012970   0x00000018   Data   RO         1691    .constdata          system_stm32f4xx.o
-    0x08012988   0x08012988   0x00000054   Data   RO         2781    .constdata          detect_task.o
-    0x080129dc   0x080129dc   0x0000001c   Data   RO         2881    .constdata          gimbal_task.o
-    0x080129f8   0x080129f8   0x0000000f   Data   RO         2981    .constdata          calibrate_task.o
-    0x08012a07   0x08012a07   0x00000001   PAD
-    0x08012a08   0x08012a08   0x00000030   Data   RO         3105    .constdata          ins_task.o
-    0x08012a38   0x08012a38   0x00000018   Data   RO         3689    .constdata          shoot.o
-    0x08012a50   0x08012a50   0x00000090   Data   RO         4546    .constdata          quaternionekf.o
-    0x08012ae0   0x08012ae0   0x00000502   Data   RO         5027    .constdata          crc8_crc16.o
-    0x08012fe2   0x08012fe2   0x00000008   Data   RO         6595    .constdata          stm32f4xx_hal_dma.o
-    0x08012fea   0x08012fea   0x00000002   PAD
-    0x08012fec   0x08012fec   0x00000804   Data   RO        12529    .constdata          arm_cortexM4lf_math.lib(arm_common_tables.o)
-    0x080137f0   0x080137f0   0x00000049   Data   RO          514    .conststring        freertos.o
-    0x08013839   0x08013839   0x00000003   PAD
-    0x0801383c   0x0801383c   0x00000020   Data   RO        12994    Region$$Table       anon$$obj.o
+    0x0801191c   0x0801191c   0x0000016c   Code   RO         2879    i.yaw_set           gimbal_task.o
+    0x08011a88   0x08011a88   0x000002c4   Code   RO        12636    x$fpl$d2f           g_wm.l(d2f_clz.o)
+    0x08011d4c   0x08011d4c   0x00000018   Code   RO        12815    x$fpl$dcmpinf       g_wm.l(dcmpi.o)
+    0x08011d64   0x08011d64   0x0000001a   Code   RO        12644    x$fpl$dfltn         g_wm.l(dflt_clz.o)
+    0x08011d7e   0x08011d7e   0x00000002   PAD
+    0x08011d80   0x08011d80   0x00000078   Code   RO        12648    x$fpl$dleqf         g_wm.l(dleqf.o)
+    0x08011df8   0x08011df8   0x000001c0   Code   RO        12650    x$fpl$dmul          g_wm.l(dmul_clz.o)
+    0x08011fb8   0x08011fb8   0x00000102   Code   RO        12817    x$fpl$dnaninf       g_wm.l(dnaninf.o)
+    0x080120ba   0x080120ba   0x00000070   Code   RO        12819    x$fpl$drenorm       g_wm.l(drenorm_clz.o)
+    0x0801212a   0x0801212a   0x0000000c   Code   RO        12821    x$fpl$dretinf       g_wm.l(dretinf.o)
+    0x08012136   0x08012136   0x00000062   Code   RO        12652    x$fpl$drleqf        g_wm.l(drleqf.o)
+    0x08012198   0x08012198   0x0000017a   Code   RO        12825    x$fpl$dunder        g_wm.l(dunder_clz.o)
+    0x08012312   0x08012312   0x00000002   PAD
+    0x08012314   0x08012314   0x000001ec   Code   RO        12827    x$fpl$exception     g_wm.l(except.o)
+    0x08012500   0x08012500   0x0000007a   Code   RO        12654    x$fpl$f2d           g_wm.l(f2d.o)
+    0x0801257a   0x0801257a   0x000000f2   Code   RO        12829    x$fpl$fnaninf       g_wm.l(fnaninf.o)
+    0x0801266c   0x0801266c   0x0000000a   Code   RO        12903    x$fpl$fpinit        g_wm.l(fpinit.o)
+    0x08012676   0x08012676   0x0000000a   Code   RO        12831    x$fpl$fretinf       g_wm.l(fretinf.o)
+    0x08012680   0x08012680   0x0000013c   Code   RO        12833    x$fpl$funder        g_wm.l(funder_clz.o)
+    0x080127bc   0x080127bc   0x000000b2   Code   RO        12905    x$fpl$retnan        g_wm.l(retnan.o)
+    0x0801286e   0x0801286e   0x0000007e   Code   RO        12835    x$fpl$trapveneer    g_wm.l(trapv.o)
+    0x080128ec   0x080128ec   0x00000000   Code   RO        12837    x$fpl$usenofp       g_wm.l(usenofp.o)
+    0x080128ec   0x080128ec   0x000000e0   Data   RO          513    .constdata          freertos.o
+    0x080129cc   0x080129cc   0x00000018   Data   RO         1691    .constdata          system_stm32f4xx.o
+    0x080129e4   0x080129e4   0x00000054   Data   RO         2781    .constdata          detect_task.o
+    0x08012a38   0x08012a38   0x0000001c   Data   RO         2881    .constdata          gimbal_task.o
+    0x08012a54   0x08012a54   0x0000000f   Data   RO         2981    .constdata          calibrate_task.o
+    0x08012a63   0x08012a63   0x00000001   PAD
+    0x08012a64   0x08012a64   0x00000030   Data   RO         3105    .constdata          ins_task.o
+    0x08012a94   0x08012a94   0x00000018   Data   RO         3689    .constdata          shoot.o
+    0x08012aac   0x08012aac   0x00000090   Data   RO         4546    .constdata          quaternionekf.o
+    0x08012b3c   0x08012b3c   0x00000502   Data   RO         5027    .constdata          crc8_crc16.o
+    0x0801303e   0x0801303e   0x00000008   Data   RO         6595    .constdata          stm32f4xx_hal_dma.o
+    0x08013046   0x08013046   0x00000002   PAD
+    0x08013048   0x08013048   0x00000804   Data   RO        12529    .constdata          arm_cortexM4lf_math.lib(arm_common_tables.o)
+    0x0801384c   0x0801384c   0x00000049   Data   RO          514    .conststring        freertos.o
+    0x08013895   0x08013895   0x00000003   PAD
+    0x08013898   0x08013898   0x00000020   Data   RO        12994    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0801385c, Size: 0x0000de40, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x000001ac])
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080138b8, Size: 0x0000de40, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x000001ac])
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -7171,7 +7171,7 @@ Image component sizes
        184          6          0          0          0        882   dma.o
          0          0          0          0          0      16452   event_groups.o
        336         58        297         36       1704       4145   freertos.o
-      2496        186         28         22        564      11818   gimbal_task.o
+      2588        194         28         22        564      11994   gimbal_task.o
        596         30          0          0          0     677783   gpio.o
        492         32          0         24      24576       5083   heap_4.o
        700         80          0          0        348       3192   i2c.o
@@ -7234,7 +7234,7 @@ Image component sizes
        832         26          0         24          0       9204   user_lib.o
 
     ----------------------------------------------------------------------
-     65936       3752       2384       1904      54896    4508509   Object Totals
+     66028       3760       2384       1904      54896    4508685   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         72          0          6         28          7          0   (incl. Padding)
 
@@ -7345,15 +7345,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     75528       4262       4436       1904      54992    4491733   Grand Totals
-     75528       4262       4436        428      54992    4491733   ELF Image Totals (compressed)
-     75528       4262       4436        428          0          0   ROM Totals
+     75620       4270       4436       1904      54992    4491909   Grand Totals
+     75620       4270       4436        428      54992    4491909   ELF Image Totals (compressed)
+     75620       4270       4436        428          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                79964 (  78.09kB)
+    Total RO  Size (Code + RO Data)                80056 (  78.18kB)
     Total RW  Size (RW Data + ZI Data)             56896 (  55.56kB)
-    Total ROM Size (Code + RO Data + RW Data)      80392 (  78.51kB)
+    Total ROM Size (Code + RO Data + RW Data)      80484 (  78.60kB)
 
 ==============================================================================
 

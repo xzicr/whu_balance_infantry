@@ -367,18 +367,34 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   {
     chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
   }
-  else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 1)
-  {
-    if(gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle==0||Self_aim_data->mode==0)
+else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && aimflag == 1)
+{
+    float new_yaw_angle;
+    if(gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle == 0 || Self_aim_data->mode == 0)
     {
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+        new_yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     }
     else
     {
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle;
+        new_yaw_angle = gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle;
+        
+        // ? 新增：计算角度跳变并补偿
+        float angle_diff = new_yaw_angle - chassis_data->yaw_angle_set;
+        
+        // 规范到 [-180, 180] 范围
+        while (angle_diff > 180.0f) {
+            angle_diff -= 360.0f;
+        } 
+        while (angle_diff < -180.0f) {
+            angle_diff += 360.0f;
+        }
+        
+        // 累加补偿到 yaw_angle_set
+        new_yaw_angle = chassis_data->yaw_angle_set + angle_diff;
     }
     
-  }
+    chassis_data->yaw_angle_set = new_yaw_angle;
+}
   if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && turnflag == 1)
    {
     chassis_data->yaw_angle_set += 180;
