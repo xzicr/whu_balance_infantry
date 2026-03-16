@@ -371,7 +371,7 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   {
     if(gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle==0||Self_aim_data->mode==0)
     {
-      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.absolute_angle_set;
+      chassis_data->yaw_angle_set = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
     }
     else
     {
