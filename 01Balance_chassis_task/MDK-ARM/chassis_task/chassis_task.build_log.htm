@@ -27,14 +27,6 @@ Project File Date:  02/27/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
-compiling iwdg_task.c...
-..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-..\application\iwdg_task.c(41): warning:  #1-D: last line of file ends without a newline
-  }
-..\application\iwdg_task.c: 3 warnings, 0 errors
 compiling chassis_behaviour.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
@@ -47,142 +39,14 @@ compiling chassis_behaviour.c...
 ..\application\chassis_behaviour.c(430): warning:  #177-D: function "chassis_open_set_control"  was declared but never referenced
   static void chassis_open_set_control(fp32 *vx_set, fp32 *vy_set, fp32 *wz_set, chassis_move_t *chassis_move_rc_to_vector)
 ..\application\chassis_behaviour.c: 5 warnings, 0 errors
-compiling Can_task.c...
+compiling iwdg_task.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
 ..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
   extern void shoot_init();
-..\application\Can_task.c(47): warning:  #1-D: last line of file ends without a newline
+..\application\iwdg_task.c(41): warning:  #1-D: last line of file ends without a newline
   }
-..\application\Can_task.c: 3 warnings, 0 errors
-compiling referee_usart_task.c...
-..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
-  const chassis_data_t *get_Uart_Chassisdata_point();
-../components/UI/ui_default.h(14): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicBottomGroup - give arg types
-  void ui_init_default_DynamicBottomGroup();
-../components/UI/ui_default.h(15): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicBottomGroup - give arg types
-  void ui_update_default_DynamicBottomGroup();
-../components/UI/ui_default.h(16): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicBottomGroup - give arg types
-  void ui_remove_default_DynamicBottomGroup();
-../components/UI/ui_default.h(21): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicLeftGroup - give arg types
-  void ui_init_default_DynamicLeftGroup();
-../components/UI/ui_default.h(22): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicLeftGroup - give arg types
-  void ui_update_default_DynamicLeftGroup();
-../components/UI/ui_default.h(23): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicLeftGroup - give arg types
-  void ui_remove_default_DynamicLeftGroup();
-../components/UI/ui_default.h(27): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicHightGroup - give arg types
-  void ui_init_default_DynamicHightGroup() ;
-../components/UI/ui_default.h(28): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicHightGroup - give arg types
-  void ui_update_default_DynamicHightGroup() ;
-../components/UI/ui_default.h(29): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicHightGroup - give arg types
-  void ui_remove_default_DynamicHightGroup() ;
-../components/UI/ui_default.h(35): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicRightGroup - give arg types
-  void ui_init_default_DynamicRightGroup();
-../components/UI/ui_default.h(36): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicRightGroup - give arg types
-  void ui_update_default_DynamicRightGroup();
-../components/UI/ui_default.h(37): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicRightGroup - give arg types
-  void ui_remove_default_DynamicRightGroup();
-../components/UI/ui_default.h(45): warning:  #1295-D: Deprecated declaration ui_init_default_StaticGroup - give arg types
-  void ui_init_default_StaticGroup();
-../components/UI/ui_default.h(46): warning:  #1295-D: Deprecated declaration ui_update_default_StaticGroup - give arg types
-  void ui_update_default_StaticGroup();
-../components/UI/ui_default.h(47): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticGroup - give arg types
-  void ui_remove_default_StaticGroup();
-../components/UI/ui_default.h(55): warning:  #1295-D: Deprecated declaration ui_init_default_StaticLeftGroup - give arg types
-  void ui_init_default_StaticLeftGroup();
-../components/UI/ui_default.h(56): warning:  #1295-D: Deprecated declaration ui_update_default_StaticLeftGroup - give arg types
-  void ui_update_default_StaticLeftGroup();
-../components/UI/ui_default.h(57): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticLeftGroup - give arg types
-  void ui_remove_default_StaticLeftGroup();
-../components/UI/ui_default.h(62): warning:  #1295-D: Deprecated declaration ui_init_default_StaticMiddleGroup - give arg types
-  void ui_init_default_StaticMiddleGroup();
-../components/UI/ui_default.h(63): warning:  #1295-D: Deprecated declaration ui_update_default_StaticMiddleGroup - give arg types
-  void ui_update_default_StaticMiddleGroup();
-../components/UI/ui_default.h(64): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticMiddleGroup - give arg types
-  void ui_remove_default_StaticMiddleGroup();
-../components/UI/ui.h(27): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicBottomGroup - give arg types
-  void ui_init_default_DynamicBottomGroup();
-../components/UI/ui.h(28): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicBottomGroup - give arg types
-  void ui_update_default_DynamicBottomGroup();
-../components/UI/ui.h(29): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicBottomGroup - give arg types
-  void ui_remove_default_DynamicBottomGroup();
-../components/UI/ui.h(31): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicLeftGroup - give arg types
-  void ui_init_default_DynamicLeftGroup();
-../components/UI/ui.h(32): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicLeftGroup - give arg types
-  void ui_update_default_DynamicLeftGroup();
-../components/UI/ui.h(33): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicLeftGroup - give arg types
-  void ui_remove_default_DynamicLeftGroup();
-../components/UI/ui.h(35): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicRightGroup - give arg types
-  void ui_init_default_DynamicRightGroup();
-../components/UI/ui.h(36): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicRightGroup - give arg types
-  void ui_update_default_DynamicRightGroup();
-../components/UI/ui.h(37): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicRightGroup - give arg types
-  void ui_remove_default_DynamicRightGroup();
-../components/UI/ui.h(39): warning:  #1295-D: Deprecated declaration ui_init_default_StaticGroup - give arg types
-  void ui_init_default_StaticGroup();
-../components/UI/ui.h(40): warning:  #1295-D: Deprecated declaration ui_update_default_StaticGroup - give arg types
-  void ui_update_default_StaticGroup();
-../components/UI/ui.h(41): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticGroup - give arg types
-  void ui_remove_default_StaticGroup();
-../components/UI/ui.h(43): warning:  #1295-D: Deprecated declaration ui_init_default_StaticLeftGroup - give arg types
-  void ui_init_default_StaticLeftGroup();
-../components/UI/ui.h(44): warning:  #1295-D: Deprecated declaration ui_update_default_StaticLeftGroup - give arg types
-  void ui_update_default_StaticLeftGroup();
-../components/UI/ui.h(45): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticLeftGroup - give arg types
-  void ui_remove_default_StaticLeftGroup();
-../components/UI/ui.h(47): warning:  #1295-D: Deprecated declaration ui_init_default_StaticMiddleGroup - give arg types
-  void ui_init_default_StaticMiddleGroup();
-../components/UI/ui.h(48): warning:  #1295-D: Deprecated declaration ui_update_default_StaticMiddleGroup - give arg types
-  void ui_update_default_StaticMiddleGroup();
-../components/UI/ui.h(49): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticMiddleGroup - give arg types
-  void ui_remove_default_StaticMiddleGroup();
-../components/UI/ui_frame1.h(13): warning:  #1295-D: Deprecated declaration ui_init_frame1_DynamicNumberGroup - give arg types
-  void ui_init_frame1_DynamicNumberGroup();
-../components/UI/ui_frame1.h(14): warning:  #1295-D: Deprecated declaration ui_update_frame1_DynamicNumberGroup - give arg types
-  void ui_update_frame1_DynamicNumberGroup();
-../components/UI/ui_frame1.h(15): warning:  #1295-D: Deprecated declaration ui_remove_frame1_DynamicNumberGroup - give arg types
-  void ui_remove_frame1_DynamicNumberGroup();
-../components/UI/ui_frame1.h(23): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticNumberGroup - give arg types
-  void ui_init_frame1_StaticNumberGroup();
-../components/UI/ui_frame1.h(24): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticNumberGroup - give arg types
-  void ui_update_frame1_StaticNumberGroup();
-../components/UI/ui_frame1.h(25): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticNumberGroup - give arg types
-  void ui_remove_frame1_StaticNumberGroup();
-../components/UI/ui_frame1.h(33): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticTextGroup - give arg types
-  void ui_init_frame1_StaticTextGroup();
-../components/UI/ui_frame1.h(34): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticTextGroup - give arg types
-  void ui_update_frame1_StaticTextGroup();
-../components/UI/ui_frame1.h(35): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticTextGroup - give arg types
-  void ui_remove_frame1_StaticTextGroup();
-../components/UI/ui.h(52): warning:  #1295-D: Deprecated declaration ui_init_frame1_DynamicNumberGroup - give arg types
-  void ui_init_frame1_DynamicNumberGroup();
-../components/UI/ui.h(53): warning:  #1295-D: Deprecated declaration ui_update_frame1_DynamicNumberGroup - give arg types
-  void ui_update_frame1_DynamicNumberGroup();
-../components/UI/ui.h(54): warning:  #1295-D: Deprecated declaration ui_remove_frame1_DynamicNumberGroup - give arg types
-  void ui_remove_frame1_DynamicNumberGroup();
-../components/UI/ui.h(56): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticNumberGroup - give arg types
-  void ui_init_frame1_StaticNumberGroup();
-../components/UI/ui.h(57): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticNumberGroup - give arg types
-  void ui_update_frame1_StaticNumberGroup();
-../components/UI/ui.h(58): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticNumberGroup - give arg types
-  void ui_remove_frame1_StaticNumberGroup();
-../components/UI/ui.h(60): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticTextGroup - give arg types
-  void ui_init_frame1_StaticTextGroup();
-../components/UI/ui.h(61): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticTextGroup - give arg types
-  void ui_update_frame1_StaticTextGroup();
-../components/UI/ui.h(62): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticTextGroup - give arg types
-  void ui_remove_frame1_StaticTextGroup();
-..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-..\application\referee_usart_task.c: 60 warnings, 0 errors
-compiling LQR.c...
-../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-..\components\algorithm\LQR.c: 2 warnings, 0 errors
+..\application\iwdg_task.c: 3 warnings, 0 errors
 compiling motor_cmd.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
@@ -191,16 +55,6 @@ compiling motor_cmd.c...
 ..\application\motor_cmd.c(14): warning:  #1-D: last line of file ends without a newline
   }
 ..\application\motor_cmd.c: 3 warnings, 0 errors
-compiling gimbal_task.c...
-..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
-  const chassis_data_t *get_Uart_Chassisdata_point();
-..\application\gimbal_task.c(68): warning:  #174-D: expression has no effect
-  		gimbal_control->gimbal_yaw_motor.yaw_given_current;
-..\application\gimbal_task.c: 4 warnings, 0 errors
 compiling Chassis_power_control.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
@@ -211,6 +65,63 @@ compiling Chassis_power_control.c...
 ..\application\Chassis_power_control.c(15): warning:  #177-D: variable "Power"  was declared but never referenced
   static float Power,Power_Buffer;
 ..\application\Chassis_power_control.c: 4 warnings, 0 errors
+compiling balance_filter.c...
+../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+..\components\filter\balance_filter.c: 2 warnings, 0 errors
+compiling LQR.c...
+../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+..\components\algorithm\LQR.c: 2 warnings, 0 errors
+compiling main.c...
+../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+../Src/main.c: 2 warnings, 0 errors
+compiling chassis_task.c...
+..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
+  const chassis_data_t *get_Uart_Chassisdata_point();
+..\application\chassis_task.c(250): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	chassis_move_init->foot_motor_L.distance_offset = (chassis_move_init->foot_motor_L.position / 360.0f) * 
+HEEL_PERIMETER;
+..\application\chassis_task.c(251): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	chassis_move_init->foot_motor_R.distance_offset = ((360.0f - chassis_move_init->foot_motor_R.position )/ 360.0f) * 
+HEEL_PERIMETER;
+..\application\chassis_task.c(368): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	fdb->foot_motor_L.distance = (fdb->foot_motor_L.position / 360.0f + fdb->foot_motor_L.turns) * 
+HEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
+..\application\chassis_task.c(369): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	fdb->foot_motor_R.distance = ((360.0f - fdb->foot_motor_R.position) / 360.0f + fdb->foot_motor_R.turns) * 
+HEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
+..\application\chassis_task.c(790): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  					else if (target_value_set->chassis_data_->wz_set > 
+HASSIS_RC_WZ_DEADLINE)
+..\application\chassis_task.c(1110): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_balancing_torque_L = (
+..\application\chassis_task.c(1116): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_moving_torque_L = (
+..\application\chassis_task.c(1122): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_balancing_torque_R = -(
+..\application\chassis_task.c(1128): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_moving_torque_R = -(
+..\application\chassis_task.c(1321): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
+..\application\chassis_task.c(1446): warning:  #177-D: variable "dL0"  was declared but never referenced
+  	fp32 dL0 = 0, L0 = 0, Q0 = 0, S0 = 0;
+..\application\chassis_task.c(1448): warning:  #550-D: variable "S3"  was set but never used
+  	fp32 A0, B0, C0, Q2, Q3, S2, S3;
+..\application\chassis_task.c(1641): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          chassis->torque_info.foot_balancing_torque_L= 0.01*chassis->torque_info.foot_balancing_torque_L;
+..\application\chassis_task.c: 16 warnings, 0 errors
 compiling test_task.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
@@ -339,6 +250,138 @@ compiling test_task.c...
 ..\application\test_task.c(119): warning:  #177-D: function "buzzer_warn_error"  was declared but never referenced
   static void buzzer_warn_error(uint8_t num)
 ..\application\test_task.c: 63 warnings, 0 errors
+compiling gimbal_task.c...
+..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
+  const chassis_data_t *get_Uart_Chassisdata_point();
+..\application\gimbal_task.c(68): warning:  #174-D: expression has no effect
+  		gimbal_control->gimbal_yaw_motor.yaw_given_current;
+..\application\gimbal_task.c: 4 warnings, 0 errors
+compiling referee_usart_task.c...
+..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
+  const chassis_data_t *get_Uart_Chassisdata_point();
+../components/UI/ui_default.h(14): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicBottomGroup - give arg types
+  void ui_init_default_DynamicBottomGroup();
+../components/UI/ui_default.h(15): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicBottomGroup - give arg types
+  void ui_update_default_DynamicBottomGroup();
+../components/UI/ui_default.h(16): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicBottomGroup - give arg types
+  void ui_remove_default_DynamicBottomGroup();
+../components/UI/ui_default.h(21): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicLeftGroup - give arg types
+  void ui_init_default_DynamicLeftGroup();
+../components/UI/ui_default.h(22): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicLeftGroup - give arg types
+  void ui_update_default_DynamicLeftGroup();
+../components/UI/ui_default.h(23): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicLeftGroup - give arg types
+  void ui_remove_default_DynamicLeftGroup();
+../components/UI/ui_default.h(27): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicHightGroup - give arg types
+  void ui_init_default_DynamicHightGroup() ;
+../components/UI/ui_default.h(28): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicHightGroup - give arg types
+  void ui_update_default_DynamicHightGroup() ;
+../components/UI/ui_default.h(29): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicHightGroup - give arg types
+  void ui_remove_default_DynamicHightGroup() ;
+../components/UI/ui_default.h(35): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicRightGroup - give arg types
+  void ui_init_default_DynamicRightGroup();
+../components/UI/ui_default.h(36): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicRightGroup - give arg types
+  void ui_update_default_DynamicRightGroup();
+../components/UI/ui_default.h(37): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicRightGroup - give arg types
+  void ui_remove_default_DynamicRightGroup();
+../components/UI/ui_default.h(45): warning:  #1295-D: Deprecated declaration ui_init_default_StaticGroup - give arg types
+  void ui_init_default_StaticGroup();
+../components/UI/ui_default.h(46): warning:  #1295-D: Deprecated declaration ui_update_default_StaticGroup - give arg types
+  void ui_update_default_StaticGroup();
+../components/UI/ui_default.h(47): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticGroup - give arg types
+  void ui_remove_default_StaticGroup();
+../components/UI/ui_default.h(55): warning:  #1295-D: Deprecated declaration ui_init_default_StaticLeftGroup - give arg types
+  void ui_init_default_StaticLeftGroup();
+../components/UI/ui_default.h(56): warning:  #1295-D: Deprecated declaration ui_update_default_StaticLeftGroup - give arg types
+  void ui_update_default_StaticLeftGroup();
+../components/UI/ui_default.h(57): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticLeftGroup - give arg types
+  void ui_remove_default_StaticLeftGroup();
+../components/UI/ui_default.h(62): warning:  #1295-D: Deprecated declaration ui_init_default_StaticMiddleGroup - give arg types
+  void ui_init_default_StaticMiddleGroup();
+../components/UI/ui_default.h(63): warning:  #1295-D: Deprecated declaration ui_update_default_StaticMiddleGroup - give arg types
+  void ui_update_default_StaticMiddleGroup();
+../components/UI/ui_default.h(64): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticMiddleGroup - give arg types
+  void ui_remove_default_StaticMiddleGroup();
+../components/UI/ui.h(27): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicBottomGroup - give arg types
+  void ui_init_default_DynamicBottomGroup();
+../components/UI/ui.h(28): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicBottomGroup - give arg types
+  void ui_update_default_DynamicBottomGroup();
+../components/UI/ui.h(29): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicBottomGroup - give arg types
+  void ui_remove_default_DynamicBottomGroup();
+../components/UI/ui.h(31): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicLeftGroup - give arg types
+  void ui_init_default_DynamicLeftGroup();
+../components/UI/ui.h(32): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicLeftGroup - give arg types
+  void ui_update_default_DynamicLeftGroup();
+../components/UI/ui.h(33): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicLeftGroup - give arg types
+  void ui_remove_default_DynamicLeftGroup();
+../components/UI/ui.h(35): warning:  #1295-D: Deprecated declaration ui_init_default_DynamicRightGroup - give arg types
+  void ui_init_default_DynamicRightGroup();
+../components/UI/ui.h(36): warning:  #1295-D: Deprecated declaration ui_update_default_DynamicRightGroup - give arg types
+  void ui_update_default_DynamicRightGroup();
+../components/UI/ui.h(37): warning:  #1295-D: Deprecated declaration ui_remove_default_DynamicRightGroup - give arg types
+  void ui_remove_default_DynamicRightGroup();
+../components/UI/ui.h(39): warning:  #1295-D: Deprecated declaration ui_init_default_StaticGroup - give arg types
+  void ui_init_default_StaticGroup();
+../components/UI/ui.h(40): warning:  #1295-D: Deprecated declaration ui_update_default_StaticGroup - give arg types
+  void ui_update_default_StaticGroup();
+../components/UI/ui.h(41): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticGroup - give arg types
+  void ui_remove_default_StaticGroup();
+../components/UI/ui.h(43): warning:  #1295-D: Deprecated declaration ui_init_default_StaticLeftGroup - give arg types
+  void ui_init_default_StaticLeftGroup();
+../components/UI/ui.h(44): warning:  #1295-D: Deprecated declaration ui_update_default_StaticLeftGroup - give arg types
+  void ui_update_default_StaticLeftGroup();
+../components/UI/ui.h(45): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticLeftGroup - give arg types
+  void ui_remove_default_StaticLeftGroup();
+../components/UI/ui.h(47): warning:  #1295-D: Deprecated declaration ui_init_default_StaticMiddleGroup - give arg types
+  void ui_init_default_StaticMiddleGroup();
+../components/UI/ui.h(48): warning:  #1295-D: Deprecated declaration ui_update_default_StaticMiddleGroup - give arg types
+  void ui_update_default_StaticMiddleGroup();
+../components/UI/ui.h(49): warning:  #1295-D: Deprecated declaration ui_remove_default_StaticMiddleGroup - give arg types
+  void ui_remove_default_StaticMiddleGroup();
+../components/UI/ui_frame1.h(13): warning:  #1295-D: Deprecated declaration ui_init_frame1_DynamicNumberGroup - give arg types
+  void ui_init_frame1_DynamicNumberGroup();
+../components/UI/ui_frame1.h(14): warning:  #1295-D: Deprecated declaration ui_update_frame1_DynamicNumberGroup - give arg types
+  void ui_update_frame1_DynamicNumberGroup();
+../components/UI/ui_frame1.h(15): warning:  #1295-D: Deprecated declaration ui_remove_frame1_DynamicNumberGroup - give arg types
+  void ui_remove_frame1_DynamicNumberGroup();
+../components/UI/ui_frame1.h(23): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticNumberGroup - give arg types
+  void ui_init_frame1_StaticNumberGroup();
+../components/UI/ui_frame1.h(24): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticNumberGroup - give arg types
+  void ui_update_frame1_StaticNumberGroup();
+../components/UI/ui_frame1.h(25): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticNumberGroup - give arg types
+  void ui_remove_frame1_StaticNumberGroup();
+../components/UI/ui_frame1.h(33): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticTextGroup - give arg types
+  void ui_init_frame1_StaticTextGroup();
+../components/UI/ui_frame1.h(34): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticTextGroup - give arg types
+  void ui_update_frame1_StaticTextGroup();
+../components/UI/ui_frame1.h(35): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticTextGroup - give arg types
+  void ui_remove_frame1_StaticTextGroup();
+../components/UI/ui.h(52): warning:  #1295-D: Deprecated declaration ui_init_frame1_DynamicNumberGroup - give arg types
+  void ui_init_frame1_DynamicNumberGroup();
+../components/UI/ui.h(53): warning:  #1295-D: Deprecated declaration ui_update_frame1_DynamicNumberGroup - give arg types
+  void ui_update_frame1_DynamicNumberGroup();
+../components/UI/ui.h(54): warning:  #1295-D: Deprecated declaration ui_remove_frame1_DynamicNumberGroup - give arg types
+  void ui_remove_frame1_DynamicNumberGroup();
+../components/UI/ui.h(56): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticNumberGroup - give arg types
+  void ui_init_frame1_StaticNumberGroup();
+../components/UI/ui.h(57): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticNumberGroup - give arg types
+  void ui_update_frame1_StaticNumberGroup();
+../components/UI/ui.h(58): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticNumberGroup - give arg types
+  void ui_remove_frame1_StaticNumberGroup();
+../components/UI/ui.h(60): warning:  #1295-D: Deprecated declaration ui_init_frame1_StaticTextGroup - give arg types
+  void ui_init_frame1_StaticTextGroup();
+../components/UI/ui.h(61): warning:  #1295-D: Deprecated declaration ui_update_frame1_StaticTextGroup - give arg types
+  void ui_update_frame1_StaticTextGroup();
+../components/UI/ui.h(62): warning:  #1295-D: Deprecated declaration ui_remove_frame1_StaticTextGroup - give arg types
+  void ui_remove_frame1_StaticTextGroup();
+..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+..\application\referee_usart_task.c: 60 warnings, 0 errors
 compiling freertos.c...
 ../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
@@ -347,61 +390,10 @@ compiling freertos.c...
 ../application/uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
   const chassis_data_t *get_Uart_Chassisdata_point();
 ../Src/freertos.c: 3 warnings, 0 errors
-compiling main.c...
-../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-../Src/main.c: 2 warnings, 0 errors
-compiling balance_filter.c...
-../application/shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-../application/shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-..\components\filter\balance_filter.c: 2 warnings, 0 errors
-compiling chassis_task.c...
-..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
-..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
-  const chassis_data_t *get_Uart_Chassisdata_point();
-..\application\chassis_task.c(250): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	chassis_move_init->foot_motor_L.distance_offset = (chassis_move_init->foot_motor_L.position / 360.0f) * 
-HEEL_PERIMETER;
-..\application\chassis_task.c(251): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	chassis_move_init->foot_motor_R.distance_offset = ((360.0f - chassis_move_init->foot_motor_R.position )/ 360.0f) * 
-HEEL_PERIMETER;
-..\application\chassis_task.c(368): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	fdb->foot_motor_L.distance = (fdb->foot_motor_L.position / 360.0f + fdb->foot_motor_L.turns) * 
-HEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
-..\application\chassis_task.c(369): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  	fdb->foot_motor_R.distance = ((360.0f - fdb->foot_motor_R.position) / 360.0f + fdb->foot_motor_R.turns) * 
-HEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
-..\application\chassis_task.c(790): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  					else if (target_value_set->chassis_data_->wz_set > 
-HASSIS_RC_WZ_DEADLINE)
-..\application\chassis_task.c(1110): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_balancing_torque_L = (
-..\application\chassis_task.c(1116): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_moving_torque_L = (
-..\application\chassis_task.c(1122): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_balancing_torque_R = -(
-..\application\chassis_task.c(1128): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		bl_ctrl->torque_info.foot_moving_torque_R = -(
-..\application\chassis_task.c(1321): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
-..\application\chassis_task.c(1446): warning:  #177-D: variable "dL0"  was declared but never referenced
-  	fp32 dL0 = 0, L0 = 0, Q0 = 0, S0 = 0;
-..\application\chassis_task.c(1448): warning:  #550-D: variable "S3"  was set but never used
-  	fp32 A0, B0, C0, Q2, Q3, S2, S3;
-..\application\chassis_task.c(1641): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-          chassis->torque_info.foot_balancing_torque_L= 0.01*chassis->torque_info.foot_balancing_torque_L;
-..\application\chassis_task.c: 16 warnings, 0 errors
 linking...
-Program Size: Code=97012 RO-data=7888 RW-data=2164 ZI-data=55484  
+Program Size: Code=97020 RO-data=7888 RW-data=2164 ZI-data=55484  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 170 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 167 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -424,7 +416,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:15
+Build Time Elapsed:  00:00:11
 </pre>
 </body>
 </html>
