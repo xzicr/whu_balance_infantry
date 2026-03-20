@@ -285,7 +285,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_C)
   {
-    chassis_data->high_set = 0.13f;
+    chassis_data->high_set = 0.15f;
   }
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Z && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL)
