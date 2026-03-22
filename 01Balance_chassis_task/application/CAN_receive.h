@@ -182,6 +182,7 @@ extern void CAN_cmd_chassis_reset_ID(void);
 extern void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 extern void CAN_cmd_gimbal(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 
+
 extern void CAN_cmd_referee_data(uint8_t color);
 extern void CAN_INIT_STATUS(uint8_t status);
 /* -----------------------HT_func------------------------- */
