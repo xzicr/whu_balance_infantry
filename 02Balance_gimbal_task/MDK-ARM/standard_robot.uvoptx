@@ -173,6 +173,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>Usart_Receive</ItemText>
         </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>shoot_control</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>

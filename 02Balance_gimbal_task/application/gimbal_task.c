@@ -242,36 +242,36 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
 {
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
-    chassis_data->vx_set = 4;
+    chassis_data->vx_set = 2;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S)
   {
-    chassis_data->vx_set = -4;
+    chassis_data->vx_set = -2;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A)
   {
-    chassis_data->wz_set = 8.0;
+    chassis_data->wz_set = 2;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D)
   {
-    chassis_data->wz_set = -8.0;
+    chassis_data->wz_set = -2;
   }
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = 8;
+    chassis_data->vx_set = 3;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = -8;
+    chassis_data->vx_set = -3;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->wz_set = 12.0;
+    chassis_data->wz_set = 3;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->wz_set = -12.0;
+    chassis_data->wz_set = -3;
   }
   
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_G||gimbal_control_set->gimbal_rc_ctrl->rc.s[2] == 1)
@@ -298,7 +298,8 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     chassis_data->high_set -= 0.0002f;
     fp32_constrain(chassis_data->high_set, 0.1, 0.34);
   }
-  if (gimbal_control_set->aim_press==1&& gimbal_control_set->aim_last_press==0)
+  if ((gimbal_control_set->aim_press==1&& gimbal_control_set->aim_last_press==0) || 
+  (gimbal_control_set->press_r == 1&& gimbal_control_set->last_press_r == 0))
   {
     aimflag = !aimflag;
     if(aimflag)
@@ -310,10 +311,10 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
       chassis_data->auto_flag = 0;
     }
   }
-  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_F && (gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_F) == 0)
-  {
-    turnflag = 1;
-  }
+  // if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_F && (gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_F) == 0)
+  // {
+  //   turnflag = 1;
+  // }
   chassis_data->shoot_mode = shoot_control.shoot_mode;
   switch(shoot_control.shoot_mode)
   {
@@ -475,6 +476,8 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
   // 键鼠数据获取
   feedback_update->last_press_l = feedback_update->press_l;
   feedback_update->press_l = feedback_update->gimbal_rc_ctrl->mouse.press_l;
+  feedback_update->last_press_r = feedback_update->press_r;
+  feedback_update->press_r = feedback_update->gimbal_rc_ctrl->mouse.press_r;
   feedback_update->lastkeyboard = feedback_update->keyboard;
   feedback_update->keyboard = feedback_update->gimbal_rc_ctrl->key.v;
   feedback_update->aim_last_press = feedback_update->aim_press;

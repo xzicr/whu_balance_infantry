@@ -219,6 +219,8 @@ typedef struct
   const shoot_control_t *shoot;
   bool_t press_l;
   bool_t last_press_l;
+  bool_t last_press_r;
+  bool_t press_r;
   uint16_t keyboard;
   uint16_t lastkeyboard;
   uint8_t aim_press,aim_last_press;

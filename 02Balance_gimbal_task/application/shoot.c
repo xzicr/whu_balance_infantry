@@ -51,12 +51,12 @@ void shoot_feedback_update()
 {
 	//当前值记录
 	shoot_control.last_press_l = shoot_control.press_l;
-	shoot_control.last_press_r = shoot_control.press_r;
 	shoot_control.last_press_fric = shoot_control.press_fric;
+	shoot_control.last_keyboard = shoot_control.keyboard;
 	shoot_control.last_press_shoot = shoot_control.press_shoot;
 	//更新值
 	shoot_control.press_l = shoot_control.shoot_rc->mouse.press_l;
-	shoot_control.press_r = shoot_control.shoot_rc->mouse.press_r;
+	shoot_control.keyboard = shoot_control.shoot_rc->key.v;
 	shoot_control.press_fric = shoot_control.shoot_rc->rc.s[3];
 	shoot_control.press_shoot = shoot_control.shoot_rc->rc.s[4];
 	
@@ -79,7 +79,7 @@ void shoot_speed_filter()
 void shoot_set_mode()
 {
 	if((shoot_control.press_fric==1&&shoot_control.last_press_fric==0)
-	||(shoot_control.press_r ==1 && 	shoot_control.last_press_r ==0))	//右上角自定义按键
+	||((shoot_control.keyboard & KEY_PRESSED_OFFSET_F) && (shoot_control.last_keyboard& KEY_PRESSED_OFFSET_F)==0))	//右上角自定义按键
 	{
 		fric_flag = !fric_flag;		//1 -> 开启摩擦轮  0 -> 关闭摩擦轮
 		continue_flag = 0;

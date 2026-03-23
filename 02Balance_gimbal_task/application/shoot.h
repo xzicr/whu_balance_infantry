@@ -82,6 +82,7 @@ typedef struct
 	int16_t shoot_right_given_current;
 	bool_t press_l,last_press_l;
     bool_t press_r,last_press_r;
+    uint16_t keyboard,last_keyboard;
     bool_t press_fric,last_press_fric;
     bool_t press_shoot,last_press_shoot;
     uint16_t press_l_time;
