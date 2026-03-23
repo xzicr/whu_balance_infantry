@@ -167,7 +167,7 @@
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 20.0f
+#define FEED_f 35.0f
 
 
 #define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET 0.0f
