@@ -301,7 +301,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =-166.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =83.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
 
 }
@@ -726,7 +726,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-0.8f,0.8f);
+		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.0f,1.0f);
 	}
 	else 
 	{
