@@ -208,7 +208,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
 	/*----------------------- Set HT Zero Point ---------------------- */
 	
-	vTaskDelay(500);
+	vTaskDelay(2000);
 	HT_Motor_zero_set();
 	Motor_Zero_CMD_Send();
 	vTaskDelay(1);
@@ -490,15 +490,29 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 		chassis_move_mode->joint_motor_4.motor_mode = MOTOR_FORCE;
 		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_FORCE;
 		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_FORCE;
+		uint32_t current_tick = xTaskGetTickCount();
+		uint32_t timeout_threshold = pdMS_TO_TICKS(100);  // 100ms超时
+
+		if (current_tick - chassis_move_mode->foot_motor_L.motor_measure->last_update_time > timeout_threshold ||
+			current_tick - chassis_move_mode->foot_motor_R.motor_measure->last_update_time > timeout_threshold)
+		{
+			// 轮毂电机离线，让髋关节失能
+			chassis_move_mode->joint_motor_1.motor_mode = MOTOR_NO_FORCE;
+			chassis_move_mode->joint_motor_2.motor_mode = MOTOR_NO_FORCE;
+			chassis_move_mode->joint_motor_3.motor_mode = MOTOR_NO_FORCE;
+			chassis_move_mode->joint_motor_4.motor_mode = MOTOR_NO_FORCE;
+		}
 	}
 	else if (chassis_move_mode->mode.chassis_mode == DEBUG_CHASSIS)
 	{
+		// 检测轮毂电机超时
 		chassis_move_mode->joint_motor_1.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->joint_motor_2.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->joint_motor_3.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->joint_motor_4.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_FORCE;
 		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_FORCE;
+
 	}
 	else
 	{

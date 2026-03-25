@@ -166,11 +166,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
       case CAN_LK_MOTOR_ID1:
       {
         get_lkmotor_measure(&lkmotor_data[0], rx_data);
+        lkmotor_data[0].last_update_time = xTaskGetTickCount(); 
         break;
       }
       case CAN_LK_MOTOR_ID2:
       {
         get_lkmotor_measure(&lkmotor_data[1], rx_data);
+        lkmotor_data[1].last_update_time = xTaskGetTickCount(); 
         break;
       }
       case CAN_YAW_MOTOR_ID:

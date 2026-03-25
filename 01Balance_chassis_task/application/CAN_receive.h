@@ -96,6 +96,7 @@ typedef struct
 	uint16_t encoder;
 	uint16_t last_encoder;
 	float angle;
+  uint32_t last_update_time;
 }lkmotor_measure_t;
 
 typedef struct 
