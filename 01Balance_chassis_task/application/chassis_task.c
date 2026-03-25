@@ -123,7 +123,7 @@ fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01
 fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.02;
 fp32 rc_sign;
-fp32 normal_move_scale = 0.6f;
+fp32 normal_move_scale = 0.3f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
 
@@ -455,11 +455,11 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	Y_speed = fdb->chassis_data_->vy_set;
 	if(X_speed>=0)
 	{
-		normalized_speed = fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-8.0f,8.0f);
+		normalized_speed = fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-4.0f,4.0f);
 	}
 	else
 	{
-		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-8.0f,8.0f);
+		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-4.0f,4.0f);
 	}
 	normalized_speed = normalized_speed*rc_sign;
 
@@ -475,8 +475,10 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 		return;
 	}
 	/* --------------------------------set chassis mode -------------------------------- */
-	if (chassis_move_mode->chassis_data_->chassis_mode == CHASSIS_MODE_OFF||chassis_move_mode->chassis_data_->chassis_mode == CHASSIS_MODE_DEBUG)
+	if (chassis_move_mode->chassis_data_->chassis_mode == CHASSIS_MODE_OFF)
 		chassis_move_mode->mode.chassis_mode = DISABLE_CHASSIS;
+	else if (chassis_move_mode->chassis_data_->chassis_mode == CHASSIS_MODE_DEBUG)
+		chassis_move_mode->mode.chassis_mode = DEBUG_CHASSIS;
 	else
 		chassis_move_mode->mode.chassis_mode = ENABLE_CHASSIS;
 
@@ -486,6 +488,15 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 		chassis_move_mode->joint_motor_2.motor_mode = MOTOR_FORCE;
 		chassis_move_mode->joint_motor_3.motor_mode = MOTOR_FORCE;
 		chassis_move_mode->joint_motor_4.motor_mode = MOTOR_FORCE;
+		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_FORCE;
+		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_FORCE;
+	}
+	else if (chassis_move_mode->mode.chassis_mode == DEBUG_CHASSIS)
+	{
+		chassis_move_mode->joint_motor_1.motor_mode = MOTOR_NO_FORCE;
+		chassis_move_mode->joint_motor_2.motor_mode = MOTOR_NO_FORCE;
+		chassis_move_mode->joint_motor_3.motor_mode = MOTOR_NO_FORCE;
+		chassis_move_mode->joint_motor_4.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_FORCE;
 		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_FORCE;
 	}
@@ -701,7 +712,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.8f,2.8f);
+		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-0.8f,0.8f);
 	}
 	else 
 	{

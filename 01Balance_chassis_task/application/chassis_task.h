@@ -198,6 +198,7 @@
 {
     ENABLE_CHASSIS = 0,
     DISABLE_CHASSIS,
+    DEBUG_CHASSIS,
 } chassis_mode_e;
 
 
