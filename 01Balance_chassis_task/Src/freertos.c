@@ -189,7 +189,7 @@ void MX_FREERTOS_Init(void)
   osThreadDef(UART_RECEIVE, uart_start_task, osPriorityNormal, 0, 128);
   setpower_handle = osThreadCreate(osThread(UART_RECEIVE), NULL);
 
-  osThreadDef(MOTOR_CMD, motor_cmd_task, osPriorityNormal, 0, 128);
+  osThreadDef(MOTOR_CMD, motor_cmd_task, osPriorityAboveNormal, 0, 256);
   motor_cmd_handle = osThreadCreate(osThread(MOTOR_CMD), NULL);
 
   osThreadDef(IWDG_TASK, iwdg_task, osPriorityAboveNormal, 0, 128);
