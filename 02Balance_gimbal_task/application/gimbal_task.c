@@ -361,6 +361,7 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;
+    chassis_data->high_set = 0.15f;
   }
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
   if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 0 && turnflag == 0)
