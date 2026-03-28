@@ -853,16 +853,16 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 	else if (target_value_set->mode.chassis_balancing_mode == JOINT_REDUCING)
 		target_value_set->mode.chassis_high_mode = CHANGING_HIGH;
-	else if (target_value_set->chassis_data_->sit_flag)
-		target_value_set->mode.chassis_high_mode = SIT_MODE;
-	else if (target_value_set->chassis_data_->high_flag)
-		target_value_set->mode.chassis_high_mode = HIGH_MODE;
-	else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS)
-		target_value_set->mode.chassis_high_mode = SIT_MODE;
+	// else if (target_value_set->chassis_data_->sit_flag)
+	// 	target_value_set->mode.chassis_high_mode = SIT_MODE;
+	// else if (target_value_set->chassis_data_->high_flag)
+	// 	target_value_set->mode.chassis_high_mode = HIGH_MODE;
+	// else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS)
+	// 	target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS_2)
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
-	else if (target_value_set->mode.jumping_stage == PREPARING_LANDING)
-		target_value_set->mode.chassis_high_mode = SIT_MODE;
+	// else if (target_value_set->mode.jumping_stage == PREPARING_LANDING)
+	// 	target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else
 		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 

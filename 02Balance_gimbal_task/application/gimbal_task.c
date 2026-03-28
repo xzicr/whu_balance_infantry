@@ -175,7 +175,7 @@ static void gimbal_init(gimbal_control_t *init)
 
 void leg_control_init(chassis_data_t *leg_contorl)
 {
-  leg_contorl->high_set = 0.1f;
+  leg_contorl->high_set = 0.15f;
 }
 void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
@@ -299,7 +299,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     fp32_constrain(chassis_data->high_set, 0.1, 0.34);
   }
   if ((gimbal_control_set->aim_press==1&& gimbal_control_set->aim_last_press==0) || 
-  (gimbal_control_set->press_r == 1&& gimbal_control_set->last_press_r == 0))
+  (gimbal_control_set->press_r == 1))
   {
     aimflag = !aimflag;
     if(aimflag)
@@ -361,7 +361,6 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;
-    chassis_data->high_set = 0;
   }
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
   if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 0 && turnflag == 0)
@@ -487,6 +486,8 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
   feedback_update->gimbal_pitch_motor.self_aim_pitch_angle = Self_aim_data->pitch / PI * 180;
   feedback_update->gimbal_yaw_motor.last_self_aim_yaw_angle = feedback_update->gimbal_yaw_motor.self_aim_yaw_angle;
   feedback_update->gimbal_yaw_motor.self_aim_yaw_angle = Self_aim_data->yaw / PI * 180;
+  //模式更新
+
 }
 
 static void gimbal_set_control(gimbal_control_t *set_control)
