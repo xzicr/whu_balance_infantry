@@ -242,36 +242,36 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
 {
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
-    chassis_data->vx_set = 2;
+    chassis_data->vx_set = 3;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S)
   {
-    chassis_data->vx_set = -2;
+    chassis_data->vx_set = -3;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A)
   {
-    chassis_data->wz_set = 2;
+    chassis_data->wz_set = 10;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D)
   {
-    chassis_data->wz_set = -2;
+    chassis_data->wz_set = -10;
   }
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = 3;
+    chassis_data->vx_set = 4;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = -3;
+    chassis_data->vx_set = -4;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->wz_set = 3;
+    chassis_data->wz_set = 16;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->wz_set = -3;
+    chassis_data->wz_set = -16;
   }
   
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_G||gimbal_control_set->gimbal_rc_ctrl->rc.s[2] == 1)
