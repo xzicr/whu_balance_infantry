@@ -237,7 +237,6 @@ typedef enum
 {
     NOT_DEFINE,
     STANDING_JUMP,
-    MOVING_JUMP,
 } jumping_mode_e;
 
 typedef enum
@@ -295,7 +294,7 @@ typedef struct
     fp32 foot_roll_angle;
     fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set,leg_angle_L_kf;
     fp32 leg_angle_R, last_leg_angle_R, leg_angle_R_set,leg_angle_R_kf;
-    fp32 leg_gyro_L, leg_gyro_R,last_leg_gyro_L,last_leg_gyro_R;
+    fp32 leg_gyro_L, leg_gyro_R,leg_gyro_L_jacobian, leg_gyro_R_jacobian,last_leg_gyro_L_jacobian, last_leg_gyro_R_jacobian;
     fp32 leg_accel_L, leg_accel_R;
 
     /* ----------debug param-------- */
