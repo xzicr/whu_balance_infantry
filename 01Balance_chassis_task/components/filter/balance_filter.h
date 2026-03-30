@@ -45,10 +45,6 @@ void FootMotor_Kalman_Init(chassis_move_t *chassis);
 void FootMotor_Kalman_Update(chassis_move_t *chassis);
 void Record_FootMotor_Control(chassis_move_t *chassis);
 
-void Leg_dlength_Kalman_Init(chassis_move_t *chassis);
-void Leg_dlength_Kalman_Update(chassis_move_t *chassis);
-void Record_Leg_Control(chassis_move_t *chassis);
-
 void Leg_angle_Kalman_Init(chassis_move_t *chassis);
 void Leg_angle_Kalman_Update(chassis_move_t *chassis);
 

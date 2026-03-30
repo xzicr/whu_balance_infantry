@@ -289,7 +289,7 @@ typedef struct
     fp32 leg_length_L_set, leg_length_R_set;
     fp32 leg_length_L, last_leg_length_L;
     fp32 leg_length_R, last_leg_length_R;
-    fp32 leg_dlength_L,leg_dlength_R,last_leg_dlength_L,last_leg_dlength_R,leg_dlength_L_kf,leg_dlength_R_kf,last_leg_dlength_L_kf,last_leg_dlength_R_kf,leg_dlength_L_jacobian, leg_dlength_R_jacobian,last_leg_dlength_L_jacobian, last_leg_dlength_R_jacobian;
+    fp32 leg_dlength_L,leg_dlength_R,last_leg_dlength_L,last_leg_dlength_R,leg_dlength_L_jacobian, leg_dlength_R_jacobian,last_leg_dlength_L_jacobian, last_leg_dlength_R_jacobian;
     fp32 leg_ddlength_L,leg_ddlength_R,last_leg_ddlength_L,last_leg_ddlength_R;
     fp32 foot_roll_angle;
     fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set,leg_angle_L_kf;
