@@ -301,7 +301,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =83.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =39.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
 
 }
@@ -463,8 +463,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	}
 	normalized_speed = normalized_speed*rc_sign;
 
-
-	//3.7尝试通过雅克比矩阵的逆矩阵计算腿长速度
 
 }
 
@@ -747,7 +745,14 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		if(target_value_set->chassis_posture_info.position_lock_state==0)
 		{
 			target_value_set->chassis_posture_info.position_lock_state=1;
-			target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
+			if(target_value_set->chassis_posture_info.foot_speed_set>0)
+			{
+				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
+			}
+			else
+			{
+				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K+0.4f;
+			}
 		}
 	}
 	else
