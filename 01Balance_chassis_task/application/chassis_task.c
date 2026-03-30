@@ -122,7 +122,6 @@ uint8_t lock;
 fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01f, leg_dlength_deadband = 0.0f;
 fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 stepp = 0.02;
-fp32 rc_sign;
 fp32 normal_move_scale = 0.3f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
@@ -377,6 +376,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
     FootMotor_Kalman_Update(fdb);
     fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed_kf + fdb->foot_motor_R.speed_kf ) / 2.0f;
 	fdb->chassis_posture_info.foot_distance_K = fdb->chassis_posture_info.foot_distance;
+    Leg_angle_Kalman_Update(fdb);
 	
 	//足端角度解算
 	Forward_kinematic_solution(fdb, fdb->joint_motor_1.position, fdb->joint_motor_1.velocity,
@@ -430,14 +430,13 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.last_leg_angle_R = fdb->chassis_posture_info.leg_angle_R;
 	fdb->chassis_posture_info.last_leg_length_L = fdb->chassis_posture_info.leg_length_L;
 	fdb->chassis_posture_info.last_leg_length_R = fdb->chassis_posture_info.leg_length_R;	
-	fdb->chassis_posture_info.last_leg_ddlength_L = fdb->chassis_posture_info.leg_ddlength_L;
-	fdb->chassis_posture_info.last_leg_ddlength_R = fdb->chassis_posture_info.leg_ddlength_R;
 	fdb->chassis_posture_info.last_leg_dlength_L_jacobian = fdb->chassis_posture_info.leg_dlength_L_jacobian;
 	fdb->chassis_posture_info.last_leg_dlength_R_jacobian = fdb->chassis_posture_info.leg_dlength_R_jacobian;
+	fdb->chassis_posture_info.last_leg_ddlength_L = fdb->chassis_posture_info.leg_ddlength_L;
+	fdb->chassis_posture_info.last_leg_ddlength_R = fdb->chassis_posture_info.leg_ddlength_R;
 	//云台相对角度更新
 	fdb->gimbal_yaw_motor.relative_angle = theta_format(fdb->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
-	rc_sign = 1.0f;
 	X_speed = fdb->chassis_data_->vx_set;
 	Y_speed = fdb->chassis_data_->vy_set;
 	if(X_speed>=0)
@@ -448,9 +447,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	{
 		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-4.0f,4.0f);
 	}
-	normalized_speed = normalized_speed*rc_sign;
-
-
 }
 
 static void chassis_set_mode(chassis_move_t *chassis_move_mode)
@@ -1031,11 +1027,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		//此时处于空中，想要达到的效果是腿的度跟地面是保持垂直，
 		//不在控制机身角度因为机身保持平衡的力矩其实与腿部保持竖直力矩相冲突，在没有地面支持力的情况下没有意义
 		bl_ctrl->torque_info.joint_balancing_torque_L = (
-			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L_kf)
 			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 		);		
 		bl_ctrl->torque_info.joint_balancing_torque_R = -(
-			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
+			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R_kf) 
 			- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
 		);
 
@@ -1065,7 +1061,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			else
 			{
 				bl_ctrl->torque_info.joint_balancing_torque_L = (
-					+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
+					+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L_kf)
 					- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 					- LQR[2][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
 					- LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
@@ -1078,7 +1074,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 					);
 
 				bl_ctrl->torque_info.joint_balancing_torque_R = -(
-					+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
+					+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R_kf) 
 					- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
 					- LQR[3][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
 					- LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
@@ -1103,9 +1099,9 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 													TORQ_K;
 	}
 	else
-	{
+	{	
 		bl_ctrl->torque_info.foot_balancing_torque_L = (
-			- LQR[0][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L) 
+			- LQR[0][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L_kf) 
 			+ LQR[0][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 			- LQR[0][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
 			+ LQR[0][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
@@ -1117,7 +1113,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			- LQR[0][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 		)*TORQ_K;
 		bl_ctrl->torque_info.foot_balancing_torque_R = -(
-			- LQR[1][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
+			- LQR[1][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R_kf) 
 			+ LQR[1][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
 			- LQR[1][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
 			+ LQR[1][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
@@ -1151,7 +1147,6 @@ else
 }
 void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 {
-	/* ----------------------求解出J矩阵  J1->N11  J2->N21  J3->N12  J4->N22--------------------------------- */
 	/* ---------J1 J2 对应支持力分解成关节扭矩     J3 J4 对应平衡扭矩分解成关节扭矩------------------------------ */
 	bl_ctrl->mapping_info.invJ1_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 1); // N11
 	bl_ctrl->mapping_info.invJ2_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 3); // N21
@@ -1506,14 +1501,14 @@ void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 
 	detect->chassis_posture_info.foot_accel_L=
 	+detect->chassis_posture_info.chassis_accel
-	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L);
+	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L_kf);
 	// +2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
 	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
 	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
 
 	detect->chassis_posture_info.foot_accel_R=
 	+detect->chassis_posture_info.chassis_accel
-	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R);
+	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R_kf);
 	// +2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
 	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
 	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
@@ -1525,11 +1520,11 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 {
 	//计算腿部支持力
 	detect->torque_info.forque_L=
-	detect->torque_info.joint_vertical_torque_L*cos(detect->chassis_posture_info.leg_angle_L)
-	+detect->torque_info.joint_horizontal_torque_L*sin(detect->chassis_posture_info.leg_angle_L)/detect->chassis_posture_info.leg_length_L;
+	detect->torque_info.joint_vertical_torque_L*cos(detect->chassis_posture_info.leg_angle_L_kf)
+	+detect->torque_info.joint_horizontal_torque_L*sin(detect->chassis_posture_info.leg_angle_L_kf)/detect->chassis_posture_info.leg_length_L;
 	detect->torque_info.forque_R=
-	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R)
-	+detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R)/detect->chassis_posture_info.leg_length_R;
+	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R_kf)	
+	+detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R_kf)/detect->chassis_posture_info.leg_length_R;
 	fp32 temp_L = fp32_constrain(detect->torque_info.forque_L, -100.0f, 100.0f);
 	fp32 temp_R = fp32_constrain(detect->torque_info.forque_R, -100.0f, 100.0f);
 	//计算加速度环节
@@ -1537,10 +1532,10 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	//支持力计算环节
 	detect->torque_info.supportive_force_L=temp_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
 	detect->torque_info.supportive_force_R=temp_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
-	detect->torque_info.supportive_force_L = 0.8f*detect->torque_info.supportive_force_L + 0.2f * detect->torque_info.last_supportive_force_L;
-	detect->torque_info.supportive_force_R = 0.8f*detect->torque_info.supportive_force_R + 0.2f * detect->torque_info.last_supportive_force_R;
-	detect->torque_info.last_supportive_force_L=detect->torque_info.supportive_force_L;
-	detect->torque_info.last_supportive_force_R=detect->torque_info.supportive_force_R;
+	// detect->torque_info.supportive_force_L = 0.8f*detect->torque_info.supportive_force_L + 0.2f * detect->torque_info.last_supportive_force_L;
+	// detect->torque_info.supportive_force_R = 0.8f*detect->torque_info.supportive_force_R + 0.2f * detect->torque_info.last_supportive_force_R;
+	// detect->torque_info.last_supportive_force_L=detect->torque_info.supportive_force_L;
+	// detect->torque_info.last_supportive_force_R=detect->torque_info.supportive_force_R;
 }
 
 // 计算多项式值
@@ -1575,40 +1570,6 @@ uint8_t leg_length_ready,leg_angle_ready,leg_gyro_stable,pitch_stable,both_feet_
 uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
 {
     if (chassis == NULL) return 0;
-    
-    // 1. 检查腿长是否达到准备长度 (0.15m ± 0.01m)
-    fp32 leg_length_tolerance = 0.04f;
-    leg_length_ready = 
-        (fabs(chassis->chassis_posture_info.leg_length_L - 0.15f) < leg_length_tolerance) &&
-        (fabs(chassis->chassis_posture_info.leg_length_R - 0.15f) < leg_length_tolerance);
-    
-    // 2. 检查腿部角度是否达到准备角度 (10度 ± )
-    fp32 leg_angle_tolerance = 0.03f; // 
-    fp32 target_leg_angle = 0.174532f;//0.0872f;  //
-    leg_angle_ready = 
-        (fabs(chassis->chassis_posture_info.leg_angle_L - target_leg_angle) < leg_angle_tolerance) &&
-        (fabs(chassis->chassis_posture_info.leg_angle_R - target_leg_angle) < leg_angle_tolerance);
-    
-    // 3. 检查腿部角速度是否稳定
-    fp32 leg_gyro_threshold = 0.5f; // 角速度阈值
-    leg_gyro_stable = 
-        (fabs(chassis->chassis_posture_info.leg_gyro_L) < leg_gyro_threshold) &&
-        (fabs(chassis->chassis_posture_info.leg_gyro_R) < leg_gyro_threshold);
-    
-    // 4. 检查机身倾斜角度是否在安全范围内
-    fp32 pitch_angle_threshold = 0.1473f; // 约8度
-    pitch_stable = 
-        (fabs(chassis->chassis_posture_info.pitch_angle) < pitch_angle_threshold);
-    
-    // 5. 检查是否双足着地
-    both_feet_on_ground = 
-        (chassis->flag_info.suspend_flag_L == ON_GROUND) &&
-        (chassis->flag_info.suspend_flag_R == ON_GROUND);
-    
-    // 6. 检查速度
-    fp32 speed_threshold = 0.2f;
-	speed_flag = 
-        (fabs(chassis->chassis_posture_info.foot_speed_KF) > speed_threshold);
     
     // 综合判断
     prepare_complete = 1;

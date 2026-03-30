@@ -164,32 +164,32 @@ void Leg_angle_Kalman_Update(chassis_move_t *chassis)
 {
     if (chassis == NULL) return;
     
-    // if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
-    // {
-    //     leg_kf_L_angle.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_angle_L;
-    //     leg_kf_L_angle.kf.ControlVector[0] = 0;
-    // }
-    // else 
-    // {
+    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
+    {
+        leg_kf_L_angle.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_angle_L;
+        leg_kf_L_angle.kf.ControlVector[0] = 0;
+    }
+    else 
+    {
         leg_kf_L_angle.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_angle_L;
         leg_kf_L_angle.kf.ControlVector[0] = chassis->torque_info.joint_horizontal_torque_L;
-    
+    }
     float *filtered_state = Kalman_Filter_Update(&leg_kf_L_angle.kf);
     if (filtered_state != NULL) {
         leg_kf_L_angle.filtered_angle = filtered_state[0]; // 滤波后的速度
     }
     chassis->chassis_posture_info.leg_angle_L_kf = leg_kf_L_angle.filtered_angle;
 
-    // if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
-    // {
-    //     leg_kf_R_angle.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_angle_R;
-    //     leg_kf_R_angle.kf.ControlVector[0] = 0;
-    // }
-    // else 
-    // {
+    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
+    {
+        leg_kf_R_angle.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_angle_R;
+        leg_kf_R_angle.kf.ControlVector[0] = 0;
+    }
+    else 
+    {
         leg_kf_R_angle.kf.MeasuredVector[0] = chassis->chassis_posture_info.leg_angle_R;
         leg_kf_R_angle.kf.ControlVector[0] = chassis->torque_info.joint_horizontal_torque_R;
-    // }
+    }
     
     filtered_state = Kalman_Filter_Update(&leg_kf_R_angle.kf);
     if (filtered_state != NULL) {

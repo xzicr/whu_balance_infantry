@@ -34,9 +34,9 @@ typedef struct {
 #define KF_L_MEASURE_NOISE 2.0f
 
 // angle卡尔曼滤波参数
-#define KF_A_ESTIMATE_ERROR 2.4f
+#define KF_A_ESTIMATE_ERROR 1.0f
 #define KF_A_PROCESS_NOISE 0.1f
-#define KF_A_MEASURE_NOISE 0.1f
+#define KF_A_MEASURE_NOISE 0.8f
 
 #define CONTROL_GAIN 0.0005759f // 控制量到速度的增益系数，需要根据实际系统调整
 
