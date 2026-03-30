@@ -38,10 +38,10 @@ void shoot_speed_calc(void)
 		fp32_constrain(ShootTime,0,4000);
 		//∑÷º∂…‰ÀŸ
 		if(m < 100){
-			shoot_speed = (10 * m - a - 10 * d) / (d * (ShootTime / 100.0f)) + a / d;
+			shoot_speed = (10 * m - a - 15 * d) / (d * (ShootTime / 100.0f)) + a / d;
 		}
 		else{
-			shoot_speed = (10 * m - a - 15 * d) / (d * (ShootTime / 100.0f)) + a / d;
+			shoot_speed = (10 * m - a - 20 * d) / (d * (ShootTime / 100.0f)) + a / d;
 		}
 	}
 	else if(0 < shoot_time && shoot_time < ShootTime){
