@@ -139,8 +139,8 @@
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 800//550.0f//460.0f
-#define LEG_SET_PID_KI 2.0f
+#define LEG_SET_PID_KP 650//550.0f//460.0f
+#define LEG_SET_PID_KI 1.5f
 #define LEG_SET_PID_KD 4000//400.0f //350.0f
 #define LEG_SET_PID_OUT 200.0f
 #define LEG_SET_PID_IOUT 120.0f
@@ -170,7 +170,6 @@
 #define FEED_f 50.0f
 
 
-#define NORMAL_MODE_WEIGHT_DISTANCE_OFFSET 0.0f
 
 #define MOTOR_POS_UPPER_BOUND 30.0f
 #define MOTOR_POS_LOWER_BOUND 68.0f
