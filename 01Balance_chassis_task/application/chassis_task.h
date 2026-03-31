@@ -139,7 +139,7 @@
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 600//550.0f//460.0f
+#define LEG_SET_PID_KP 800//550.0f//460.0f
 #define LEG_SET_PID_KI 2.0f
 #define LEG_SET_PID_KD 4000//400.0f //350.0f
 #define LEG_SET_PID_OUT 200.0f

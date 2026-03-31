@@ -107,7 +107,7 @@ fp32 suspend_stand_PD[2] = {200.0f, 50.0f};
 fp32 delta;
 float alpha_dx = 1.0f;
 float alpha_dv = 1.0f;
-float alpha_da = 0.8f;
+float alpha_da = 0.7f;
 
 fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.174532f;//0.0872f;
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
@@ -1313,15 +1313,20 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 			detect->chassis_posture_info.leg_length_L > 0.13f )||
 			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
 			detect->flag_info.suspend_flag_L = OFF_GROUND;
-		else
+		else if (detect->torque_info.supportive_force_L > LOWER_SUPPORT_FORCE + 5.0f)  
+		// 添加滞回区间，例如+10N的阈值差
+		{
 			detect->flag_info.suspend_flag_L = ON_GROUND;
+		}
 		if(( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
 			detect->chassis_posture_info.leg_length_R > 0.13f )||
 			(detect->chassis_posture_info.leg_length_R>0.33f&&detect->torque_info.supportive_force_R <= 20))
-
 			detect->flag_info.suspend_flag_R = OFF_GROUND;
-		else
+		else if (detect->torque_info.supportive_force_R > LOWER_SUPPORT_FORCE + 5.0f)  
+		// 添加滞回区间，例如+10N的阈值差
+		{
 			detect->flag_info.suspend_flag_R = ON_GROUND;
+		}
 	}
 
 	if (detect->flag_info.abnormal_flag == 1 &&
@@ -1502,14 +1507,14 @@ void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 
 	detect->chassis_posture_info.foot_accel_L=
 	+detect->chassis_posture_info.chassis_accel
-	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L_kf);
+	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L);
 	// +2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
 	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
 	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
 
 	detect->chassis_posture_info.foot_accel_R=
 	+detect->chassis_posture_info.chassis_accel
-	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R_kf);
+	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R);
 	// +2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
 	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
 	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
@@ -1533,10 +1538,10 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 	//支持力计算环节
 	detect->torque_info.supportive_force_L=temp_L+m_w*g+m_w*detect->chassis_posture_info.foot_accel_L;
 	detect->torque_info.supportive_force_R=temp_R+m_w*g+m_w*detect->chassis_posture_info.foot_accel_R;
-	// detect->torque_info.supportive_force_L = 0.8f*detect->torque_info.supportive_force_L + 0.2f * detect->torque_info.last_supportive_force_L;
-	// detect->torque_info.supportive_force_R = 0.8f*detect->torque_info.supportive_force_R + 0.2f * detect->torque_info.last_supportive_force_R;
-	// detect->torque_info.last_supportive_force_L=detect->torque_info.supportive_force_L;
-	// detect->torque_info.last_supportive_force_R=detect->torque_info.supportive_force_R;
+	detect->torque_info.supportive_force_L = 0.7f*detect->torque_info.supportive_force_L + 0.3f * detect->torque_info.last_supportive_force_L;
+	detect->torque_info.supportive_force_R = 0.7f*detect->torque_info.supportive_force_R + 0.3f * detect->torque_info.last_supportive_force_R;
+	detect->torque_info.last_supportive_force_L=detect->torque_info.supportive_force_L;
+	detect->torque_info.last_supportive_force_R=detect->torque_info.supportive_force_R;
 }
 
 // 计算多项式值
