@@ -139,9 +139,9 @@
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 500//550.0f//460.0f
-#define LEG_SET_PID_KI 1.0f
-#define LEG_SET_PID_KD 450//400.0f //350.0f
+#define LEG_SET_PID_KP 600//550.0f//460.0f
+#define LEG_SET_PID_KI 2.0f
+#define LEG_SET_PID_KD 4000//400.0f //350.0f
 #define LEG_SET_PID_OUT 200.0f
 #define LEG_SET_PID_IOUT 120.0f
 
@@ -162,7 +162,7 @@
 #define WHEEL_RADIUS 0.071f
 #define LEG_OFFSET       30.0f// 水平位置到上限位的夹角
 #define LOWER_SUPPORT_FORCE_FOR_JUMP 5.0f
-#define LOWER_SUPPORT_FORCE 15.0f
+#define LOWER_SUPPORT_FORCE 10.0f
 #define MOVE_LOWER_BOUND 0.5f
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f
