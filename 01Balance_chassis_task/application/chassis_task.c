@@ -491,8 +491,8 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 		chassis_move_mode->joint_motor_2.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->joint_motor_3.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->joint_motor_4.motor_mode = MOTOR_NO_FORCE;
-		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_FORCE;
-		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_FORCE;
+		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_NO_FORCE;
+		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_NO_FORCE;
 
 	}
 	else
