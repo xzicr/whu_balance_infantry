@@ -3,7 +3,7 @@
 <title>Static Call Graph - [chassis_task\chassis_task.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image chassis_task\chassis_task.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Apr 01 05:10:25 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Apr 01 05:56:17 2026
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1675,8 +1675,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
-<P><STRONG><a name="[127]"></a>Chassis_Status_Detect</STRONG> (Thumb, 374 bytes, Stack size 32 bytes, chassis_task.o(i.Chassis_Status_Detect))
-<BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = Chassis_Status_Detect &rArr; Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
+<P><STRONG><a name="[127]"></a>Chassis_Status_Detect</STRONG> (Thumb, 444 bytes, Stack size 40 bytes, chassis_task.o(i.Chassis_Status_Detect))
+<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = Chassis_Status_Detect &rArr; Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -1688,7 +1688,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[12d]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1798 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = Chassis_Torque_Calculation &rArr; Jump_Wheel_Control &rArr; __aeabi_dmul
+<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = Chassis_Torque_Calculation &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LQR_Data_Update
@@ -2621,14 +2621,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HT_Motor_zero_set
 </UL>
 
-<P><STRONG><a name="[132]"></a>Jump_Wheel_Control</STRONG> (Thumb, 122 bytes, Stack size 8 bytes, chassis_task.o(i.Jump_Wheel_Control))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = Jump_Wheel_Control &rArr; __aeabi_dmul
-</UL>
-<BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-</UL>
-<BR>[Called By]<UL><LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
+<P><STRONG><a name="[132]"></a>Jump_Wheel_Control</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, chassis_task.o(i.Jump_Wheel_Control))
+<BR><BR>[Called By]<UL><LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 </UL>
 
 <P><STRONG><a name="[13b]"></a>Kalman_Filter_Init</STRONG> (Thumb, 1012 bytes, Stack size 32 bytes, kalman_filter.o(i.Kalman_Filter_Init))
@@ -5188,7 +5182,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
 <LI><a href="#[201]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
-<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_init
@@ -5311,7 +5304,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
 <LI><a href="#[201]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
-<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_init
@@ -5472,7 +5464,6 @@ Global Symbols
 <LI><a href="#[201]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[205]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Target_Value_Set
 <LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
-<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
 <LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation

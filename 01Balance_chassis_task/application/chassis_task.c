@@ -98,8 +98,8 @@ fp32 suspend_LQR[2][6] = {
 fp32 roll_PID[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
-fp32 jump_stand_PD_L[2] = {1600000.0f, 250.0f};
-fp32 jump_stand_PD_R[2] = {1600000.0f, 250.0f};
+fp32 jump_stand_PD_L[2] = {2500000.0f, 250.0f};
+fp32 jump_stand_PD_R[2] = {2500000.0f, 250.0f};
 
 fp32 suspend_stand_PD[2] = {200.0f, 50.0f};
 
@@ -541,6 +541,7 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 uint8_t reduce_flag = 0;
 fp32 reduce_high, high_offset = 0.2f;
 fp32 debug_1 = 0.96;
+fp32 ground_stable_timer = 0;  // 添加这行
 static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_change)
 {
 	if (chassis_mode_change == NULL)
@@ -620,8 +621,8 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
                 
             case EXTENDING_LEGS:
                 // 腿伸长阶段
-                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.30f && 
-                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.30f)
+                if (chassis_mode_change->chassis_posture_info.leg_length_L >= 0.32f && 
+                    chassis_mode_change->chassis_posture_info.leg_length_R >= 0.32f)
                 {
                     chassis_mode_change->mode.jumping_stage = CONSTACTING_LEGS_2;
                     chassis_mode_change->flag_info.jump_contact_timer = xTaskGetTickCount();
@@ -822,16 +823,10 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 	else if (target_value_set->mode.chassis_balancing_mode == JOINT_REDUCING)
 		target_value_set->mode.chassis_high_mode = CHANGING_HIGH;
-	// else if (target_value_set->chassis_data_->sit_flag)
-	// 	target_value_set->mode.chassis_high_mode = SIT_MODE;
-	// else if (target_value_set->chassis_data_->high_flag)
-	// 	target_value_set->mode.chassis_high_mode = HIGH_MODE;
-	// else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS)
-	// 	target_value_set->mode.chassis_high_mode = SIT_MODE;
+
 	else if (target_value_set->mode.jumping_stage == CONSTACTING_LEGS_2)
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
-	// else if (target_value_set->mode.jumping_stage == PREPARING_LANDING)
-	// 	target_value_set->mode.chassis_high_mode = SIT_MODE;
+
 	else
 		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 
@@ -1302,32 +1297,46 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 				 detect->flag_info.abnormal_flag)
 			detect->flag_info.abnormal_flag = 0;
 	}
-
 	Supportive_Force_Cal(detect);
-
-	if (detect->mode.jumping_stage == EXTENDING_LEGS)
-		detect->flag_info.suspend_flag_L = detect->flag_info.suspend_flag_R = ON_GROUND;
+	
+	if((detect->flag_info.last_suspend_flag_L ==OFF_GROUND&&detect->flag_info.suspend_flag_L ==ON_GROUND) ||
+		(detect->flag_info.last_suspend_flag_R ==OFF_GROUND&&detect->flag_info.suspend_flag_R ==ON_GROUND))
+	{
+		ground_stable_timer = pdMS_TO_TICKS(450);  // 检测到落地，启动200ms计时器
+	}
+	if(ground_stable_timer > 0)
+	{
+		ground_stable_timer--;
+		detect->flag_info.suspend_flag_L = ON_GROUND;
+		detect->flag_info.suspend_flag_R = ON_GROUND;
+	}
 	else
 	{
-		if( (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
-			detect->chassis_posture_info.leg_length_L > 0.13f )||
-			(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
-			detect->flag_info.suspend_flag_L = OFF_GROUND;
-		else if (detect->torque_info.supportive_force_L > LOWER_SUPPORT_FORCE + 5.0f)  
-		// 添加滞回区间，例如+10N的阈值差
+		if (detect->mode.jumping_stage == EXTENDING_LEGS)
+			detect->flag_info.suspend_flag_L = detect->flag_info.suspend_flag_R = ON_GROUND;
+		else
 		{
-			detect->flag_info.suspend_flag_L = ON_GROUND;
+			if( (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
+				detect->chassis_posture_info.leg_length_L > 0.13f )||
+				(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
+				detect->flag_info.suspend_flag_L = OFF_GROUND;
+			else if (detect->torque_info.supportive_force_L > LOWER_SUPPORT_FORCE + 5.0f)  
+			// 添加滞回区间，例如+10N的阈值差
+			{
+				detect->flag_info.suspend_flag_L = ON_GROUND;
+
+			}
+			if(( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
+				detect->chassis_posture_info.leg_length_R > 0.13f )||
+				(detect->chassis_posture_info.leg_length_R>0.33f&&detect->torque_info.supportive_force_R <= 20))
+				detect->flag_info.suspend_flag_R = OFF_GROUND;
+			else if (detect->torque_info.supportive_force_R > LOWER_SUPPORT_FORCE + 5.0f)  
+			// 添加滞回区间，例如+10N的阈值差
+			{
+				detect->flag_info.suspend_flag_R = ON_GROUND;
+			}
 		}
-		if(( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
-			detect->chassis_posture_info.leg_length_R > 0.13f )||
-			(detect->chassis_posture_info.leg_length_R>0.33f&&detect->torque_info.supportive_force_R <= 20))
-			detect->flag_info.suspend_flag_R = OFF_GROUND;
-		else if (detect->torque_info.supportive_force_R > LOWER_SUPPORT_FORCE + 5.0f)  
-		// 添加滞回区间，例如+10N的阈值差
-		{
-			detect->flag_info.suspend_flag_R = ON_GROUND;
-		}
-	}
+	}		
 
 	if (detect->flag_info.abnormal_flag == 1 &&
 		(detect->flag_info.last_suspend_flag_L == ON_GROUND || detect->flag_info.last_suspend_flag_R == ON_GROUND) &&
@@ -1344,6 +1353,8 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 	if (fabs(detect->chassis_posture_info.foot_speed_KF) > stablize_foot_speed_threshold &&
 		fabs(detect->chassis_posture_info.yaw_gyro) > stablize_yaw_speed_threshold)
 		detect->flag_info.stablize_high_flag = 1;
+	detect->flag_info.last_suspend_flag_L = detect->flag_info.suspend_flag_L;
+	detect->flag_info.last_suspend_flag_R = detect->flag_info.suspend_flag_R;
 }
 
 void Motor_CMD_Send(chassis_move_t *CMD_Send)
@@ -1593,8 +1604,8 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
 {
     if (chassis->mode.jumping_stage == EXTENDING_LEGS)
     {
-        chassis->torque_info.foot_balancing_torque_L= 0.17*chassis->torque_info.foot_balancing_torque_L;
-        chassis->torque_info.foot_balancing_torque_R =-0.17*chassis->torque_info.foot_balancing_torque_R;  
+        chassis->torque_info.foot_balancing_torque_L= chassis->torque_info.foot_balancing_torque_L;
+        chassis->torque_info.foot_balancing_torque_R =-chassis->torque_info.foot_balancing_torque_R;  
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
     }
