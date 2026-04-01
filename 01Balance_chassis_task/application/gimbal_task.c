@@ -72,7 +72,7 @@ void gimbal_control_loop(gimbal_control_t *gimbal_control,chassis_move_t *chassi
 	}
 	else if(gimbal_control->gimbal_yaw_motor.gimbal_motor_mode==GIMBAL_MOTOR_GYRO )
 	{
-
+		
 		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid,gimbal_control->gimbal_yaw_motor.absolute_angle,gimbal_control->gimbal_yaw_motor.absolute_angle_set);
 		// PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid,gimbal_control->gimbal_yaw_motor.motor_gyro,gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid.out-chassis_move->chassis_posture_info.yaw_gyro);
 		PID_calc(&gimbal_control->gimbal_yaw_motor.gimbal_motor_gyro_pid,gimbal_control->gimbal_yaw_motor.gimbal_motor_measure->speed_rpm*2*PI/60,gimbal_control->gimbal_yaw_motor.gimbal_motor_angle_pid.out-chassis_move->chassis_posture_info.yaw_gyro);
