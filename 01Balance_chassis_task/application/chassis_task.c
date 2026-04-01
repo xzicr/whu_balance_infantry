@@ -207,7 +207,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
 	/*----------------------- Set HT Zero Point ---------------------- */
 	
-	vTaskDelay(2000);
+	vTaskDelay(1600);
 	HT_Motor_zero_set();
 	Motor_Zero_CMD_Send();
 	vTaskDelay(1);
@@ -893,6 +893,25 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				break;
 		}
 	}
+	// ================== 空中伸腿逻辑 ==================
+	// 非跳跃模式下，检测到离地时伸长腿
+	if (target_value_set->mode.sport_mode != JUMPING_MODE)
+	{
+		if (target_value_set->flag_info.suspend_flag_L == OFF_GROUND ||
+			target_value_set->flag_info.suspend_flag_R == OFF_GROUND)
+		{
+			// 空中：伸长腿到最大长度，保证落地缓冲
+			target_value_set->chassis_posture_info.leg_length_L_set = 0.35f;  // 最大腿长
+			target_value_set->chassis_posture_info.leg_length_R_set = 0.35f;
+		}
+		else
+		{
+			// 正常落地：使用理想高度
+			target_value_set->chassis_posture_info.leg_length_L_set = target_value_set->chassis_posture_info.ideal_high;
+			target_value_set->chassis_posture_info.leg_length_R_set = target_value_set->chassis_posture_info.ideal_high;
+		}
+	}
+	// ==========================================
 	else if (target_value_set->mode.sport_mode == ABNORMAL_MOVING_MODE ||
 		(target_value_set->flag_info.suspend_flag_L == 1 && target_value_set->flag_info.suspend_flag_R == 1) ||
 		target_value_set->chassis_posture_info.ideal_high == SIT_HIGH ||
