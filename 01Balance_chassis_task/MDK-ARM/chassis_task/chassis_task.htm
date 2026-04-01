@@ -3,7 +3,7 @@
 <title>Static Call Graph - [chassis_task\chassis_task.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image chassis_task\chassis_task.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Apr 01 06:50:45 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Apr 01 15:08:03 2026
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1687,7 +1687,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[12d]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1930 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
+<P><STRONG><a name="[12d]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1798 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = Chassis_Torque_Calculation &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
@@ -1695,11 +1695,9 @@ Global Symbols
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;handle_airborne_state
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-<LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 </UL>
 <BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
@@ -3201,7 +3199,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PWM_ConfigChannel
 </UL>
 
-<P><STRONG><a name="[205]"></a>Target_Value_Set</STRONG> (Thumb, 998 bytes, Stack size 32 bytes, chassis_task.o(i.Target_Value_Set))
+<P><STRONG><a name="[205]"></a>Target_Value_Set</STRONG> (Thumb, 1152 bytes, Stack size 32 bytes, chassis_task.o(i.Target_Value_Set))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Target_Value_Set &rArr; __aeabi_cdcmpeq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[200]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
@@ -3343,7 +3341,6 @@ Global Symbols
 <LI><a href="#[205]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Target_Value_Set
 <LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
-<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Status_Detect
 <LI><a href="#[25a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_mode_change_control_transit
 </UL>
@@ -5368,7 +5365,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_single_control
 <LI><a href="#[205]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Target_Value_Set
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
-<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Status_Detect
 </UL>
 

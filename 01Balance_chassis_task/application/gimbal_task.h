@@ -15,9 +15,9 @@
 
 
 
-#define YAW_GYRO_PID_KP       1600.0f//2000.0f//1800
-#define YAW_GYRO_PID_KI       0.1f//1.0f
-#define YAW_GYRO_PID_KD       600.0f// 0.0f
+#define YAW_GYRO_PID_KP       1000.0f//2000.0f//1800
+#define YAW_GYRO_PID_KI       0.00001f//1.0f
+#define YAW_GYRO_PID_KD       1500.0f// 0.0f
 #define YAW_GYRO_PID_MAX_OUT   30000.0f
 #define YAW_GYRO_PID_MAX_IOUT  10000.0f
 

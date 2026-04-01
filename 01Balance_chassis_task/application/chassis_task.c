@@ -735,17 +735,25 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 
 	// --------- Distance Set ---------
 	if(target_value_set->chassis_posture_info.position_lock_flag==1)
-		target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.target_distance_set;
+	target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.target_distance_set;
 	else if( target_value_set->mode.chassis_balancing_mode == NO_FORCE || target_value_set->mode.sport_mode == TK_MODE)
-		target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
+	target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
 	else if(target_value_set->mode.sport_mode == NORMAL_MOVING_MODE)
-		target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
+	target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
 	else if( target_value_set->mode.sport_mode == ABNORMAL_MOVING_MODE )
-		target_value_set->chassis_posture_info.foot_distance_set =  target_value_set->chassis_posture_info.foot_distance_K;
+	target_value_set->chassis_posture_info.foot_distance_set =  target_value_set->chassis_posture_info.foot_distance_K;
 	else if( target_value_set->flag_info.suspend_flag_R == OFF_GROUND ||
 		target_value_set->flag_info.suspend_flag_L == OFF_GROUND )
 		target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
-
+	fp32 distance_error = target_value_set->chassis_posture_info.foot_distance_set - target_value_set->chassis_posture_info.foot_distance_K;
+	// 误差超过30cm时，重置目标值
+	if (fabs(distance_error) > 0.3f)
+	{
+		target_value_set->chassis_posture_info.foot_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
+	}
+	// 现在误差已经归零，正常计算
+	distance_error = target_value_set->chassis_posture_info.foot_distance_set - target_value_set->chassis_posture_info.foot_distance_K;  // = 0
+		
 	// --------- Y Speed & Angle Set ---------
 	if (target_value_set->mode.sport_mode != NONE &&
 		target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
@@ -1064,13 +1072,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			}
 			else
 			{
-				fp32 distance_error = bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K;
-				fp32 distance_error_threshold = 0.3f;  // 30cm阈值，超过则禁用位置环
-				fp32 distance_weight = 1.0f;  // 距离权重，默认1
-				if (fabs(distance_error) > distance_error_threshold)
-				{
-					distance_weight = 0.0f;  // 误差过大，不考虑位置环
-				}
+
 				bl_ctrl->torque_info.joint_balancing_torque_L = (
 					+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
 					- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
@@ -1078,7 +1080,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 					- LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 				);
 				bl_ctrl->torque_info.joint_moving_torque_L    = (
-					+ LQR[2][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )*distance_weight
+					+ LQR[2][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
 					+ LQR[2][1] * ( bl_ctrl->chassis_posture_info.foot_speed_set    - bl_ctrl->chassis_posture_info.foot_speed_KF )
 					+ LQR[2][2] * ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total )
 					+ LQR[2][3] * ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
@@ -1091,7 +1093,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 					- LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 				);
 				bl_ctrl->torque_info.joint_moving_torque_R    = -(
-					+ LQR[3][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )*distance_weight
+					+ LQR[3][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
 					+ LQR[3][1] * ( bl_ctrl->chassis_posture_info.foot_speed_set    - bl_ctrl->chassis_posture_info.foot_speed_KF )
 					+ LQR[3][2] * ( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total )
 					+ LQR[3][3] * ( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
@@ -1111,13 +1113,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	}
 	else
 	{	
-		fp32 distance_error = bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K;
-		fp32 distance_error_threshold = 0.3f;  // 30cm阈值，超过则禁用位置环
-		fp32 distance_weight = 1.0f;  // 距离权重，默认1
-		if (fabs(distance_error) > distance_error_threshold)
-		{
-			distance_weight = 0.0f;  // 误差过大，不考虑位置环
-		}
+
 		bl_ctrl->torque_info.foot_balancing_torque_L = (
 			- LQR[0][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L) 
 			+ LQR[0][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
@@ -1125,7 +1121,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			+ LQR[0][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 		) * TORQ_K; 
 		bl_ctrl->torque_info.foot_moving_torque_L = (
-			- LQR[0][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K ) *distance_weight
+			- LQR[0][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
 			- LQR[0][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
  			- LQR[0][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
 			- LQR[0][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
@@ -1137,7 +1133,7 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			+ LQR[1][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 		) * TORQ_K;
 		bl_ctrl->torque_info.foot_moving_torque_R = -(
-			- LQR[1][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K ) *distance_weight
+			- LQR[1][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
 			- LQR[1][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
 			- LQR[1][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
 			- LQR[1][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
