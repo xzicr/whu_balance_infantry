@@ -71,7 +71,7 @@ void uart_start_task(void const  *pvParameters)
     while(1)
     {
         get_shoot_speed(&referee_data.shoot_speed);
-        HAL_UART_Transmit_DMA(&huart1,(uint8_t *)&referee_data,sizeof(referee_data_t));
+        HAL_UART_Transmit(&huart1,(uint8_t *)&referee_data,sizeof(referee_data_t),100);
        osDelay(10);
     }
 }
