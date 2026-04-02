@@ -72,6 +72,8 @@ typedef struct
     int16_t given_current;
     uint8_t temperate;
     int16_t last_ecd;
+    uint32_t last_time;
+    fp32 angle;
 }motor_measure_t;
 
 

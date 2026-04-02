@@ -285,7 +285,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_C)
   {
-    chassis_data->high_set = 0.16f;
+    chassis_data->high_set = 0.1f;
   }
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Z && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL)
@@ -361,7 +361,11 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;
-    chassis_data->high_set = 0.15f;
+    chassis_data->high_set = 0.17f;
+  }
+  if(chassis_data->chassis_mode == CHASSIS_MODE_DEBUG)
+  {
+    chassis_data->high_set = 0.17f;
   }
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
   if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 0 && turnflag == 0)
@@ -466,7 +470,7 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
     return;
   }
   // 云台数据更新
-  feedback_update->gimbal_pitch_motor.relative_angle = feedback_update->gimbal_pitch_motor.gimbal_motor_measure->last_ecd;
+  feedback_update->gimbal_pitch_motor.relative_angle = 0;//feedback_update->gimbal_pitch_motor.gimbal_motor_measure->last_ecd;
   feedback_update->gimbal_pitch_motor.absolute_angle = *(feedback_update->gimbal_INT_angle_point + INS_PITCH_ADDRESS_OFFSET);
   feedback_update->gimbal_pitch_motor.motor_gyro = *(feedback_update->gimbal_INT_gyro_point + INS_GYRO_Y_ADDRESS_OFFSET);
   feedback_update->gimbal_yaw_motor.relative_angle = feedback_update->gimbal_yaw_motor.gimbal_motor_measure->last_ecd;

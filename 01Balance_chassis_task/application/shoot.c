@@ -38,7 +38,7 @@ void shoot_speed_calc(void)
 		fp32_constrain(ShootTime,0,4000);
 		//分级射速
 		if(m < 100){
-			shoot_speed = (10 * m - a - 15 * d) / (d * (ShootTime / 100.0f)) + a / d;
+			shoot_speed = (10 * m - a - 5 * d) / (d * (ShootTime / 100.0f)) + a / d;
 		}
 		else{
 			shoot_speed = (10 * m - a - 20 * d) / (d * (ShootTime / 100.0f)) + a / d;
@@ -52,7 +52,7 @@ void shoot_speed_calc(void)
 	if(shoot_time < ShootTime){
 		shoot_time++;
 	}
-	fp32_constrain(shoot_speed, 0, 25);  // 根据实际电机能力限制
+	fp32_constrain(shoot_speed, 0, 30);  // 根据实际电机能力限制
 }
 
 void ballet_feq_calc(fp32 fequence)

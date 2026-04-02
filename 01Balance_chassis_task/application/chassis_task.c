@@ -101,7 +101,7 @@ fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 jump_stand_PD_L[2] = {2500000.0f, 250.0f};
 fp32 jump_stand_PD_R[2] = {2500000.0f, 250.0f};
 
-fp32 suspend_stand_PD[2] = {200.0f, 50.0f};
+fp32 suspend_stand_PD[2] = {60.0f, 20.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
@@ -299,7 +299,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =46.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =75.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
 
 }
@@ -893,24 +893,24 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				break;
 		}
 	}
-	// ================== 空中伸腿逻辑 ==================
-	// 非跳跃模式下，检测到离地时伸长腿
-	if (target_value_set->mode.sport_mode != JUMPING_MODE)
-	{
-		if (target_value_set->flag_info.suspend_flag_L == OFF_GROUND ||
-			target_value_set->flag_info.suspend_flag_R == OFF_GROUND)
-		{
-			// 空中：伸长腿到最大长度，保证落地缓冲
-			target_value_set->chassis_posture_info.leg_length_L_set = 0.35f;  // 最大腿长
-			target_value_set->chassis_posture_info.leg_length_R_set = 0.35f;
-		}
-		else
-		{
-			// 正常落地：使用理想高度
-			target_value_set->chassis_posture_info.leg_length_L_set = target_value_set->chassis_posture_info.ideal_high;
-			target_value_set->chassis_posture_info.leg_length_R_set = target_value_set->chassis_posture_info.ideal_high;
-		}
-	}
+	// // ================== 空中伸腿逻辑 ==================
+	// // 非跳跃模式下，检测到离地时伸长腿
+	// if (target_value_set->mode.sport_mode != JUMPING_MODE)
+	// {
+	// 	if (target_value_set->flag_info.suspend_flag_L == OFF_GROUND ||
+	// 		target_value_set->flag_info.suspend_flag_R == OFF_GROUND)
+	// 	{
+	// 		// 空中：伸长腿到最大长度，保证落地缓冲
+	// 		target_value_set->chassis_posture_info.leg_length_L_set = 0.35f;  // 最大腿长
+	// 		target_value_set->chassis_posture_info.leg_length_R_set = 0.35f;
+	// 	}
+	// 	else
+	// 	{
+	// 		// 正常落地：使用理想高度
+	// 		target_value_set->chassis_posture_info.leg_length_L_set = target_value_set->chassis_posture_info.ideal_high;
+	// 		target_value_set->chassis_posture_info.leg_length_R_set = target_value_set->chassis_posture_info.ideal_high;
+	// 	}
+	// }
 	// ==========================================
 	else if (target_value_set->mode.sport_mode == ABNORMAL_MOVING_MODE ||
 		(target_value_set->flag_info.suspend_flag_L == 1 && target_value_set->flag_info.suspend_flag_R == 1) ||
