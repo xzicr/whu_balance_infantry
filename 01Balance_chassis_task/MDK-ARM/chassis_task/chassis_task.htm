@@ -3,7 +3,7 @@
 <title>Static Call Graph - [chassis_task\chassis_task.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image chassis_task\chassis_task.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Thu Apr 02 15:05:50 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Thu Apr 02 16:13:44 2026
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1684,7 +1684,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[12a]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1798 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = Chassis_Torque_Calculation &rArr; __aeabi_dmul
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = Chassis_Torque_Calculation &rArr; Jump_Wheel_Control &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LQR_Data_Update
@@ -2596,8 +2596,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HT_Motor_zero_set
 </UL>
 
-<P><STRONG><a name="[12f]"></a>Jump_Wheel_Control</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, chassis_task.o(i.Jump_Wheel_Control))
-<BR><BR>[Called By]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
+<P><STRONG><a name="[12f]"></a>Jump_Wheel_Control</STRONG> (Thumb, 122 bytes, Stack size 8 bytes, chassis_task.o(i.Jump_Wheel_Control))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = Jump_Wheel_Control &rArr; __aeabi_dmul
+</UL>
+<BR>[Calls]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+</UL>
+<BR>[Called By]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 </UL>
 
 <P><STRONG><a name="[138]"></a>Kalman_Filter_Init</STRONG> (Thumb, 1012 bytes, Stack size 32 bytes, kalman_filter.o(i.Kalman_Filter_Init))
@@ -3174,7 +3180,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PWM_ConfigChannel
 </UL>
 
-<P><STRONG><a name="[1ff]"></a>Target_Value_Set</STRONG> (Thumb, 1144 bytes, Stack size 32 bytes, chassis_task.o(i.Target_Value_Set))
+<P><STRONG><a name="[1ff]"></a>Target_Value_Set</STRONG> (Thumb, 1152 bytes, Stack size 32 bytes, chassis_task.o(i.Target_Value_Set))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Target_Value_Set &rArr; __aeabi_cdcmpeq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
@@ -5171,6 +5177,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_init
@@ -5293,6 +5300,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_feedback_update
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_init
@@ -5453,6 +5461,7 @@ Global Symbols
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
 <LI><a href="#[1ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Target_Value_Set
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Jump_Wheel_Control
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Combine
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation

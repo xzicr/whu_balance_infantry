@@ -299,7 +299,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =75.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =109.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
 
 }
@@ -696,7 +696,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.25f,1.25f);
+		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.6f,1.6f);
 	}
 	else 
 	{
@@ -1641,8 +1641,8 @@ void Jump_Wheel_Control(chassis_move_t *chassis)
 {
     if (chassis->mode.jumping_stage == EXTENDING_LEGS)
     {
-        chassis->torque_info.foot_balancing_torque_L= chassis->torque_info.foot_balancing_torque_L;
-        chassis->torque_info.foot_balancing_torque_R =-chassis->torque_info.foot_balancing_torque_R;  
+        chassis->torque_info.foot_balancing_torque_L= 0.8*chassis->torque_info.foot_balancing_torque_L;
+        chassis->torque_info.foot_balancing_torque_R =-0.8*chassis->torque_info.foot_balancing_torque_R;  
         LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
         LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
     }
