@@ -696,7 +696,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.3f,1.3f);
+		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.25f,1.25f);
 	}
 	else 
 	{
