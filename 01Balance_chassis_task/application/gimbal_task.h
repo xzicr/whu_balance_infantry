@@ -9,9 +9,9 @@
 // yaw 速度环 PID参数以及 PID最大输出，积分输出
 #define YAW_ANGLE_PID_KP      0.5
 #define YAW_ANGLE_PID_KI      0.0f
-#define YAW_ANGLE_PID_KD      -0.4f
-#define YAW_ANGLE_PID_MAX_OUT   3.0f
-#define YAW_ANGLE_PID_MAX_IOUT  0.5f
+#define YAW_ANGLE_PID_KD      0.4f
+#define YAW_ANGLE_PID_MAX_OUT   20.0f
+#define YAW_ANGLE_PID_MAX_IOUT  5.0f
 
 
 
