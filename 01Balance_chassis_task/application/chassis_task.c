@@ -178,6 +178,9 @@ void chassis_task(void const *pvParameters)
 
 		//目标值设置
 		Target_Value_Set(&chassis_move);
+		
+		//功率限制
+		chassis_power_limit(&chassis_move);
 
 		//力矩输出计算
 		Chassis_Torque_Calculation(&chassis_move);
