@@ -7,17 +7,17 @@
 #include "shoot.h"
 #include "user_lib.h"
 // yaw 速度环 PID参数以及 PID最大输出，积分输出
-#define YAW_ANGLE_PID_KP      0.5// 1800.0f//500.0f//0.25
-#define YAW_ANGLE_PID_KI      0.0f// 0.1f//
-#define YAW_ANGLE_PID_KD      -0.4f//	40000.0f//3000.0f//
-#define YAW_ANGLE_PID_MAX_OUT   3.0f//2.0f
+#define YAW_ANGLE_PID_KP      0.5
+#define YAW_ANGLE_PID_KI      0.0f
+#define YAW_ANGLE_PID_KD      -0.4f
+#define YAW_ANGLE_PID_MAX_OUT   3.0f
 #define YAW_ANGLE_PID_MAX_IOUT  0.5f
 
 
 
-#define YAW_GYRO_PID_KP       9000.0f//2000.0f//1800
-#define YAW_GYRO_PID_KI       15.0f//1.0f
-#define YAW_GYRO_PID_KD       0.0f// 0.0f
+#define YAW_GYRO_PID_KP       9000.0f
+#define YAW_GYRO_PID_KI       15.0f
+#define YAW_GYRO_PID_KD       0.0f
 #define YAW_GYRO_PID_MAX_OUT   30000.0f
 #define YAW_GYRO_PID_MAX_IOUT  9000.0f
 
@@ -51,8 +51,8 @@ typedef struct
 typedef struct
 {
     const motor_measure_t *gimbal_motor_measure;
-    pid_type_def gimbal_motor_angle_pid;
     gimbal_PID_t gimbal_motor_angle1_pid;
+    pid_type_def gimbal_motor_angle_pid;
     pid_type_def gimbal_motor_gyro_pid;
     gimbal_motor_mode_e gimbal_motor_mode;
     fp32 absolute_angle;     //rad
