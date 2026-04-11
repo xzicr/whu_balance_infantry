@@ -351,35 +351,35 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_4.torque_get = 0.95f * fdb->joint_motor_4.torque_get + 0.05f * fdb->joint_motor_4.motor_measure->real_torque;
 
 	/*------------------------------------ Update LK Motor info -------------------------------*/
-	fdb->foot_motor_L.last_position = fdb->foot_motor_L.position;
-	fdb->foot_motor_R.last_position = fdb->foot_motor_R.position;
-	fdb->foot_motor_L.position = fdb->foot_motor_L.motor_measure->angle;
-	fdb->foot_motor_R.position = fdb->foot_motor_R.motor_measure->angle;
-	if (fdb->flag_info.init_flag != 1)
-	{
-		if ((fdb->foot_motor_L.last_position - fdb->foot_motor_L.position) > HALF_POSITION_RANGE)
-			fdb->foot_motor_L.turns++;
-		else if ((fdb->foot_motor_L.last_position - fdb->foot_motor_L.position) < -HALF_POSITION_RANGE)
-			fdb->foot_motor_L.turns--;
-		if ((fdb->foot_motor_R.last_position - fdb->foot_motor_R.position) > HALF_POSITION_RANGE)
-			fdb->foot_motor_R.turns--;
-		else if ((fdb->foot_motor_R.last_position - fdb->foot_motor_R.position) < -HALF_POSITION_RANGE)
-			fdb->foot_motor_R.turns++;
-	}
+	// fdb->foot_motor_L.last_position = fdb->foot_motor_L.position;
+	// fdb->foot_motor_R.last_position = fdb->foot_motor_R.position;
+	// fdb->foot_motor_L.position = fdb->foot_motor_L.motor_measure->angle;
+	// fdb->foot_motor_R.position = fdb->foot_motor_R.motor_measure->angle;
+	// if (fdb->flag_info.init_flag != 1)
+	// {
+	// 	if ((fdb->foot_motor_L.last_position - fdb->foot_motor_L.position) > HALF_POSITION_RANGE)
+	// 		fdb->foot_motor_L.turns++;
+	// 	else if ((fdb->foot_motor_L.last_position - fdb->foot_motor_L.position) < -HALF_POSITION_RANGE)
+	// 		fdb->foot_motor_L.turns--;
+	// 	if ((fdb->foot_motor_R.last_position - fdb->foot_motor_R.position) > HALF_POSITION_RANGE)
+	// 		fdb->foot_motor_R.turns--;
+	// 	else if ((fdb->foot_motor_R.last_position - fdb->foot_motor_R.position) < -HALF_POSITION_RANGE)
+	// 		fdb->foot_motor_R.turns++;
+	// }
 	// 离地时暂停里程计累积，保持当前位置不变
-	if (fdb->flag_info.suspend_flag_L == ON_GROUND)
-	{
-		fdb->foot_motor_L.distance = (fdb->foot_motor_L.position / 360.0f + fdb->foot_motor_L.turns) * WHEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
-	}
-	else
-	{}
-	if (fdb->flag_info.suspend_flag_R == ON_GROUND)
-	{
-		fdb->foot_motor_R.distance = ((360.0f - fdb->foot_motor_R.position) / 360.0f + fdb->foot_motor_R.turns) * WHEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
-	}
-	else
-	{}
-	fdb->chassis_posture_info.foot_distance = (fdb->foot_motor_L.distance + fdb->foot_motor_R.distance) / 2.0f;
+	// if (fdb->flag_info.suspend_flag_L == ON_GROUND)
+	// {
+	// 	fdb->foot_motor_L.distance = (fdb->foot_motor_L.position / 360.0f + fdb->foot_motor_L.turns) * WHEEL_PERIMETER - fdb->foot_motor_L.distance_offset;
+	// }
+	// else
+	// {}
+	// if (fdb->flag_info.suspend_flag_R == ON_GROUND)
+	// {
+	// 	fdb->foot_motor_R.distance = ((360.0f - fdb->foot_motor_R.position) / 360.0f + fdb->foot_motor_R.turns) * WHEEL_PERIMETER - fdb->foot_motor_R.distance_offset;
+	// }
+	// else
+	// {}
+	// fdb->chassis_posture_info.foot_distance = (fdb->foot_motor_L.distance + fdb->foot_motor_R.distance) / 2.0f;
 
 	fdb->foot_motor_L.speed = fdb->foot_motor_L.motor_measure->speed * PI2 * WHEEL_RADIUS / 10.0f / 60.0f; // rpm -> m/s
 	fdb->foot_motor_R.speed = -fdb->foot_motor_R.motor_measure->speed * PI2 * WHEEL_RADIUS / 10.0f / 60.0f;
@@ -388,7 +388,13 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	// 使用卡尔曼滤波更新速度
     FootMotor_Kalman_Update(fdb);
     fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed_kf + fdb->foot_motor_R.speed_kf ) / 2.0f;
-	fdb->chassis_posture_info.foot_distance_K = fdb->chassis_posture_info.foot_distance;
+	if (fabs(fdb->chassis_posture_info.foot_speed_set) < 0.1f && fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.5f && 
+	(fdb->flag_info.suspend_flag_L == ON_GROUND ))
+	{
+		fdb->chassis_posture_info.foot_distance_K += fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
+	}
+
+	
     Leg_angle_Kalman_Update(fdb);
 	
 	//足端角度解算

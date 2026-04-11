@@ -47,8 +47,8 @@ void FootMotor_Kalman_Init(chassis_move_t *chassis)
     memcpy(foot_motor_kf_L.kf.H_data, H_Init, sizeof(H_Init));
     memcpy(foot_motor_kf_L.kf.R_data, R_Init, sizeof(R_Init));
     // 设置控制矩阵B [dt; 1] 表示控制量对速度和加速度的影响
-    foot_motor_kf_L.kf.B_data[0] = CHASSIS_CONTROL_TIME * CONTROL_GAIN;
-    foot_motor_kf_L.kf.B_data[1] = CONTROL_GAIN;
+    foot_motor_kf_L.kf.B_data[0] = CHASSIS_CONTROL_TIME * 1;
+    foot_motor_kf_L.kf.B_data[1] = 1;
     foot_motor_kf_L.filtered_speed = 0;
 
     
@@ -61,8 +61,8 @@ void FootMotor_Kalman_Init(chassis_move_t *chassis)
     memcpy(foot_motor_kf_R.kf.Q_data, Q_Init, sizeof(Q_Init));
     memcpy(foot_motor_kf_R.kf.H_data, H_Init, sizeof(H_Init));
     memcpy(foot_motor_kf_R.kf.R_data, R_Init, sizeof(R_Init));
-    foot_motor_kf_R.kf.B_data[0] = CHASSIS_CONTROL_TIME * CONTROL_GAIN;
-    foot_motor_kf_R.kf.B_data[1] = CONTROL_GAIN;
+    foot_motor_kf_R.kf.B_data[0] = CHASSIS_CONTROL_TIME * 1;
+    foot_motor_kf_R.kf.B_data[1] = 1;
     foot_motor_kf_R.filtered_speed = 0;
 
 
@@ -72,16 +72,8 @@ void FootMotor_Kalman_Update(chassis_move_t *chassis)
 {
     if (chassis == NULL) return;
     
-    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
-    {
-        foot_motor_kf_L.kf.MeasuredVector[0] = 0;
-        foot_motor_kf_L.kf.ControlVector[0] = 0;
-    }
-    else 
-    {
-        foot_motor_kf_L.kf.MeasuredVector[0] = chassis->foot_motor_L.speed;
-        foot_motor_kf_L.kf.ControlVector[0] = chassis->foot_motor_L.last_control_torque;
-    }
+    foot_motor_kf_L.kf.MeasuredVector[0] = chassis->foot_motor_L.speed;
+    foot_motor_kf_L.kf.ControlVector[0] = chassis->chassis_posture_info.x_accel;
     
     float *filtered_state = Kalman_Filter_Update(&foot_motor_kf_L.kf);
     if (filtered_state != NULL) {
@@ -89,17 +81,8 @@ void FootMotor_Kalman_Update(chassis_move_t *chassis)
     }
     chassis->foot_motor_L.speed_kf = foot_motor_kf_L.filtered_speed;
 
-
-    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
-    {
-        foot_motor_kf_R.kf.MeasuredVector[0] = 0;
-        foot_motor_kf_R.kf.ControlVector[0] = 0;
-    }
-    else 
-    {
-        foot_motor_kf_R.kf.MeasuredVector[0] = chassis->foot_motor_R.speed;
-        foot_motor_kf_R.kf.ControlVector[0] = chassis->foot_motor_R.last_control_torque;
-    }
+    foot_motor_kf_R.kf.MeasuredVector[0] = chassis->foot_motor_R.speed;
+    foot_motor_kf_R.kf.ControlVector[0] = chassis->chassis_posture_info.x_accel;
     
     filtered_state = Kalman_Filter_Update(&foot_motor_kf_R.kf);
     if (filtered_state != NULL) {
