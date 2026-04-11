@@ -299,7 +299,8 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     fp32_constrain(chassis_data->high_set, 0.1, 0.34);
   }
   if ((gimbal_control_set->aim_press==1&& gimbal_control_set->aim_last_press==0) || 
-  (gimbal_control_set->press_r == 1&&gimbal_control_set->last_press_r == 0))
+  (gimbal_control_set->press_r == 1&&gimbal_control_set->last_press_r == 0)||
+  (gimbal_control_set->press_r == 0&&gimbal_control_set->last_press_r == 1))
   {
     aimflag = !aimflag;
     if(aimflag)
@@ -311,10 +312,6 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
       chassis_data->auto_flag = 0;
     }
   }
-  // if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_F && (gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_F) == 0)
-  // {
-  //   turnflag = 1;
-  // }
   chassis_data->shoot_mode = shoot_control.shoot_mode;
   switch(shoot_control.shoot_mode)
   {
