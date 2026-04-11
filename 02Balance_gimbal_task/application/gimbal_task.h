@@ -40,9 +40,9 @@
 #define PITCH_GYRO_PID_KD 0.0f
 #define PITCH_GYRO_PID_MAX_OUT 30000.0f
 #define PITCH_GYRO_PID_MAX_IOUT 10000.0f
-#define PITCH_ANGLE_PID_KP 0.85f//0.3f       
+#define PITCH_ANGLE_PID_KP 0.77f//0.3f       
 #define PITCH_ANGLE_PID_KI 0.0f      
-#define PITCH_ANGLE_PID_KD 30.0f       
+#define PITCH_ANGLE_PID_KD 25.0f       
 #define PITCH_ANGLE_PID_MAX_OUT 12.0f//3.0f  
 #define PITCH_ANGLE_PID_MAX_IOUT 3.0f//1.0f 
 
@@ -67,10 +67,10 @@
 
 
 #define YAW_RC_SEN    0.0003f
-#define PITCH_RC_SEN  -0.0001f //0.005
+#define PITCH_RC_SEN  -0.00006f //0.005
 
 #define YAW_MOUSE_SEN   0.001f
-#define PITCH_MOUSE_SEN -0.001f
+#define PITCH_MOUSE_SEN -0.0007f
 
 #define HIGH_SEN 0.0000005f
 

@@ -288,12 +288,12 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     chassis_data->high_set = 0.1f;
   }
 
-  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Z && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL)
+  if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_X)
   {
     chassis_data->high_set += 0.0002f;
     fp32_constrain(chassis_data->high_set, 0.1, 0.34);
   }
-  else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_X && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL)
+  else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Z)
   {
     chassis_data->high_set -= 0.0002f;
     fp32_constrain(chassis_data->high_set, 0.1, 0.34);
@@ -377,7 +377,7 @@ else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && aimflag == 1)
     float new_yaw_angle;
     if(gimbal_control_set->gimbal_yaw_motor.self_aim_yaw_angle == 0 || Self_aim_data->mode == 0)
     {
-        new_yaw_angle = gimbal_control_set->gimbal_yaw_motor.absolute_angle;
+        chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
     }
     else
     {
@@ -513,9 +513,9 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     {
       set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 26)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 22)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 26;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 22;
     }
     else
     {
@@ -529,9 +529,9 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     {
       set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 26)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 22)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 26;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 22;
     }
     else
     {

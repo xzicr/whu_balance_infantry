@@ -85,10 +85,9 @@ fp32 pitch_rad;
 static int32_t calculate_jump_line_position(void)
 {
 
-    // 2. 跳跃距离（根据当前速度估算，或用固定值）
     fp32 jump_distance = 0.5f;  // 0.5米，可根据速度调整
     
-    // 3. 坐标系转换
+
     pitch_rad = uart_data.receive_chassis_data.pitch_angle*PI/180.0f;
     fp32 cos_p = cosf(pitch_rad);
     fp32 sin_p = sinf(pitch_rad);
@@ -96,21 +95,19 @@ static int32_t calculate_jump_line_position(void)
     fp32 world_x = jump_distance;
     fp32 world_z = 0.0f;  // 地面高度
     
-    // 转换到相机坐标系
+
     fp32 P_c_x = world_x;
     fp32 P_c_z = world_x * sin_p + (CAMERA_HEIGHT - world_z) * cos_p;
     fp32 P_c_y = -world_x * cos_p + (CAMERA_HEIGHT - world_z) * sin_p;
     
-    // 4. 投影到像素坐标
+
     fp32 u = CX + FOCAL_LENGTH * P_c_x / P_c_z;
     fp32 v = CY + FOCAL_LENGTH * P_c_y / P_c_z;
     
-    // 5. 边界检查
+
     if (v < 0) v = 0;
     if (v > 1080) v = 1080;
-    
-    // 6. 绘制水平线（在UI任务中调用）
-    // ui_draw_line(0, (int)v, 1920, (int)v, UI_COLOR_GREEN);
+
     
     return (int32_t)v;  // 返回线的高度像素值
 }
@@ -132,7 +129,6 @@ void referee_usart_task(void const * argument)
         ui_self_id =robot_state.robot_id;        
         referee_unpack_fifo_data();
         osDelay(10);
-
         //定时初始化防止图形未进行初始化
         if(uwTick - ui_initTick_1 >= 2*ui_period)
         {
@@ -175,9 +171,9 @@ void referee_usart_task(void const * argument)
         {
           ui_g_DynamicGroup_AutoRound->color = UI_Color_White;
         }
-        ui_g_DynamicGroup_DirectionArc->start_angle = 30-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
-        ui_g_DynamicGroup_DirectionArc->end_angle = 330-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
-        ui_g_DynamicGroup_HightNum->number = chassis_move.chassis_posture_info.leg_length_L;
+        ui_g_DynamicGroup_DirectionArc->start_angle = 30-loop_fp32_constrain(chassis_move.chassis_posture_info.yaw_angle_total,-PI,PI)*180/PI;
+        ui_g_DynamicGroup_DirectionArc->end_angle = 330-loop_fp32_constrain(chassis_move.chassis_posture_info.yaw_angle_total,-PI,PI)*180/PI;
+        ui_g_DynamicGroup_HightNum->number = chassis_move.chassis_posture_info.leg_length_L*100;
         ui_g_DynamicGroup_HightLine->end_y = 350 + fp32_constrain(chassis_move.chassis_posture_info.leg_length_L/0.35*284,0,284);
         ui_g_DynamicGroup_JumpLine->end_y = calculate_jump_line_position();
         ui_g_DynamicGroup_JumpLine->start_y = ui_g_DynamicGroup_JumpLine->end_y;
