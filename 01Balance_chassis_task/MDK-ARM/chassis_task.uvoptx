@@ -163,6 +163,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>chassis_move,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pitch_rad</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ui_g_DynamicGroup_JumpLine,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
@@ -1777,7 +1787,7 @@
 
   <Group>
     <GroupName>UI</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1800,8 +1810,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\components\UI\ui_default.c</PathWithFileName>
-      <FilenameWithoutPath>ui_default.c</FilenameWithoutPath>
+      <PathWithFileName>..\components\UI\ui_g.c</PathWithFileName>
+      <FilenameWithoutPath>ui_g.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1812,38 +1822,14 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\components\UI\ui_default.h</PathWithFileName>
-      <FilenameWithoutPath>ui_default.h</FilenameWithoutPath>
+      <PathWithFileName>..\components\UI\ui_g.h</PathWithFileName>
+      <FilenameWithoutPath>ui_g.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
       <FileNumber>126</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\components\UI\ui_frame1.c</PathWithFileName>
-      <FilenameWithoutPath>ui_frame1.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>12</GroupNumber>
-      <FileNumber>127</FileNumber>
-      <FileType>5</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\components\UI\ui_frame1.h</PathWithFileName>
-      <FilenameWithoutPath>ui_frame1.h</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>12</GroupNumber>
-      <FileNumber>128</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1855,7 +1841,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>129</FileNumber>
+      <FileNumber>127</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1867,7 +1853,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>130</FileNumber>
+      <FileNumber>128</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

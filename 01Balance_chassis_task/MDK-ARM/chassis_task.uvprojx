@@ -2987,24 +2987,14 @@
               <FilePath>..\components\UI\ui.h</FilePath>
             </File>
             <File>
-              <FileName>ui_default.c</FileName>
+              <FileName>ui_g.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_default.c</FilePath>
+              <FilePath>..\components\UI\ui_g.c</FilePath>
             </File>
             <File>
-              <FileName>ui_default.h</FileName>
+              <FileName>ui_g.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_default.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_frame1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\components\UI\ui_frame1.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_frame1.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\components\UI\ui_frame1.h</FilePath>
+              <FilePath>..\components\UI\ui_g.h</FilePath>
             </File>
             <File>
               <FileName>ui_interface.c</FileName>

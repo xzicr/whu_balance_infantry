@@ -57,14 +57,6 @@ uint32_t ui_initTick_2;
 uint32_t ui_initTick_3;
 extern __IO uint32_t uwTick; // 系统时钟
 
-//动态数据指针外部声明
-extern ui_interface_round_t *ui_default_DynamicBottomGroup_FricRound;
-extern ui_interface_round_t *ui_default_DynamicBottomGroup_AimRound;
-extern ui_interface_arc_t *ui_default_DynamicLeftGroup_ShootHeatArc;
-extern ui_interface_arc_t *ui_default_DynamicLeftGroup_PowerArc;
-extern ui_interface_arc_t *ui_default_DynamicRightGroup_DynamicPitchArc;
-extern ui_interface_arc_t *ui_default_DynamicRightGroup_ChassisArc;
-extern ui_interface_number_t *ui_frame1_DynamicNumberGroup_NewNumber;
 //裁判系统
 extern robot_status_t robot_state; //机器人状态
 extern power_heat_data_t power_heat_data;  //机器人功率与发射热量
@@ -76,7 +68,53 @@ extern int ui_self_id;  //机器人ID
 extern uart_data_t uart_data;
 //拨弹盘结构体数据
 extern shoot_control_t shoot_control;
-//暂存变量
+
+// 相机参数
+#define HORIZONTAL_FOV     139.0f    // 水平视角
+#define FOCAL_LENGTH_MM   12.0f      // 等效焦距 mm
+#define CAMERA_HEIGHT      0.35f     // 相机安装高度（米）
+
+// 像素焦距计算
+// f_像素 = 图像宽度 / (2 * tan(视角/2))
+#define FOCAL_LENGTH      (1920.0f / (2.0f * tanf(HORIZONTAL_FOV * 3.14159f / 360.0f)))  // ≈ 835 像素
+#define CX                960.0f     // 光心X
+#define CY                540.0f     // 光心Y
+
+fp32 pitch_rad;
+// ================== 动态起跳线计算 ==================
+static int32_t calculate_jump_line_position(void)
+{
+
+    // 2. 跳跃距离（根据当前速度估算，或用固定值）
+    fp32 jump_distance = 0.5f;  // 0.5米，可根据速度调整
+    
+    // 3. 坐标系转换
+    pitch_rad = uart_data.receive_chassis_data.pitch_angle*PI/180.0f;
+    fp32 cos_p = cosf(pitch_rad);
+    fp32 sin_p = sinf(pitch_rad);
+    
+    fp32 world_x = jump_distance;
+    fp32 world_z = 0.0f;  // 地面高度
+    
+    // 转换到相机坐标系
+    fp32 P_c_x = world_x;
+    fp32 P_c_z = world_x * sin_p + (CAMERA_HEIGHT - world_z) * cos_p;
+    fp32 P_c_y = -world_x * cos_p + (CAMERA_HEIGHT - world_z) * sin_p;
+    
+    // 4. 投影到像素坐标
+    fp32 u = CX + FOCAL_LENGTH * P_c_x / P_c_z;
+    fp32 v = CY + FOCAL_LENGTH * P_c_y / P_c_z;
+    
+    // 5. 边界检查
+    if (v < 0) v = 0;
+    if (v > 1080) v = 1080;
+    
+    // 6. 绘制水平线（在UI任务中调用）
+    // ui_draw_line(0, (int)v, 1920, (int)v, UI_COLOR_GREEN);
+    
+    return (int32_t)v;  // 返回线的高度像素值
+}
+// ==================================================
 
 void referee_usart_task(void const * argument)
 {
@@ -84,115 +122,66 @@ void referee_usart_task(void const * argument)
     fifo_s_init(&referee_fifo, referee_fifo_buf, REFEREE_FIFO_BUF_LENGTH);
     usart6_init(usart6_buf[0], usart6_buf[1], USART_RX_BUF_LENGHT);
 		osDelay(10);
-	
-    ui_init_default_DynamicBottomGroup();
-    ui_init_default_DynamicHightGroup();
-    ui_init_default_DynamicLeftGroup();
-    ui_init_default_DynamicRightGroup();
-    ui_init_default_StaticLeftGroup();
-    ui_init_default_StaticGroup();
-    ui_init_default_StaticMiddleGroup();
-    ui_init_frame1_DynamicNumberGroup();
-    ui_init_frame1_StaticNumberGroup();
-    ui_init_frame1_StaticTextGroup();
 
-    while(1)
+    ui_init_g_DynamicGroup();
+    ui_init_g_StaticGraphicGroup();
+    ui_init_g_StaticTextGroup();
+
+    while (1)
     {
         ui_self_id =robot_state.robot_id;        
         referee_unpack_fifo_data();
         osDelay(10);
 
         //定时初始化防止图形未进行初始化
-        if(uwTick - ui_initTick_1 >= 3*ui_period)
+        if(uwTick - ui_initTick_1 >= 2*ui_period)
         {
           ui_initTick_1 =uwTick;
-          ui_init_default_DynamicBottomGroup();
-          ui_init_default_DynamicHightGroup();
-          ui_init_default_DynamicLeftGroup();
+          ui_init_g_DynamicGroup();
         }
-        if(uwTick - ui_initTick_2 >= 4*ui_period)
+        if(uwTick - ui_initTick_2 >= 3*ui_period)
         {
           ui_initTick_2 =uwTick;
-          ui_init_default_DynamicRightGroup();
-          ui_init_default_StaticLeftGroup();
-          ui_init_default_StaticGroup();
+          ui_init_g_StaticGraphicGroup();        
         }
-        if(uwTick - ui_initTick_3 >= 3*ui_period)
+        if(uwTick - ui_initTick_3 >= 4*ui_period)
         {
           ui_initTick_3 =uwTick;
-          ui_init_default_StaticMiddleGroup();
-          ui_init_frame1_DynamicNumberGroup();
-          ui_init_frame1_StaticNumberGroup();
-          ui_init_frame1_StaticTextGroup();
+          ui_init_g_StaticTextGroup();
         }
         //设置按键触发重新初始化
         if(uart_data.receive_chassis_data.ui_init_flag==1)
         {
-          ui_init_default_DynamicBottomGroup();
-          ui_init_default_DynamicHightGroup();
-          ui_init_default_DynamicLeftGroup();
+          ui_init_g_DynamicGroup();
+          ui_init_g_StaticGraphicGroup();
+          ui_init_g_StaticTextGroup();
           osDelay(ui_period);
-          ui_init_default_DynamicRightGroup();
-          ui_init_default_StaticLeftGroup();
-          ui_init_default_StaticGroup();
-          osDelay(ui_period);
-          ui_init_default_StaticMiddleGroup();
-          ui_init_frame1_DynamicNumberGroup();
-          ui_init_frame1_StaticNumberGroup();
-          ui_init_frame1_StaticTextGroup();
         }
         //开始伟大的编程吧
         //自瞄和摩擦轮
         if(uart_data.receive_chassis_data.fric_flag==1)
         {
-          ui_default_DynamicBottomGroup_FricRound->color = UI_Color_Pink;
+          ui_g_DynamicGroup_FricRound->color = UI_Color_Pink;
         }
         else
         {
-          ui_default_DynamicBottomGroup_FricRound->color = UI_Color_White;
+          ui_g_DynamicGroup_FricRound->color = UI_Color_White;
         }
         if(uart_data.receive_chassis_data.auto_flag==1)
         {
-          ui_default_DynamicBottomGroup_AimRound->color = UI_Color_Pink;
+          ui_g_DynamicGroup_AutoRound->color = UI_Color_Pink;
         }
         else
         {
-          ui_default_DynamicBottomGroup_AimRound->color = UI_Color_White;
+          ui_g_DynamicGroup_AutoRound->color = UI_Color_White;
         }
-
-        ui_update_default_DynamicHightGroup();
-        ui_update_default_DynamicBottomGroup();
-        // osDelay(ui_period);
-        // ui_update_default_DynamicBottomGroup();
-        //底盘缓冲能量和枪口热量
-        // ui_default_DynamicLeftGroup_ShootHeatArc->start_angle = 
-        // 290;//-fp32_constrain( power_heat_data.shooter_17mm_1_barrel_heat/robot_state.shooter_barrel_heat_limit*20.0f,0,20);
-        // ui_default_DynamicLeftGroup_PowerArc->start_angle = 
-        // 290;//+fp32_constrain( power_heat_data.buffer_energy,0,50);
-        // ui_default_DynamicLeftGroup_ShootHeatArc->start_angle = 
-        // 270.0-fp32_constrain( uart_data.receive_chassis_data.vx_set,0,20);
-        // ui_default_DynamicLeftGroup_PowerArc->start_angle = 
-        // 225.0+fp32_constrain( uart_data.receive_chassis_data.vy_set,0,55);
-        ui_update_default_DynamicLeftGroup();
-
-        ui_default_DynamicRightGroup_ChassisArc->start_angle = 200-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
-        ui_default_DynamicRightGroup_ChassisArc->end_angle = 160-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
-        ui_default_DynamicRightGroup_DynamicPitchArc->start_angle = 90-chassis_move.chassis_posture_info.pitch_angle*180/PI;
-        ui_default_DynamicRightGroup_DynamicPitchArc->end_angle = 91-chassis_move.chassis_posture_info.pitch_angle*180/PI;
-
-        ui_update_default_DynamicRightGroup();
-        // osDelay(ui_period);
-        // ui_update_default_DynamicRightGroup();
-        ui_frame1_DynamicNumberGroup_NewNumber->number = shoot_control.shoot_motor_measure->speed_rpm;
-        if( shoot_control.shoot_motor_measure->speed_rpm<200)
-        {
-          ui_frame1_DynamicNumberGroup_NewNumber->color = UI_Color_Purplish_red;
-        }
-        else
-        {
-          ui_frame1_DynamicNumberGroup_NewNumber->color = UI_Color_Green;
-        }
-        ui_update_frame1_DynamicNumberGroup();
+        ui_g_DynamicGroup_DirectionArc->start_angle = 30-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
+        ui_g_DynamicGroup_DirectionArc->end_angle = 330-chassis_move.chassis_posture_info.yaw_angle_total*180/PI;
+        ui_g_DynamicGroup_HightNum->number = chassis_move.chassis_posture_info.leg_length_L;
+        ui_g_DynamicGroup_HightLine->end_y = 350 + fp32_constrain(chassis_move.chassis_posture_info.leg_length_L/0.35*284,0,284);
+        ui_g_DynamicGroup_JumpLine->end_y = calculate_jump_line_position();
+        ui_g_DynamicGroup_JumpLine->start_y = ui_g_DynamicGroup_JumpLine->end_y;
+        ui_update_g_DynamicGroup();
 
     }
 }

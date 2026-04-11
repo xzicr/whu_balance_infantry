@@ -71,8 +71,7 @@ chassis_task\referee_usart_task.o: ..\application\CAN_receive.h
 chassis_task\referee_usart_task.o: ../components/UI/ui.h
 chassis_task\referee_usart_task.o: ../components/UI/ui_interface.h
 chassis_task\referee_usart_task.o: ../components/UI/ui_types.h
-chassis_task\referee_usart_task.o: ../components/UI/ui_default.h
-chassis_task\referee_usart_task.o: ../components/UI/ui_frame1.h
+chassis_task\referee_usart_task.o: ../components/UI/ui_g.h
 chassis_task\referee_usart_task.o: ..\application\chassis_task.h
 chassis_task\referee_usart_task.o: ../components/controller/pid.h
 chassis_task\referee_usart_task.o: ..\application\remote_control.h

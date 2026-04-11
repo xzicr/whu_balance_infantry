@@ -97,8 +97,7 @@
 "chassis_task\cmsis_os.o"
 "chassis_task\heap_4.o"
 "chassis_task\port.o"
-"chassis_task\ui_default.o"
-"chassis_task\ui_frame1.o"
+"chassis_task\ui_g.o"
 "chassis_task\ui_interface.o"
 --strict --scatter "chassis_task\chassis_task.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols

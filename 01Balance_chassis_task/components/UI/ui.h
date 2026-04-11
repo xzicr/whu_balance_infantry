@@ -9,6 +9,9 @@
 extern "C" {
 #endif
 
+#include "ui_interface.h"
+
+#include "ui_g.h"
 
 // 图形配置参数：图形颜色
 #define UI_Color_Main 0         // 红蓝主色
@@ -20,46 +23,17 @@ extern "C" {
 #define UI_Color_Cyan 6         // 青色
 #define UI_Color_Black 7
 #define UI_Color_White 8
-#include "ui_interface.h"
 
-#include "ui_default.h"
 
-void ui_init_default_DynamicBottomGroup();
-void ui_update_default_DynamicBottomGroup();
-void ui_remove_default_DynamicBottomGroup();
-
-void ui_init_default_DynamicLeftGroup();
-void ui_update_default_DynamicLeftGroup();
-void ui_remove_default_DynamicLeftGroup();
-
-void ui_init_default_DynamicRightGroup();
-void ui_update_default_DynamicRightGroup();
-void ui_remove_default_DynamicRightGroup();
-
-void ui_init_default_StaticGroup();
-void ui_update_default_StaticGroup();
-void ui_remove_default_StaticGroup();
-
-void ui_init_default_StaticLeftGroup();
-void ui_update_default_StaticLeftGroup();
-void ui_remove_default_StaticLeftGroup();
-
-void ui_init_default_StaticMiddleGroup();
-void ui_update_default_StaticMiddleGroup();
-void ui_remove_default_StaticMiddleGroup();
-#include "ui_frame1.h"
-
-void ui_init_frame1_DynamicNumberGroup();
-void ui_update_frame1_DynamicNumberGroup();
-void ui_remove_frame1_DynamicNumberGroup();
-
-void ui_init_frame1_StaticNumberGroup();
-void ui_update_frame1_StaticNumberGroup();
-void ui_remove_frame1_StaticNumberGroup();
-
-void ui_init_frame1_StaticTextGroup();
-void ui_update_frame1_StaticTextGroup();
-void ui_remove_frame1_StaticTextGroup();
+void ui_init_g_DynamicGroup();
+void ui_update_g_DynamicGroup();
+void ui_remove_g_DynamicGroup();
+void ui_init_g_StaticGraphicGroup();
+void ui_update_g_StaticGraphicGroup();
+void ui_remove_g_StaticGraphicGroup();
+void ui_init_g_StaticTextGroup();
+void ui_update_g_StaticTextGroup();
+void ui_remove_g_StaticTextGroup();
 
 #ifdef __cplusplus
 }
