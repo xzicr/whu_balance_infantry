@@ -81,7 +81,7 @@ uint8_t close;
 gimbal_control_t gimbal_control;
 
 // 自瞄 转向标志位
-uint8_t aimflag = 0, turnflag = 0;
+uint8_t aimflag = 0;
 
 // PID参数
 static const fp32 Pitch_angle_pid[3] = {PITCH_ANGLE_PID_KP, PITCH_ANGLE_PID_KI, PITCH_ANGLE_PID_KD};
@@ -299,7 +299,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     fp32_constrain(chassis_data->high_set, 0.1, 0.34);
   }
   if ((gimbal_control_set->aim_press==1&& gimbal_control_set->aim_last_press==0) || 
-  (gimbal_control_set->press_r == 1))
+  (gimbal_control_set->press_r == 1&&gimbal_control_set->last_press_r == 0))
   {
     aimflag = !aimflag;
     if(aimflag)
@@ -368,7 +368,7 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
     chassis_data->high_set = 0.17f;
   }
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
-  if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 0 && turnflag == 0)
+  if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 0 )
   {
     chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
   }
@@ -396,15 +396,12 @@ else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && aimflag == 1)
         
         // 累加补偿到 yaw_angle_set
         new_yaw_angle = chassis_data->yaw_angle_set + angle_diff;
+        chassis_data->yaw_angle_set = new_yaw_angle;
     }
     
-    chassis_data->yaw_angle_set = new_yaw_angle;
+    
 }
-  if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && turnflag == 1)
-   {
-    chassis_data->yaw_angle_set += 180;
-    turnflag = 0;
-  }
+
 }
 
 
@@ -503,7 +500,7 @@ static void gimbal_set_control(gimbal_control_t *set_control)
   {
     if(set_control->gimbal_pitch_motor.self_aim_pitch_angle==0)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = set_control->gimbal_pitch_motor.absolute_angle_set;
+      set_control->gimbal_pitch_motor.absolute_angle_set += pitch_channel * PITCH_RC_SEN + set_control->gimbal_rc_ctrl->mouse.y * PITCH_MOUSE_SEN;
     }
     else
     {

@@ -27,56 +27,18 @@ Project File Date:  04/11/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
-compiling referee_usart_task.c...
-..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
-  const chassis_data_t *get_Uart_Chassisdata_point();
-../components/UI/ui_g.h(19): warning:  #1295-D: Deprecated declaration ui_init_g_DynamicGroup - give arg types
-  void ui_init_g_DynamicGroup();
-../components/UI/ui_g.h(20): warning:  #1295-D: Deprecated declaration ui_update_g_DynamicGroup - give arg types
-  void ui_update_g_DynamicGroup();
-../components/UI/ui_g.h(21): warning:  #1295-D: Deprecated declaration ui_remove_g_DynamicGroup - give arg types
-  void ui_remove_g_DynamicGroup();
-../components/UI/ui_g.h(31): warning:  #1295-D: Deprecated declaration ui_init_g_StaticGraphicGroup - give arg types
-  void ui_init_g_StaticGraphicGroup();
-../components/UI/ui_g.h(32): warning:  #1295-D: Deprecated declaration ui_update_g_StaticGraphicGroup - give arg types
-  void ui_update_g_StaticGraphicGroup();
-../components/UI/ui_g.h(33): warning:  #1295-D: Deprecated declaration ui_remove_g_StaticGraphicGroup - give arg types
-  void ui_remove_g_StaticGraphicGroup();
-../components/UI/ui_g.h(41): warning:  #1295-D: Deprecated declaration ui_init_g_StaticTextGroup - give arg types
-  void ui_init_g_StaticTextGroup();
-../components/UI/ui_g.h(42): warning:  #1295-D: Deprecated declaration ui_update_g_StaticTextGroup - give arg types
-  void ui_update_g_StaticTextGroup();
-../components/UI/ui_g.h(43): warning:  #1295-D: Deprecated declaration ui_remove_g_StaticTextGroup - give arg types
-  void ui_remove_g_StaticTextGroup();
-../components/UI/ui.h(28): warning:  #1295-D: Deprecated declaration ui_init_g_DynamicGroup - give arg types
-  void ui_init_g_DynamicGroup();
-../components/UI/ui.h(29): warning:  #1295-D: Deprecated declaration ui_update_g_DynamicGroup - give arg types
-  void ui_update_g_DynamicGroup();
-../components/UI/ui.h(30): warning:  #1295-D: Deprecated declaration ui_remove_g_DynamicGroup - give arg types
-  void ui_remove_g_DynamicGroup();
-../components/UI/ui.h(31): warning:  #1295-D: Deprecated declaration ui_init_g_StaticGraphicGroup - give arg types
-  void ui_init_g_StaticGraphicGroup();
-../components/UI/ui.h(32): warning:  #1295-D: Deprecated declaration ui_update_g_StaticGraphicGroup - give arg types
-  void ui_update_g_StaticGraphicGroup();
-../components/UI/ui.h(33): warning:  #1295-D: Deprecated declaration ui_remove_g_StaticGraphicGroup - give arg types
-  void ui_remove_g_StaticGraphicGroup();
-../components/UI/ui.h(34): warning:  #1295-D: Deprecated declaration ui_init_g_StaticTextGroup - give arg types
-  void ui_init_g_StaticTextGroup();
-../components/UI/ui.h(35): warning:  #1295-D: Deprecated declaration ui_update_g_StaticTextGroup - give arg types
-  void ui_update_g_StaticTextGroup();
-../components/UI/ui.h(36): warning:  #1295-D: Deprecated declaration ui_remove_g_StaticTextGroup - give arg types
-  void ui_remove_g_StaticTextGroup();
+compiling shoot.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
 ..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
   extern void shoot_init();
-..\application\referee_usart_task.c(177): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-          ui_g_DynamicGroup_HightLine->end_y = 350 + fp32_constrain(chassis_move.chassis_posture_info.leg_length_L/0.35*284,0,284);
-..\application\referee_usart_task.c: 22 warnings, 0 errors
+..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
+  const chassis_data_t *get_Uart_Chassisdata_point();
+..\application\shoot.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=95568 RO-data=7924 RW-data=2068 ZI-data=54564  
+Program Size: Code=95564 RO-data=7920 RW-data=2068 ZI-data=54564  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 22 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -99,7 +61,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:05
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

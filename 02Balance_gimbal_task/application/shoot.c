@@ -146,7 +146,6 @@ void friction_control_set()
 	{
 		if(friction_speed_set_state == 0)
 		{
-			// laser_on();		//意义不明的函数
 			shoot_control.friction_left_speed_set-=50;  
 			shoot_control.friction_right_speed_set+=50;   
 			if(shoot_control.friction_left_speed_set <= -6500 && shoot_control.friction_right_speed_set >= 6500)                           
@@ -156,7 +155,6 @@ void friction_control_set()
 		{
 			shoot_control.friction_left_speed_set=-6500;  
 			shoot_control.friction_right_speed_set=6500;                              
-			// laser_on();
 		}
 	}
 	else if (fric_flag == 0)
