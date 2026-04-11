@@ -101,7 +101,7 @@ fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 jump_stand_PD_L[2] = {2500000.0f, 250.0f};
 fp32 jump_stand_PD_R[2] = {2500000.0f, 250.0f};
 
-fp32 suspend_stand_PD[2] = {60.0f, 20.0f};
+fp32 suspend_stand_PD[2] = {200.0f, 40.0f};
 
 /* ------------------------平步数据------------------------ */
 fp32 delta;
@@ -111,25 +111,16 @@ float alpha_da = 0.7f;
 
 fp32 IDEAL_PREPARING_STAND_JUMPING_ANGLE = 0.174532f;//0.0872f;
 fp32 stablize_foot_speed_threshold = 1.2f, stablize_yaw_speed_threshold = 1.5f, rotate_move_threshold = 45.0f;
-uint8_t robot_level = 1;
 fp32 rotate_speed_list[11] = {0.0, 5.0, 5.3, 5.6, 6.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0};
 fp32 move_scale_list[11] = {0.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
 fp32 rotate_move_scale_list[11] = {0.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8};
 
 
-
-uint8_t lock;
 fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01f, leg_dlength_deadband = 0.0f;
 fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
-fp32 stepp = 0.02;
 fp32 normal_move_scale = 0.4f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
-
-
-
-
-float a,b,c,d;
 
 
 extern gimbal_control_t gimbal_control;
@@ -189,9 +180,7 @@ void chassis_task(void const *pvParameters)
 		Chassis_Torque_Combine(&chassis_move);
 
 		//发送计算结果
-
-		Motor_CMD_Send(&chassis_move);
-		
+		Motor_CMD_Send(&chassis_move);	
 		
 		vTaskDelay(CHASSIS_CONTROL_TIME_MS);
 
@@ -389,7 +378,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
     FootMotor_Kalman_Update(fdb);
     fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed_kf + fdb->foot_motor_R.speed_kf ) / 2.0f;
 	if (fabs(fdb->chassis_posture_info.foot_speed_set) < 0.1f && fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.5f && 
-	(fdb->flag_info.suspend_flag_L == ON_GROUND ))
+	(fdb->flag_info.suspend_flag_L == ON_GROUND && fdb->flag_info.suspend_flag_R == ON_GROUND))
 	{
 		fdb->chassis_posture_info.foot_distance_K += fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
 	}
@@ -437,7 +426,6 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2); 
 	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity*(2*PI/60)  + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity*(2*PI/60) ;
 	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity*(2*PI/60)  + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity*(2*PI/60);
-	// Leg_dlength_Kalman_Update(fdb);
 	
 	// 计算加速度
 	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_jacobian - fdb->chassis_posture_info.last_leg_dlength_L_jacobian) / CHASSIS_CONTROL_TIME;
@@ -512,7 +500,6 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode)
 		chassis_move_mode->joint_motor_4.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->foot_motor_L.motor_mode = MOTOR_NO_FORCE;
 		chassis_move_mode->foot_motor_R.motor_mode = MOTOR_NO_FORCE;
-
 	}
 	else
 	{

@@ -72,8 +72,16 @@ void FootMotor_Kalman_Update(chassis_move_t *chassis)
 {
     if (chassis == NULL) return;
     
-    foot_motor_kf_L.kf.MeasuredVector[0] = chassis->foot_motor_L.speed;
-    foot_motor_kf_L.kf.ControlVector[0] = chassis->chassis_posture_info.x_accel;
+    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
+    {
+        foot_motor_kf_L.kf.MeasuredVector[0] = 0;
+        foot_motor_kf_L.kf.ControlVector[0] = 0;
+    }
+    else 
+    {
+        foot_motor_kf_L.kf.MeasuredVector[0] = chassis->foot_motor_L.speed;
+        foot_motor_kf_L.kf.ControlVector[0] = -chassis->chassis_posture_info.x_accel;//负号因为c板安装问题
+    }
     
     float *filtered_state = Kalman_Filter_Update(&foot_motor_kf_L.kf);
     if (filtered_state != NULL) {
@@ -81,8 +89,17 @@ void FootMotor_Kalman_Update(chassis_move_t *chassis)
     }
     chassis->foot_motor_L.speed_kf = foot_motor_kf_L.filtered_speed;
 
-    foot_motor_kf_R.kf.MeasuredVector[0] = chassis->foot_motor_R.speed;
-    foot_motor_kf_R.kf.ControlVector[0] = chassis->chassis_posture_info.x_accel;
+
+    if(chassis->mode.chassis_mode == DISABLE_CHASSIS)
+    {
+        foot_motor_kf_R.kf.MeasuredVector[0] = 0;
+        foot_motor_kf_R.kf.ControlVector[0] = 0;
+    }
+    else 
+    {
+        foot_motor_kf_R.kf.MeasuredVector[0] = chassis->foot_motor_R.speed;
+        foot_motor_kf_R.kf.ControlVector[0] = -chassis->chassis_posture_info.x_accel;
+    }
     
     filtered_state = Kalman_Filter_Update(&foot_motor_kf_R.kf);
     if (filtered_state != NULL) {

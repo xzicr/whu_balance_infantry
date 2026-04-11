@@ -3,7 +3,7 @@
 #include "arm_math.h"
 #include "Chassis_power_control.h"
 #include "referee.h"
-float Plimit=0;
+float Plimit=1;
 static float Power_Buffer;
 
 extern power_heat_data_t power_heat_data;
