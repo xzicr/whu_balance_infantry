@@ -184,13 +184,6 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
   {
     return;
   }
-  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
-  {
-    if (fabs(gimbal_control_set->gimbal_pitch_motor.absolute_angle - INIT_PITCH_SET) > GIMBAL_INIT_ANGLE_ERROR)
-    {
-      return;
-    }
-  }
   // Ò£¿Ø¿ØÖÆ
   rc_control(gimbal_control_set, chassis_data);
 
@@ -351,10 +344,6 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
 void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
   int16_t yaw_channel = 0;
-  if (chassis_data->chassis_mode == CHASSIS_MODE_INIT)
-  {
-    chassis_data->yaw_angle_set = chassis_data->yaw_angle;
-  }
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;

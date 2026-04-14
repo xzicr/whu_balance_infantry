@@ -11,7 +11,7 @@ static uint16_t received = 0;//当前接收到的数据长度
 static uint8_t Usart_Receive[1];//用于接收单个字节的数据
 referee_data_t referee_data;
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+	void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART1)
     {

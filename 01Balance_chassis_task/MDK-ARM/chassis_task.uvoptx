@@ -173,6 +173,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>ui_g_DynamicGroup_JumpLine,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>yaw_ctrl_data</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
