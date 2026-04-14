@@ -507,9 +507,9 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     {
       set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 22)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 8.5)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 22;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 8.5;
     }
     else
     {
@@ -523,9 +523,9 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     {
       set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 22)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 8.5)  
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 22;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 8.5;
     }
     else
     {

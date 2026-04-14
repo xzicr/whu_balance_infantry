@@ -27,14 +27,14 @@ Project File Date:  04/11/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
-compiling shoot.c...
-..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
-  extern shoot_control_t *shoot();
-..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
-  extern void shoot_init();
+compiling uart_receive.c...
 ..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
   const chassis_data_t *get_Uart_Chassisdata_point();
-..\application\shoot.c: 3 warnings, 0 errors
+..\application\uart_receive.c(57): warning:  #223-D: function "memcpy" declared implicitly
+                  memcpy(&uart_data, buffer, sizeof(uart_data_t));
+..\application\uart_receive.c(75): warning:  #223-D: function "osDelay" declared implicitly
+         osDelay(100);
+..\application\uart_receive.c: 3 warnings, 0 errors
 linking...
 Program Size: Code=95564 RO-data=7920 RW-data=2068 ZI-data=54564  
 FromELF: creating hex file...
@@ -61,7 +61,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

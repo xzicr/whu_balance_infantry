@@ -32,11 +32,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         }
         else if (Count == 1) 
         {
-            buffer[received++] = received_byte;
-
-
             if (received_byte == 0xFF)
             {
+                buffer[received++] = received_byte;
                 Count = 2; 
             }
             else

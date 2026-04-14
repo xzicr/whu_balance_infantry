@@ -32,11 +32,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         }
         else if (Count == 1) 
         {
-            buffer[received++] = received_byte;
-
-
+            
+            
             if (received_byte == 0xFF)
             {
+                buffer[received++] = received_byte;
                 Count = 2; 
             }
             else
@@ -72,7 +72,7 @@ void uart_start_task(void const  *pvParameters)
     {
         get_shoot_speed(&referee_data.shoot_speed);
         HAL_UART_Transmit(&huart1,(uint8_t *)&referee_data,sizeof(referee_data_t),100);
-       osDelay(10);
+       osDelay(100);
     }
 }
 

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\standard_tpye_c\standard_tpye_c.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\standard_tpye_c\standard_tpye_c.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sat Apr 11 18:29:57 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Tue Apr 14 17:03:21 2026
 <BR><P>
 <H3>Maximum Stack Usage =        408 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -2633,12 +2633,12 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[241]"></a>PID_calc</STRONG> (Thumb, 492 bytes, Stack size 0 bytes, pid.o(i.PID_calc))
-<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
+<BR><BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
 <LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_control_loop
 </UL>
 
 <P><STRONG><a name="[248]"></a>PID_init</STRONG> (Thumb, 92 bytes, Stack size 0 bytes, pid.o(i.PID_init))
-<BR><BR>[Called By]<UL><LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
+<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_init
 </UL>
 
@@ -3385,7 +3385,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __hardfp_fabs
 </UL>
 <BR>[Called By]<UL><LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_rc_to_control_vector
-<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
+<LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
 </UL>
 
 <P><STRONG><a name="[db]"></a>__hardfp_sqrtf</STRONG> (Thumb, 58 bytes, Stack size 16 bytes, sqrtf_full.o(i.__hardfp_sqrtf))
@@ -3564,7 +3564,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[28c]"></a>friction_control_set</STRONG> (Thumb, 152 bytes, Stack size 0 bytes, shoot.o(i.friction_control_set))
-<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
+<BR><BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
 </UL>
 
 <P><STRONG><a name="[239]"></a>get_CRC16_check_sum</STRONG> (Thumb, 46 bytes, Stack size 12 bytes, crc8_crc16.o(i.get_CRC16_check_sum))
@@ -3587,7 +3587,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[288]"></a>get_chassis_motor_measure_point</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, can_receive.o(i.get_chassis_motor_measure_point))
-<BR><BR>[Called By]<UL><LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
+<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
 </UL>
 
 <P><STRONG><a name="[234]"></a>get_enemy_color</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, can_receive.o(i.get_enemy_color))
@@ -3616,12 +3616,12 @@ Global Symbols
 
 <P><STRONG><a name="[228]"></a>get_remote_control_point</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, remote_control.o(i.get_remote_control_point))
 <BR><BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calibrate_task
-<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
+<LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_init
 </UL>
 
 <P><STRONG><a name="[247]"></a>get_selfaim_data</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, self_aim.o(i.get_selfaim_data))
-<BR><BR>[Called By]<UL><LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
+<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_init
 </UL>
 
@@ -3630,12 +3630,12 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_cmd_gimbal
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CAN_cmd_chassis
-<LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
-<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
-<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;leg_control_init
+<LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
+<LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_Init
+<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;leg_control_init
 <LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_rc_to_control_vector
-<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
-<LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_control
+<LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
+<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_control
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_init
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_feedback_update
 <LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_control_loop
@@ -3667,7 +3667,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
-<P><STRONG><a name="[24c]"></a>leg_control_init</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gimbal_task.o(i.leg_control_init))
+<P><STRONG><a name="[24d]"></a>leg_control_init</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gimbal_task.o(i.leg_control_init))
 <BR><BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
@@ -3786,7 +3786,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[24d]"></a>shoot_Init</STRONG> (Thumb, 132 bytes, Stack size 8 bytes, shoot.o(i.shoot_Init))
+<P><STRONG><a name="[24e]"></a>shoot_Init</STRONG> (Thumb, 132 bytes, Stack size 8 bytes, shoot.o(i.shoot_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = shoot_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_chassis_motor_measure_point
@@ -3797,7 +3797,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
-<P><STRONG><a name="[24e]"></a>shoot_control_loop</STRONG> (Thumb, 184 bytes, Stack size 8 bytes, shoot.o(i.shoot_control_loop))
+<P><STRONG><a name="[24f]"></a>shoot_control_loop</STRONG> (Thumb, 184 bytes, Stack size 8 bytes, shoot.o(i.shoot_control_loop))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = shoot_control_loop &rArr; shoot_speed_filter
 </UL>
 <BR>[Calls]<UL><LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
@@ -3810,11 +3810,11 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[289]"></a>shoot_feedback_update</STRONG> (Thumb, 84 bytes, Stack size 0 bytes, shoot.o(i.shoot_feedback_update))
-<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
+<BR><BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
 </UL>
 
 <P><STRONG><a name="[28b]"></a>shoot_set_mode</STRONG> (Thumb, 338 bytes, Stack size 0 bytes, shoot.o(i.shoot_set_mode))
-<BR><BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
+<BR><BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
 </UL>
 
 <P><STRONG><a name="[28a]"></a>shoot_speed_filter</STRONG> (Thumb, 154 bytes, Stack size 8 bytes, shoot.o(i.shoot_speed_filter))
@@ -3822,7 +3822,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[250]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 </UL>
-<BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
+<BR>[Called By]<UL><LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;shoot_control_loop
 </UL>
 
 <P><STRONG><a name="[21e]"></a>sqrtf</STRONG> (Thumb, 62 bytes, Stack size 16 bytes, sqrtf_full.o(i.sqrtf))
@@ -3844,8 +3844,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
-<P><STRONG><a name="[24b]"></a>toe_is_error</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, detect_task.o(i.toe_is_error))
-<BR><BR>[Called By]<UL><LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
+<P><STRONG><a name="[24c]"></a>toe_is_error</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, detect_task.o(i.toe_is_error))
+<BR><BR>[Called By]<UL><LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
 </UL>
 
 <P><STRONG><a name="[8d]"></a>uart_task</STRONG> (Thumb, 62 bytes, Stack size 0 bytes, uart_task.o(i.uart_task))
@@ -4301,10 +4301,10 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_f2d
 </UL>
 
-<P><STRONG><a name="[24a]"></a>__aeabi_cdcmple</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, dleqf.o(x$fpl$dleqf))
+<P><STRONG><a name="[24b]"></a>__aeabi_cdcmple</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, dleqf.o(x$fpl$dleqf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_cdcmple
 </UL>
-<BR>[Called By]<UL><LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
+<BR>[Called By]<UL><LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
 </UL>
 
 <P><STRONG><a name="[2a7]"></a>_dcmple</STRONG> (Thumb, 120 bytes, Stack size 32 bytes, dleqf.o(x$fpl$dleqf), UNUSED)
@@ -4356,6 +4356,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_cdrcmple
 </UL>
 <BR>[Called By]<UL><LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_rc_to_control_vector
+<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_control
 </UL>
 
 <P><STRONG><a name="[2ae]"></a>_drcmple</STRONG> (Thumb, 98 bytes, Stack size 16 bytes, drleqf.o(x$fpl$drleqf), UNUSED)
@@ -4391,7 +4392,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_f2d
 </UL>
 <BR>[Called By]<UL><LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_rc_to_control_vector
-<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
+<LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_mode
+<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_set_control
 <LI><a href="#[1f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;data_transition
 </UL>
 
@@ -4543,17 +4545,22 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
-<P><STRONG><a name="[24f]"></a>gimbal_set_control</STRONG> (Thumb, 356 bytes, Stack size 0 bytes, gimbal_task.o(i.gimbal_set_control))
-<BR><BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
+<P><STRONG><a name="[249]"></a>gimbal_set_control</STRONG> (Thumb, 398 bytes, Stack size 16 bytes, gimbal_task.o(i.gimbal_set_control))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = gimbal_set_control &rArr; __aeabi_f2d
+</UL>
+<BR>[Calls]<UL><LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
+</UL>
+<BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
-<P><STRONG><a name="[249]"></a>gimbal_set_mode</STRONG> (Thumb, 252 bytes, Stack size 24 bytes, gimbal_task.o(i.gimbal_set_mode))
+<P><STRONG><a name="[24a]"></a>gimbal_set_mode</STRONG> (Thumb, 252 bytes, Stack size 24 bytes, gimbal_task.o(i.gimbal_set_mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = gimbal_set_mode &rArr; __aeabi_cdcmple
 </UL>
-<BR>[Calls]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;toe_is_error
+<BR>[Calls]<UL><LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;toe_is_error
 <LI><a href="#[22f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
+<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
