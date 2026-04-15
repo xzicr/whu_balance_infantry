@@ -376,11 +376,11 @@ void chassis_feedback_update(chassis_move_t *fdb)
 
 	// 使用卡尔曼滤波更新速度
     FootMotor_Kalman_Update(fdb);
-    fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed_kf + fdb->foot_motor_R.speed_kf ) / 2.0f;
-	if (fabs(fdb->chassis_posture_info.foot_speed_set) < 0.1f && fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.5f && 
-	(fdb->flag_info.suspend_flag_L == ON_GROUND && fdb->flag_info.suspend_flag_R == ON_GROUND))
+    fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed + fdb->foot_motor_R.speed ) / 2.0f;
+	if ( (fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.8f)
+	 && (fdb->flag_info.suspend_flag_L == ON_GROUND && fdb->flag_info.suspend_flag_R == ON_GROUND))
 	{
-		fdb->chassis_posture_info.foot_distance_K -= fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
+		fdb->chassis_posture_info.foot_distance_K += fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
 	}
 
 	
@@ -713,15 +713,15 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		if(target_value_set->chassis_posture_info.position_lock_state==0)
 		{
 			target_value_set->chassis_posture_info.position_lock_state=1;
-			if(target_value_set->chassis_posture_info.foot_speed_KF<-0.2)
-			{
-				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;//根据实际质心偏移选择合适的余量
-			}
-			else if(target_value_set->chassis_posture_info.foot_speed_KF>0.2)	
-			{
-				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
-			}
-			
+			// if(target_value_set->chassis_posture_info.foot_speed_KF<-0.4)
+			// {
+			// 	target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;//根据实际质心偏移选择合适的余量
+			// }
+			// else if(target_value_set->chassis_posture_info.foot_speed_KF>0.1)	
+			// {
+			// 	target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
+			// }
+			target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
 		}
 	}
 	else
