@@ -25,6 +25,8 @@ fp32 shoot_speed = 0.0f;
 extern robot_status_t robot_state;
 extern power_heat_data_t power_heat_data;
 
+
+
 void shoot_speed_calc(void)
 {
 	float a = (float)(robot_state.shooter_barrel_cooling_value);
@@ -52,7 +54,7 @@ void shoot_speed_calc(void)
 	if(shoot_time < ShootTime){
 		shoot_time++;
 	}
-	fp32_constrain(shoot_speed, 0, 24);  // 根据实际电机能力限制
+	fp32_constrain(shoot_speed, 0, 12);  // 根据实际电机能力限制
 }
 
 void ballet_feq_calc(fp32 fequence)

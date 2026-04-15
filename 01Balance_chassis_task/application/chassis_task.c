@@ -89,6 +89,9 @@ const fp32 m_w = 1.19f;
 // 底盘运动数据
 chassis_move_t chassis_move;
 
+//速度斜坡函数
+ramp_function_source_t speed_ramp_vx, speed_ramp_vy;
+
 fp32 TK_x_p = -10.0f, TK_y_p = 10.0f, TK_y_d = 3.0f, reducing_p = 120.0f;
 
 fp32 suspend_LQR[2][6] = {
@@ -291,7 +294,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =109.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =61.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
 
 }
@@ -713,14 +716,6 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		if(target_value_set->chassis_posture_info.position_lock_state==0)
 		{
 			target_value_set->chassis_posture_info.position_lock_state=1;
-			// if(target_value_set->chassis_posture_info.foot_speed_KF<-0.4)
-			// {
-			// 	target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;//根据实际质心偏移选择合适的余量
-			// }
-			// else if(target_value_set->chassis_posture_info.foot_speed_KF>0.1)	
-			// {
-			// 	target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
-			// }
 			target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
 		}
 	}
