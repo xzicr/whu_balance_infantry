@@ -52,7 +52,7 @@ void shoot_speed_calc(void)
 	if(shoot_time < ShootTime){
 		shoot_time++;
 	}
-	fp32_constrain(shoot_speed, 0, 27);  // 根据实际电机能力限制
+	fp32_constrain(shoot_speed, 0, 24);  // 根据实际电机能力限制
 }
 
 void ballet_feq_calc(fp32 fequence)
