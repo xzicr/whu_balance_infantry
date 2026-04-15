@@ -380,7 +380,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	if (fabs(fdb->chassis_posture_info.foot_speed_set) < 0.1f && fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.5f && 
 	(fdb->flag_info.suspend_flag_L == ON_GROUND && fdb->flag_info.suspend_flag_R == ON_GROUND))
 	{
-		fdb->chassis_posture_info.foot_distance_K += fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
+		fdb->chassis_posture_info.foot_distance_K -= fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
 	}
 
 	
@@ -715,11 +715,11 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 			target_value_set->chassis_posture_info.position_lock_state=1;
 			if(target_value_set->chassis_posture_info.foot_speed_KF<-0.2)
 			{
-				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K-0.3f;//根据实际质心偏移选择合适的余量
+				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;//根据实际质心偏移选择合适的余量
 			}
 			else if(target_value_set->chassis_posture_info.foot_speed_KF>0.2)	
 			{
-				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K+0.5f;
+				target_value_set->chassis_posture_info.target_distance_set = target_value_set->chassis_posture_info.foot_distance_K;
 			}
 			
 		}
