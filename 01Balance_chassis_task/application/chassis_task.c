@@ -296,8 +296,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
 	chassis_move_init->gimbal_yaw_motor.relative_angle_init =98.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 	// 初始化速度斜坡函数
-	ramp_init(&speed_ramp_vx, 0.004f, 3.0f, -3.0f);
-	ramp_init(&speed_ramp_vy, 0.004f, 3.0f, -3.0f);
+	ramp_init(&speed_ramp_vx, 0.001f, 3.0f, -3.0f);
+	ramp_init(&speed_ramp_vy, 0.001f, 3.0f, -3.0f);
 
 
 
@@ -702,7 +702,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	{
 		if(fabs(target_value_set->chassis_data_->wz_set) < CHASSIS_RC_WZ_DEADLINE)
 		{
-			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.2f,1.2f);
+			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.4f,1.4f);
 		}
 	}
 	else 

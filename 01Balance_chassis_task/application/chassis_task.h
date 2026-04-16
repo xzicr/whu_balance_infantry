@@ -139,9 +139,9 @@
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 750//550.0f//460.0f
-#define LEG_SET_PID_KI 1.4f
-#define LEG_SET_PID_KD 4200//400.0f //350.0f
+#define LEG_SET_PID_KP 750
+#define LEG_SET_PID_KI 2.0f
+#define LEG_SET_PID_KD 4800//400.0f //350.0f
 #define LEG_SET_PID_OUT 200.0f
 #define LEG_SET_PID_IOUT 120.0f
 
@@ -167,7 +167,7 @@
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.25f
 
-#define FEED_f 50.0f
+#define FEED_f 60.0f
 
 
 
