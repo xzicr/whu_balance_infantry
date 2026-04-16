@@ -120,7 +120,7 @@ fp32 rotate_move_scale_list[11] = {0.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 
 
 
 fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01f, leg_dlength_deadband = 0.0f;
-fp32  rc_angle_temp, X_speed, Y_speed, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
+fp32  rc_angle_temp, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
 fp32 normal_move_scale = 0.4f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
@@ -294,7 +294,12 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =61.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =98.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	// 初始化速度斜坡函数
+	ramp_init(&speed_ramp_vx, 0.01f, 3.0f, -3.0f);
+	ramp_init(&speed_ramp_vy, 0.01f, 3.0f, -3.0f);
+
+
 
 
 }
@@ -447,15 +452,15 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	//云台相对角度更新
 	fdb->gimbal_yaw_motor.relative_angle = theta_format(fdb->gimbal_yaw_motor.gimbal_motor_measure->angle);
 
-	X_speed = fdb->chassis_data_->vx_set;
-	Y_speed = fdb->chassis_data_->vy_set;
-	if(X_speed>=0)
+	ramp_calc(&speed_ramp_vx, fdb->chassis_data_->vx_set);
+	ramp_calc(&speed_ramp_vy, fdb->chassis_data_->vy_set);
+	if(speed_ramp_vx.out>=0)
 	{
-		normalized_speed = fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-4.0f,4.0f);
+		normalized_speed = fp32_constrain(sqrt(speed_ramp_vx.out*speed_ramp_vx.out+speed_ramp_vy.out*speed_ramp_vy.out),-3.0f,3.0f);
 	}
 	else
 	{
-		normalized_speed = -fp32_constrain(sqrt(X_speed*X_speed+Y_speed*Y_speed),-4.0f,4.0f);
+		normalized_speed = -fp32_constrain(sqrt(speed_ramp_vx.out*speed_ramp_vx.out+speed_ramp_vy.out*speed_ramp_vy.out),-3.0f,3.0f);
 	}
 }
 

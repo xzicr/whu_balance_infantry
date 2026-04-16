@@ -51,6 +51,10 @@ void ramp_calc(ramp_function_source_t *ramp_source_type, fp32 input)
     {
         ramp_source_type->out = ramp_source_type->min_value;
     }
+    if(input==0)
+    {
+        ramp_source_type->out =0;
+    }
 }
 /**
   * @brief          一阶低通滤波初始化

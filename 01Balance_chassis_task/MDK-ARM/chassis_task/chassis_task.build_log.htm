@@ -27,18 +27,43 @@ Project File Date:  04/11/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
-compiling shoot.c...
+compiling chassis_task.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
 ..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
   extern void shoot_init();
 ..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
   const chassis_data_t *get_Uart_Chassisdata_point();
-..\application\shoot.c: 3 warnings, 0 errors
+..\application\chassis_task.c(244): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	chassis_move_init->foot_motor_L.distance_offset = (chassis_move_init->foot_motor_L.position / 360.0f) * 
+HEEL_PERIMETER;
+..\application\chassis_task.c(245): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	chassis_move_init->foot_motor_R.distance_offset = ((360.0f - chassis_move_init->foot_motor_R.position )/ 360.0f) * 
+HEEL_PERIMETER;
+..\application\chassis_task.c(797): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  					else if (target_value_set->chassis_data_->wz_set > 
+HASSIS_RC_WZ_DEADLINE)
+..\application\chassis_task.c(1132): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_balancing_torque_L = (
+..\application\chassis_task.c(1138): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_moving_torque_L = (
+..\application\chassis_task.c(1144): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_balancing_torque_R = -(
+..\application\chassis_task.c(1150): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		bl_ctrl->torque_info.foot_moving_torque_R = -(
+..\application\chassis_task.c(1354): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				(detect->chassis_posture_info.leg_length_L>0.33&&detect->torque_info.supportive_force_L <= 20))
+..\application\chassis_task.c(1487): warning:  #177-D: variable "dL0"  was declared but never referenced
+  	fp32 dL0 = 0, L0 = 0, Q0 = 0, S0 = 0;
+..\application\chassis_task.c(1489): warning:  #550-D: variable "S3"  was set but never used
+  	fp32 A0, B0, C0, Q2, Q3, S2, S3;
+..\application\chassis_task.c(1640): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          chassis->torque_info.foot_balancing_torque_L= 0.8*chassis->torque_info.foot_balancing_torque_L;
+..\application\chassis_task.c: 14 warnings, 0 errors
 linking...
-Program Size: Code=95460 RO-data=7920 RW-data=2068 ZI-data=54564  
+Program Size: Code=95664 RO-data=7924 RW-data=2060 ZI-data=54604  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 3 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 14 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -61,7 +86,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>
