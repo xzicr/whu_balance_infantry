@@ -121,7 +121,7 @@ fp32 rotate_move_scale_list[11] = {0.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 
 
 fp32 rollP, rollD, rollI, roll_angle_deadband = 0.01f, roll_gyro_deadband = 0.01f, leg_dlength_deadband = 0.0f;
 fp32  rc_angle_temp, temp_max_spd,normalized_speed, rotate_move_offset, delta_theta, delta_theta_temp, acc_step = 0.3f;
-fp32 normal_move_scale = 0.4f;
+fp32 normal_move_scale = 1.0f;
 fp32 suspend_foot_speed_Kp=200.0f;
 fp32 SIT_HIGH = 0.12f;
 
@@ -296,8 +296,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 
 	chassis_move_init->gimbal_yaw_motor.relative_angle_init =98.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
 	// 初始化速度斜坡函数
-	ramp_init(&speed_ramp_vx, 0.01f, 3.0f, -3.0f);
-	ramp_init(&speed_ramp_vy, 0.01f, 3.0f, -3.0f);
+	ramp_init(&speed_ramp_vx, 0.004f, 3.0f, -3.0f);
+	ramp_init(&speed_ramp_vy, 0.004f, 3.0f, -3.0f);
 
 
 
@@ -385,7 +385,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	// 使用卡尔曼滤波更新速度
     FootMotor_Kalman_Update(fdb);
     fdb->chassis_posture_info.foot_speed_KF = ( fdb->foot_motor_L.speed + fdb->foot_motor_R.speed ) / 2.0f;
-	if ( (fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.8f)
+	if ( (fabs(fdb->chassis_posture_info.foot_speed_KF) < 0.6f)
 	 && (fdb->flag_info.suspend_flag_L == ON_GROUND && fdb->flag_info.suspend_flag_R == ON_GROUND))
 	{
 		fdb->chassis_posture_info.foot_distance_K += fdb->chassis_posture_info.foot_speed_KF*CHASSIS_CONTROL_TIME;
@@ -700,7 +700,10 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
 	target_value_set->flag_info.suspend_flag_R == ON_GROUND)
 	{
-		target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.6f,1.6f);
+		if(fabs(target_value_set->chassis_data_->wz_set) < CHASSIS_RC_WZ_DEADLINE)
+		{
+			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.2f,1.2f);
+		}
 	}
 	else 
 	{
