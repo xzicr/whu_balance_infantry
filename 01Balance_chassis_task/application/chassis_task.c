@@ -98,7 +98,7 @@ fp32 suspend_LQR[2][6] = {
 	20.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 	0, 0, 0, 0, 0, 0};
 /* ------------------------PID info------------------------ */
-fp32 roll_PID[3] = {45.0f, 22.0f};	 
+fp32 roll_PD[3] = {45.0f, 22.0f};	 
 fp32 coordinate_PD[2] = {10.0f, 1.0f}; // 10.0f,0.5f    //15.0f,1.0f
 fp32 yaw_PD_test[2] = {20.0f, 180.0f};
 fp32 jump_stand_PD_L[2] = {2500000.0f, 250.0f};
@@ -942,11 +942,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	{
 		if (bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband)
 		{
-			rollP =  roll_PID[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle));
+			rollP =  roll_PD[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle));
 		}
 		else if (bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband)
 		{
-			rollP = roll_PID[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle ));
+			rollP = roll_PD[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle ));
 		}
 		else
 		{
@@ -955,11 +955,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 
 		if (bl_ctrl->chassis_posture_info.roll_gyro < -roll_gyro_deadband)
 		{
-			rollD = roll_PID[1] * -(bl_ctrl->chassis_posture_info.roll_gyro );
+			rollD = roll_PD[1] * (bl_ctrl->chassis_posture_info.roll_gyro );
 		}
 		else if (bl_ctrl->chassis_posture_info.roll_gyro > roll_gyro_deadband)
 		{
-			rollD = roll_PID[1] * -(bl_ctrl->chassis_posture_info.roll_gyro );
+			rollD = roll_PD[1] * (bl_ctrl->chassis_posture_info.roll_gyro );		
 		}
 		else
 		{
@@ -1518,13 +1518,13 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	{
 		feedback_update->chassis_posture_info.leg_length_L = L0;
 		feedback_update->chassis_posture_info.leg_angle_L = Q0;
-		feedback_update->chassis_posture_info.leg_gyro_L = S0;
+		feedback_update->chassis_posture_info.leg_gyro_L = -S0;
 	}
 	else
 	{
 		feedback_update->chassis_posture_info.leg_length_R = L0;		
 		feedback_update->chassis_posture_info.leg_angle_R = -Q0;
-		feedback_update->chassis_posture_info.leg_gyro_R = -S0;
+		feedback_update->chassis_posture_info.leg_gyro_R = S0;
 
 	}
 }

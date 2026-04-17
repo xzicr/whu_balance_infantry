@@ -27,6 +27,14 @@ Project File Date:  04/11/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil5\ARM\ARMCC\Bin'
 Build target 'chassis_task'
+compiling motor_cmd.c...
+..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
+  extern shoot_control_t *shoot();
+..\application\shoot.h(64): warning:  #1295-D: Deprecated declaration shoot_init - give arg types
+  extern void shoot_init();
+..\application\motor_cmd.c(14): warning:  #1-D: last line of file ends without a newline
+  }
+..\application\motor_cmd.c: 3 warnings, 0 errors
 compiling chassis_task.c...
 ..\application\shoot.h(63): warning:  #1295-D: Deprecated declaration shoot - give arg types
   extern shoot_control_t *shoot();
@@ -61,9 +69,9 @@ HASSIS_RC_WZ_DEADLINE)
           chassis->torque_info.foot_balancing_torque_L= 0.8*chassis->torque_info.foot_balancing_torque_L;
 ..\application\chassis_task.c: 14 warnings, 0 errors
 linking...
-Program Size: Code=95692 RO-data=7920 RW-data=2060 ZI-data=54604  
+Program Size: Code=95684 RO-data=7920 RW-data=2060 ZI-data=54604  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 14 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 17 Warning(s).
 
 <h2>Software Packages used:</h2>
 
