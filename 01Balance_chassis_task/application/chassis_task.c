@@ -907,9 +907,9 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->chassis_posture_info.foot_roll_angle =
 			target_value_set->chassis_posture_info.roll_angle;
 		target_value_set->chassis_posture_info.leg_length_L_set =
-			target_value_set->chassis_posture_info.ideal_high + 0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
+			target_value_set->chassis_posture_info.ideal_high -0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
 		target_value_set->chassis_posture_info.leg_length_R_set =
-			target_value_set->chassis_posture_info.ideal_high - 0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
+			target_value_set->chassis_posture_info.ideal_high + 0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
 	}
 }
 void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
@@ -940,11 +940,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	}
 	else
 	{
-		if (bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband)
+		if (bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband)
 		{
 			rollP =  roll_PD[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle));
 		}
-		else if (bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband)
+		else if (bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband)
 		{
 			rollP = roll_PD[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle ));
 		}
@@ -953,11 +953,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			rollP = 0.0f;
 		}
 
-		if (bl_ctrl->chassis_posture_info.roll_gyro < -roll_gyro_deadband)
+		if (bl_ctrl->chassis_posture_info.roll_gyro > roll_gyro_deadband)
 		{
 			rollD = roll_PD[1] * (bl_ctrl->chassis_posture_info.roll_gyro );
 		}
-		else if (bl_ctrl->chassis_posture_info.roll_gyro > roll_gyro_deadband)
+		else if (bl_ctrl->chassis_posture_info.roll_gyro < -roll_gyro_deadband)
 		{
 			rollD = roll_PD[1] * (bl_ctrl->chassis_posture_info.roll_gyro );		
 		}
@@ -965,8 +965,8 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		{
 			rollD = 0.0f;
 		}
-		bl_ctrl->torque_info.joint_roll_torque_R = rollP + rollD ;//极性问题建议自己实际尝试
-		bl_ctrl->torque_info.joint_roll_torque_L = -bl_ctrl->torque_info.joint_roll_torque_R;
+		bl_ctrl->torque_info.joint_roll_torque_L = -(rollP + rollD) ;//极性问题建议自己实际尝试
+		bl_ctrl->torque_info.joint_roll_torque_R = -bl_ctrl->torque_info.joint_roll_torque_L;
 	}
 	
 
@@ -1182,14 +1182,14 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	LimitMax(bl_ctrl->foot_motor_L.torque_out, 16383);
 	LimitMax(bl_ctrl->foot_motor_R.torque_out, 16383);
 	/* -----------------------首先尝试平衡力矩调试-------------------------	 */
-	bl_ctrl->torque_info.joint_horizontal_torque_L =
-		bl_ctrl->torque_info.joint_balancing_torque_L+bl_ctrl->torque_info.joint_moving_torque_L;//+bl_ctrl->torque_info.joint_prevent_splits_torque_L;
+	// bl_ctrl->torque_info.joint_horizontal_torque_L = 
+	// 	bl_ctrl->torque_info.joint_balancing_torque_L+bl_ctrl->torque_info.joint_moving_torque_L;//+bl_ctrl->torque_info.joint_prevent_splits_torque_L;
 	bl_ctrl->torque_info.joint_horizontal_torque_R =
 		bl_ctrl->torque_info.joint_balancing_torque_R+bl_ctrl->torque_info.joint_moving_torque_R;//+bl_ctrl->torque_info.joint_prevent_splits_torque_R;
 
-	bl_ctrl->torque_info.joint_vertical_torque_L =
-		bl_ctrl->torque_info.joint_stand_torque_L + bl_ctrl->torque_info.joint_roll_torque_L;
-	bl_ctrl->torque_info.joint_vertical_torque_R =
+	// bl_ctrl->torque_info.joint_vertical_torque_L = 
+	// 	bl_ctrl->torque_info.joint_stand_torque_L + bl_ctrl->torque_info.joint_roll_torque_L;
+	bl_ctrl->torque_info.joint_vertical_torque_R = 
 		bl_ctrl->torque_info.joint_stand_torque_R + bl_ctrl->torque_info.joint_roll_torque_R;
 
 	/* 左视图：假设此时需要一个逆时针扭矩那么：1 2 号电机顺时针   右视图：根据上文此时计算出需要顺时针扭矩那么： 3 4 号电机 逆时针 下文又将3 4 号电机扭矩反向，所以是顺时针 */
