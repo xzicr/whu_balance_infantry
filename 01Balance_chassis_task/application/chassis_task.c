@@ -1040,11 +1040,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		//不在控制机身角度因为机身保持平衡的力矩其实与腿部保持竖直力矩相冲突，在没有地面支持力的情况下没有意义
 		bl_ctrl->torque_info.joint_balancing_torque_L = (
 			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L_kf)
-			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+			+ LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 		);		
 		bl_ctrl->torque_info.joint_balancing_torque_R = -(
 			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R_kf) 
-			- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
+			+ LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
 		);
 
 		bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
@@ -1182,13 +1182,13 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	LimitMax(bl_ctrl->foot_motor_L.torque_out, 16383);
 	LimitMax(bl_ctrl->foot_motor_R.torque_out, 16383);
 	/* -----------------------首先尝试平衡力矩调试-------------------------	 */
-	// bl_ctrl->torque_info.joint_horizontal_torque_L = 
-	// 	bl_ctrl->torque_info.joint_balancing_torque_L+bl_ctrl->torque_info.joint_moving_torque_L;//+bl_ctrl->torque_info.joint_prevent_splits_torque_L;
+	bl_ctrl->torque_info.joint_horizontal_torque_L = 
+		bl_ctrl->torque_info.joint_balancing_torque_L+bl_ctrl->torque_info.joint_moving_torque_L;
 	bl_ctrl->torque_info.joint_horizontal_torque_R =
-		bl_ctrl->torque_info.joint_balancing_torque_R+bl_ctrl->torque_info.joint_moving_torque_R;//+bl_ctrl->torque_info.joint_prevent_splits_torque_R;
+		bl_ctrl->torque_info.joint_balancing_torque_R+bl_ctrl->torque_info.joint_moving_torque_R;
 
-	// bl_ctrl->torque_info.joint_vertical_torque_L = 
-	// 	bl_ctrl->torque_info.joint_stand_torque_L + bl_ctrl->torque_info.joint_roll_torque_L;
+	bl_ctrl->torque_info.joint_vertical_torque_L = 
+		bl_ctrl->torque_info.joint_stand_torque_L + bl_ctrl->torque_info.joint_roll_torque_L;
 	bl_ctrl->torque_info.joint_vertical_torque_R = 
 		bl_ctrl->torque_info.joint_stand_torque_R + bl_ctrl->torque_info.joint_roll_torque_R;
 
@@ -1635,9 +1635,9 @@ void handle_airborne_state(chassis_move_t *bl_ctrl)
     // 2. 处理 joint_balancing_torque（平衡力矩）
     if (bl_ctrl->flag_info.suspend_flag_R == 1)
     {
-        bl_ctrl->torque_info.joint_balancing_torque_L = (
-            + LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-            - LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+        bl_ctrl->torque_info.joint_balancing_torque_R = (
+            + LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R)
+            + LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
         );
         bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
     }
@@ -1646,7 +1646,7 @@ void handle_airborne_state(chassis_move_t *bl_ctrl)
     {
         bl_ctrl->torque_info.joint_balancing_torque_L = (
             + LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-            - LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+            + LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
         );
         bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
     }

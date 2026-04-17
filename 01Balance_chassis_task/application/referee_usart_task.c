@@ -72,7 +72,7 @@ extern shoot_control_t shoot_control;
 // 相机参数
 #define HORIZONTAL_FOV     139.0f    // 水平视角
 #define FOCAL_LENGTH_MM   12.0f      // 等效焦距 mm
-#define CAMERA_HEIGHT      0.35f     // 相机安装高度（米）
+#define CAMERA_HEIGHT      0.45f     // 相机安装高度（米）
 
 // 像素焦距计算
 // f_像素 = 图像宽度 / (2 * tan(视角/2))
@@ -85,7 +85,7 @@ fp32 pitch_rad;
 static int32_t calculate_jump_line_position(void)
 {
 
-    fp32 jump_distance = 0.5f;  // 0.5米，可根据速度调整
+    fp32 jump_distance = 0.6f;  // 0.6米，可根据速度调整
     
 
     pitch_rad = uart_data.receive_chassis_data.pitch_angle*PI/180.0f;
