@@ -246,36 +246,36 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	
 	/* ----------------------------------VMC J-------------------------------- */
 	// N11 系数
-	chassis_move_init->InverseJacobianCoefficient.N11.c0 = 0.1226f;	  //-0.0046f;
-	chassis_move_init->InverseJacobianCoefficient.N11.c1 = -1.824f;	  // 0.0074f;
-	chassis_move_init->InverseJacobianCoefficient.N11.c2 = -0.08976f; //-0.0027f;
-	chassis_move_init->InverseJacobianCoefficient.N11.c3 = 3.55f;	  // 0.0076f;
-	chassis_move_init->InverseJacobianCoefficient.N11.c4 = -0.2468f;  // 0.0133f;
-	chassis_move_init->InverseJacobianCoefficient.N11.c5 = 0.0434;	  // 0.0006f;
+	// chassis_move_init->InverseJacobianCoefficient.N11.c0 = 0.132f;//0.1226f;	  
+	// chassis_move_init->InverseJacobianCoefficient.N11.c1 = -1.885f;//-1.824f;	 
+	// chassis_move_init->InverseJacobianCoefficient.N11.c2 = 0.0761f;//-0.08976f; 
+	// chassis_move_init->InverseJacobianCoefficient.N11.c3 = 3.656f;//3.55f;	 
+	// chassis_move_init->InverseJacobianCoefficient.N11.c4 = -0.2059f;//-0.2468f;  
+	// chassis_move_init->InverseJacobianCoefficient.N11.c5 = 0.03211f;//0.0434;	  
 	
-	// N12 系数
-	chassis_move_init->InverseJacobianCoefficient.N12.c0 = 0.05869f;   // 0.0614f;
-	chassis_move_init->InverseJacobianCoefficient.N12.c1 = 2.473f;	   //-0.2012f;
-	chassis_move_init->InverseJacobianCoefficient.N12.c2 = -0.6447f;   // 0.0776f;
-	chassis_move_init->InverseJacobianCoefficient.N12.c3 = -4.797f;	   // 0.4127f;
-	chassis_move_init->InverseJacobianCoefficient.N12.c4 = 2.438f;	   //-0.2497f;
-	chassis_move_init->InverseJacobianCoefficient.N12.c5 = -0.003233f; //-0.0021f;
+	// // N12 系数
+	// chassis_move_init->InverseJacobianCoefficient.N12.c0 = 0.06866f;//0.05869f;   
+	// chassis_move_init->InverseJacobianCoefficient.N12.c1 = 2.388f;//2.473f;	   
+	// chassis_move_init->InverseJacobianCoefficient.N12.c2 = -0.6333f;//-0.6447f; 
+	// chassis_move_init->InverseJacobianCoefficient.N12.c3 = -4.664f;//-4.797f;	   
+	// chassis_move_init->InverseJacobianCoefficient.N12.c4 = 2.333f;//2.438f;	   
+	// chassis_move_init->InverseJacobianCoefficient.N12.c5 = 0.01124f;//-0.003233f;
 	
-	// N21 系数
-	chassis_move_init->InverseJacobianCoefficient.N21.c0 = 0.1226f;	  //-1.2671f;
-	chassis_move_init->InverseJacobianCoefficient.N21.c1 = -1.824f;	  // 7.6106f;
-	chassis_move_init->InverseJacobianCoefficient.N21.c2 = -0.08976f; //-0.1929f;
-	chassis_move_init->InverseJacobianCoefficient.N21.c3 = 3.55f;	  //-11.8850f;
-	chassis_move_init->InverseJacobianCoefficient.N21.c4 = 0.2468f;	  // 0.9325f;
-	chassis_move_init->InverseJacobianCoefficient.N21.c5 = 0.0434f;	  // 0.0488f;
+	// // N21 系数
+	// chassis_move_init->InverseJacobianCoefficient.N21.c0 = 0.132f;// 0.1226f;	  
+	// chassis_move_init->InverseJacobianCoefficient.N21.c1 = -1.855f;//-1.824f;	 
+	// chassis_move_init->InverseJacobianCoefficient.N21.c2 = -0.0761f;//-0.08976f; 
+	// chassis_move_init->InverseJacobianCoefficient.N21.c3 = 3.656f;//3.55f;	 
+	// chassis_move_init->InverseJacobianCoefficient.N21.c4 = 0.2095f;//-0.2468f;  
+	// chassis_move_init->InverseJacobianCoefficient.N21.c5 = 0.03211f;//0.0434;	  
 	
-	// N22 系数
-	chassis_move_init->InverseJacobianCoefficient.N22.c0 = -0.05869f; // 0.0038f;
-	chassis_move_init->InverseJacobianCoefficient.N22.c1 = -2.473f;	  //-0.0392f;
-	chassis_move_init->InverseJacobianCoefficient.N22.c2 = -0.6447f;  //-0.0004f;
-	chassis_move_init->InverseJacobianCoefficient.N22.c3 = 4.797f;	  // 0.0767f;
-	chassis_move_init->InverseJacobianCoefficient.N22.c4 = 2.438f;	  // 0.0013f;
-	chassis_move_init->InverseJacobianCoefficient.N22.c5 = 0.003233f; // 0;
+	// // N22 系数
+	// chassis_move_init->InverseJacobianCoefficient.N22.c0 = -0.06866f;//-0.05869f; 
+	// chassis_move_init->InverseJacobianCoefficient.N22.c1 = -2.388f;//-2.473f;	   
+	// chassis_move_init->InverseJacobianCoefficient.N22.c2 = -0.6333f;//-0.6447f; 
+	// chassis_move_init->InverseJacobianCoefficient.N22.c3 = 4.664f;//4.797f;	   
+	// chassis_move_init->InverseJacobianCoefficient.N22.c4 = 2.333f;//2.438f;	   
+	// chassis_move_init->InverseJacobianCoefficient.N22.c5 = -0.01124f;//-0.003233f; 
 
 	// 初始化yaw角度PID
 	const static fp32 chassis_yaw_pid[3] = {CHASSIS_FOLLOW_GIMBAL_PID_KP, CHASSIS_FOLLOW_GIMBAL_PID_KI, CHASSIS_FOLLOW_GIMBAL_PID_KD};
@@ -1511,9 +1511,6 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	vyc = vyb + S2 * L2 * cos(Q2);
 	S0 = 3 * (-sin(fabs(Q0)) * vxc - cos(Q0) * vyc);
 
-	// if( Q0 < 0 )
-	// 	Q0 = -Q0;
-	/*******************************/
 	if (ce)
 	{
 		feedback_update->chassis_posture_info.leg_length_L = L0;
@@ -1587,19 +1584,19 @@ float evaluate_polynomial(float L0, float Q0, PolynomialCoefficients coeffs)
 // 计算雅可比矩阵
 float get_jacobian_element(chassis_move_t *VMCJ, float L0, float Q0, uint8_t element_type)
 {
-	switch (element_type)
-	{
-	case 1: // N11
-		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N11);
-	case 2: // N12
-		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N12);
-	case 3: // N21
-		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N21);
-	case 4: // N22
-		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N22);
-	default:
-		return 0.0f; // 或者返回错误值
-	}
+	// switch (element_type)
+	// {
+	// case 1: // N11
+	// 	return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N11);
+	// case 2: // N12
+	// 	return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N12);
+	// case 3: // N21
+	// 	return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N21);
+	// case 4: // N22
+	// 	return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N22);
+	// default:
+	// 	return 0.0f; // 或者返回错误值
+	// }
 }
 uint8_t leg_length_ready,leg_angle_ready,leg_gyro_stable,pitch_stable,both_feet_on_ground ,speed_flag,prepare_complete;
 uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)

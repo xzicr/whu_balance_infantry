@@ -34,7 +34,7 @@ l4 =parameters.l4;    % 左腿第二段长度 [m]
 l5 =parameters.l5;    % 髋关节间距 [m]
 % 示例1：正常位置
 test_l = 0.15;          % [m] 腿长
-test_theta = 0.160*180/pi;        % [°] 角度（垂直向下为0°）
+test_theta = 0*180/pi;        % [°] 角度（垂直向下为0°）
 test_theta_rad = test_theta * pi/180;
 %[phi1, phi2] = solve_kinematics_accurate(test_l, test_theta_rad);
 [J1 ,J2 ,J3, J4] = calculate_jacobian_elements(test_l, test_theta_rad);
@@ -68,10 +68,15 @@ disp([J1 ,J2 ,J3, J4]);
 
 
 %% 步骤4：计算关节力矩示例
+
+disp('============');
+disp('============');
+disp('============');
+disp('============');
 disp('=== 关节力矩计算示例1 ===');
 
 % 虚拟腿受力 [Fl; Fp]
-F_virtual = [20;0];   % [N]
+F_virtual = [40;0];   % [N]
 
 % 计算关节力矩
 tau = J_transpose * F_virtual;
@@ -84,7 +89,7 @@ fprintf('关节力矩 tau = [%.3f; %.3f] N·m\n', tau(1), tau(2));
 disp('=== 关节力矩计算示例2 ===');
 
 % 虚拟腿受力 [Fl; Fp]
-F_virtual = [0;5];   % [N]
+F_virtual = [0;30];   % [N]
 
 % 计算关节力矩
 tau = J_transpose * F_virtual;
@@ -95,7 +100,7 @@ fprintf('关节力矩 tau = [%.3f; %.3f] N·m\n', tau(1), tau(2));
 disp('=== 关节力矩计算示例3 ===');
 
 % 虚拟腿受力 [Fl; Fp]
-F_virtual = [10;5];   % [N]
+F_virtual = [400;30];   % [N]
 
 % 计算关节力矩
 tau = J_transpose * F_virtual;
