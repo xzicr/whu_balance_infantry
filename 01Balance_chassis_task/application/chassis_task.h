@@ -426,24 +426,6 @@ typedef struct
 	fp32 invJ3_R,invJ4_R;
 } mapping_info_t;
 
-// 定义多项式系数结构体
-typedef struct {
-    float c0; // 常数项
-    float c1; // L0系数
-    float c2; // Q0系数
-    float c3; // L0^2系数
-    float c4; // L0*Q0系数
-    float c5; // Q0^2系数
-} PolynomialCoefficients;
-
-// 定义逆雅可比矩阵系数
-typedef struct {
-    PolynomialCoefficients N11;
-    PolynomialCoefficients N12;
-    PolynomialCoefficients N21;
-    PolynomialCoefficients N22;
-} InverseJacobianCoefficients;
-
 typedef struct
 {
 
@@ -452,8 +434,8 @@ typedef struct
     chassis_posture_info_t chassis_posture_info;
     torque_info_t torque_info;
     mapping_info_t mapping_info;
-    InverseJacobianCoefficients InverseJacobianCoefficient;
-
+    float J_L[2][2];           // 雅可比矩阵
+    float J_R[2][2];         
     const RC_ctrl_t *chassis_RC;
     const fp32 *chassis_INS_angle;
     const fp32 *chassis_INS_gyro;
@@ -517,6 +499,4 @@ extern void chassis_task(void const *pvParameters);
   */
 extern void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *chassis_move_rc_to_vector);
 extern chassis_move_t chassis_move;
-float evaluate_polynomial(float L0, float Q0, PolynomialCoefficients coeffs);
-float get_jacobian_element(chassis_move_t *VMCJ, float L0, float Q0, uint8_t element_type);
 #endif
