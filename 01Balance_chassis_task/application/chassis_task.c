@@ -241,8 +241,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_move_init->joint_motor_4.position_offset = chassis_move_init->joint_motor_4.motor_measure->ecd;
 	chassis_move_init->joint_motor_1.position = (chassis_move_init->joint_motor_1.motor_measure->ecd - chassis_move_init->joint_motor_1.position_offset) + LEG_OFFSET;
 	chassis_move_init->joint_motor_2.position = (chassis_move_init->joint_motor_2.motor_measure->ecd - chassis_move_init->joint_motor_2.position_offset) - LEG_OFFSET;
-	chassis_move_init->joint_motor_3.position = (chassis_move_init->joint_motor_3.motor_measure->ecd - chassis_move_init->joint_motor_3.position_offset) + LEG_OFFSET;
-	chassis_move_init->joint_motor_4.position = (chassis_move_init->joint_motor_4.motor_measure->ecd - chassis_move_init->joint_motor_4.position_offset) - LEG_OFFSET;
+	chassis_move_init->joint_motor_3.position = (chassis_move_init->joint_motor_3.motor_measure->ecd - chassis_move_init->joint_motor_3.position_offset) - LEG_OFFSET;
+	chassis_move_init->joint_motor_4.position = (chassis_move_init->joint_motor_4.motor_measure->ecd - chassis_move_init->joint_motor_4.position_offset) + LEG_OFFSET;
 	chassis_move_init->foot_motor_L.distance_offset = (chassis_move_init->foot_motor_L.position / 360.0f) * WHEEL_PERIMETER;
 	chassis_move_init->foot_motor_R.distance_offset = ((360.0f - chassis_move_init->foot_motor_R.position )/ 360.0f) * WHEEL_PERIMETER;
 	// ≥ı ºªØyawΩ«∂»PID
@@ -1553,7 +1553,7 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	A0 = 2.0f * L2 * (xd - xb);
 	B0 = 2.0f * L2 * (yd - yb);
 	C0 = L2 * L2 + Lbd - L3 * L3;
-	Q2 = 2.0f * atan((B0 + sqrt(A0 * A0 + B0 * B0 - C0 * C0)) / (A0 + C0));
+	Q2 = 2.0f * atan2((B0 + sqrt(A0 * A0 + B0 * B0 - C0 * C0)) , (A0 + C0));
 
 	xc = xb + cos(Q2) * L2;
 	yc = yb + sin(Q2) * L2;
@@ -1565,7 +1565,7 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	vyb = S1 * L1 * cos_Q1;
 	vxd = -S4 * L4 * sin_Q4;
 	vyd = S4 * L4 * cos_Q4;
-	Q3 = atan((yc - yd) / (xc - xd));
+	Q3 = atan2((yc - yd) , (xc - xd));
 	S2 = ((vxd - vxb) * cos(Q3) + (vyd - vyb) * sin(Q3)) / (L2 * sin(Q3 - Q2));
 	S3 = ((vxd - vxb) * cos(Q2) + (vyd - vyb) * sin(Q2)) / (L2 * sin(Q3 - Q2));
 	vxc = vxb - S2 * L2 * sin(Q2);
