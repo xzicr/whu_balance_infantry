@@ -3,7 +3,7 @@
 <title>Static Call Graph - [chassis_task\chassis_task.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image chassis_task\chassis_task.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sun Apr 19 12:14:44 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sun Apr 19 12:51:39 2026
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1685,7 +1685,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[128]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1784 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
+<P><STRONG><a name="[128]"></a>Chassis_Torque_Calculation</STRONG> (Thumb, 1772 bytes, Stack size 64 bytes, chassis_task.o(i.Chassis_Torque_Calculation))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = Chassis_Torque_Calculation &rArr; Jump_Wheel_Control &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
@@ -4005,7 +4005,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INS_cali_gyro
 </UL>
 
-<P><STRONG><a name="[12f]"></a>handle_airborne_state</STRONG> (Thumb, 128 bytes, Stack size 0 bytes, chassis_task.o(i.handle_airborne_state))
+<P><STRONG><a name="[12f]"></a>handle_airborne_state</STRONG> (Thumb, 124 bytes, Stack size 0 bytes, chassis_task.o(i.handle_airborne_state))
 <BR><BR>[Called By]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Chassis_Torque_Calculation
 </UL>
 
@@ -4165,7 +4165,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[78]"></a>motor_cmd_task</STRONG> (Thumb, 62 bytes, Stack size 0 bytes, motor_cmd.o(i.motor_cmd_task))
+<P><STRONG><a name="[78]"></a>motor_cmd_task</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, motor_cmd.o(i.motor_cmd_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = motor_cmd_task &rArr; osDelay &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay

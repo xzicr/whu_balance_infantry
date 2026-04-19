@@ -9,8 +9,8 @@ function generate_jacobian_fit()
     l5 = parameters.l5;
     
     % 定义采样范围
-    l_samples = linspace(0.10, 0.40, 100);
-    theta_samples = linspace(-60, 60, 100) * pi/180;
+    l_samples = linspace(0.10, 0.40, 150);
+    theta_samples = linspace(-60, 60, 150) * pi/180;
     
     [L_grid, Theta_grid] = meshgrid(l_samples, theta_samples);
     
