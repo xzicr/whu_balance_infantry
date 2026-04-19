@@ -148,7 +148,7 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl);
 void Motor_CMD_Send(chassis_move_t *CMD_Send);
 uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis);
 void Jump_Wheel_Control(chassis_move_t *chassis);
-void CalcJacobian(float phi1, float phi4, float J[2][2]);
+
 
 void chassis_task(void const *pvParameters)
 {
@@ -265,6 +265,39 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	// 初始化速度斜坡函数
 	ramp_init(&speed_ramp_vx, 0.001f, 3.0f, -3.0f);
 	ramp_init(&speed_ramp_vy, 0.001f, 3.0f, -3.0f);
+	/* ----------------------------------VMC J-------------------------------- */
+	//N11 系数
+	chassis_move_init->InverseJacobianCoefficient.N11.c0 = 0.132f;//0.1226f;	  
+	chassis_move_init->InverseJacobianCoefficient.N11.c1 = -1.885f;//-1.824f;	 
+	chassis_move_init->InverseJacobianCoefficient.N11.c2 = 0.0761f;//-0.08976f; 
+	chassis_move_init->InverseJacobianCoefficient.N11.c3 = 3.656f;//3.55f;	 
+	chassis_move_init->InverseJacobianCoefficient.N11.c4 = -0.2059f;//-0.2468f;  
+	chassis_move_init->InverseJacobianCoefficient.N11.c5 = 0.03211f;//0.0434;	  
+	
+	// N12 系数
+	chassis_move_init->InverseJacobianCoefficient.N12.c0 = 0.06866f;//0.05869f;   
+	chassis_move_init->InverseJacobianCoefficient.N12.c1 = 2.388f;//2.473f;	   
+	chassis_move_init->InverseJacobianCoefficient.N12.c2 = -0.6333f;//-0.6447f; 
+	chassis_move_init->InverseJacobianCoefficient.N12.c3 = -4.664f;//-4.797f;	   
+	chassis_move_init->InverseJacobianCoefficient.N12.c4 = 2.333f;//2.438f;	   
+	chassis_move_init->InverseJacobianCoefficient.N12.c5 = 0.01124f;//-0.003233f;
+	
+	// N21 系数
+	chassis_move_init->InverseJacobianCoefficient.N21.c0 = 0.132f;// 0.1226f;	  
+	chassis_move_init->InverseJacobianCoefficient.N21.c1 = -1.855f;//-1.824f;	 
+	chassis_move_init->InverseJacobianCoefficient.N21.c2 = -0.0761f;//-0.08976f; 
+	chassis_move_init->InverseJacobianCoefficient.N21.c3 = 3.656f;//3.55f;	 
+	chassis_move_init->InverseJacobianCoefficient.N21.c4 = 0.2095f;//-0.2468f;  
+	chassis_move_init->InverseJacobianCoefficient.N21.c5 = 0.03211f;//0.0434;	  
+	
+	// N22 系数
+	chassis_move_init->InverseJacobianCoefficient.N22.c0 = -0.06866f;//-0.05869f; 
+	chassis_move_init->InverseJacobianCoefficient.N22.c1 = -2.388f;//-2.473f;	   
+	chassis_move_init->InverseJacobianCoefficient.N22.c2 = -0.6333f;//-0.6447f; 
+	chassis_move_init->InverseJacobianCoefficient.N22.c3 = 4.664f;//4.797f;	   
+	chassis_move_init->InverseJacobianCoefficient.N22.c4 = 2.333f;//2.438f;	   
+	chassis_move_init->InverseJacobianCoefficient.N22.c5 = -0.01124f;//-0.003233f; 
+
 
 
 
@@ -360,10 +393,10 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->chassis_posture_info.leg_angle_L += fdb->chassis_posture_info.pitch_angle;
 	fdb->chassis_posture_info.leg_angle_R += fdb->chassis_posture_info.pitch_angle;
 	
-	fdb->mapping_info.J1_L = fdb->J_L[0][0];
-	fdb->mapping_info.J2_L = fdb->J_L[0][1];
-	fdb->mapping_info.J1_R = fdb->J_R[0][0];
-	fdb->mapping_info.J2_R = fdb->J_R[0][1];
+	fdb->mapping_info.J1_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 1);
+	fdb->mapping_info.J2_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 2);
+	fdb->mapping_info.J1_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 1);
+	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2);
 	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity*(2*PI/60)  + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity*(2*PI/60) ;
 	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity*(2*PI/60)  + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity*(2*PI/60);
 	
@@ -839,9 +872,9 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 		target_value_set->chassis_posture_info.foot_roll_angle =
 			target_value_set->chassis_posture_info.roll_angle;
 		target_value_set->chassis_posture_info.leg_length_L_set =
-			target_value_set->chassis_posture_info.ideal_high -0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
+			target_value_set->chassis_posture_info.ideal_high +0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
 		target_value_set->chassis_posture_info.leg_length_R_set =
-			target_value_set->chassis_posture_info.ideal_high + 0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
+			target_value_set->chassis_posture_info.ideal_high - 0.24f * arm_sin_f32( target_value_set->chassis_posture_info .foot_roll_angle ) / arm_cos_f32( target_value_set->chassis_posture_info .foot_roll_angle );
 	}
 }
 void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
@@ -849,25 +882,18 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	// 在函数开头判断
 	if (bl_ctrl->mode.chassis_mode == DISABLE_CHASSIS) {
 		// 所有力矩清零
-		bl_ctrl->torque_info.joint_stand_torque_L = 0;
-		bl_ctrl->torque_info.joint_stand_torque_R = 0;
-		bl_ctrl->torque_info.joint_balancing_torque_L = 0;
-		bl_ctrl->torque_info.joint_balancing_torque_R = 0;
-		bl_ctrl->torque_info.joint_moving_torque_L = 0;
-		bl_ctrl->torque_info.joint_moving_torque_R = 0;
+	// 	bl_ctrl->torque_info.joint_stand_torque_L = 0;
+	// 	bl_ctrl->torque_info.joint_stand_torque_R = 0;
+	// 	bl_ctrl->torque_info.joint_balancing_torque_L = 0;
+	// 	bl_ctrl->torque_info.joint_balancing_torque_R = 0;
+	// 	bl_ctrl->torque_info.joint_moving_torque_L = 0;
+	// 	bl_ctrl->torque_info.joint_moving_torque_R = 0;
 		
-	// 直接返回，不进行后续计算
-	return;
+	// // 直接返回，不进行后续计算
+	// return;
     }
 	//LQR拟合矩阵数据更新
 	LQR_Data_Update(bl_ctrl);
-
-	//更新雅可比矩阵
-	CalcJacobian(bl_ctrl->joint_motor_1.position,bl_ctrl->joint_motor_2.position,bl_ctrl->J_L);
-	CalcJacobian(bl_ctrl->joint_motor_4.position,bl_ctrl->joint_motor_3.position,bl_ctrl->J_R);
-
-
-
 	//不同情况下roll轴控制
 	if (bl_ctrl->flag_info.suspend_flag_R == 1 || bl_ctrl->flag_info.suspend_flag_L == 1 ||
 		bl_ctrl->mode.chassis_high_mode == SIT_MODE)
@@ -877,11 +903,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	}
 	else
 	{
-		if (bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband)
+		if (bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband)
 		{
 			rollP =  roll_PD[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle));
 		}
-		else if (bl_ctrl->chassis_posture_info.roll_angle < -roll_angle_deadband)
+		else if (bl_ctrl->chassis_posture_info.roll_angle > roll_angle_deadband)
 		{
 			rollP = roll_PD[0] * (bl_ctrl->chassis_posture_info.roll_angle_set - (bl_ctrl->chassis_posture_info.roll_angle ));
 		}
@@ -890,11 +916,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 			rollP = 0.0f;
 		}
 
-		if (bl_ctrl->chassis_posture_info.roll_gyro > roll_gyro_deadband)
+		if (bl_ctrl->chassis_posture_info.roll_gyro < -roll_gyro_deadband)
 		{
 			rollD = roll_PD[1] * (bl_ctrl->chassis_posture_info.roll_gyro );
 		}
-		else if (bl_ctrl->chassis_posture_info.roll_gyro < -roll_gyro_deadband)
+		else if (bl_ctrl->chassis_posture_info.roll_gyro > roll_gyro_deadband)
 		{
 			rollD = roll_PD[1] * (bl_ctrl->chassis_posture_info.roll_gyro );		
 		}
@@ -902,9 +928,10 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		{
 			rollD = 0.0f;
 		}
-		bl_ctrl->torque_info.joint_roll_torque_L = -(rollP + rollD) ;//极性问题建议自己实际尝试
-		bl_ctrl->torque_info.joint_roll_torque_R = -bl_ctrl->torque_info.joint_roll_torque_L;
+		bl_ctrl->torque_info.joint_roll_torque_R = rollP + rollD ;//极性问题建议自己实际尝试
+		bl_ctrl->torque_info.joint_roll_torque_L = -bl_ctrl->torque_info.joint_roll_torque_R;
 	}
+
 	
 
 	//不同情况下垂直方向力控制
@@ -977,11 +1004,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		//不在控制机身角度因为机身保持平衡的力矩其实与腿部保持竖直力矩相冲突，在没有地面支持力的情况下没有意义
 		bl_ctrl->torque_info.joint_balancing_torque_L = (
 			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L_kf)
-			+ LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+			- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 		);		
 		bl_ctrl->torque_info.joint_balancing_torque_R = -(
 			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R_kf) 
-			+ LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
+			- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
 		);
 
 		bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
@@ -1012,9 +1039,9 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 
 				bl_ctrl->torque_info.joint_balancing_torque_L = (
 					+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-					+ LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-					+ LQR[2][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
-					+ LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
+					- LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+					- LQR[2][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
+					- LQR[2][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 				);
 				bl_ctrl->torque_info.joint_moving_torque_L    = (
 					+ LQR[2][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
@@ -1025,9 +1052,9 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 
 				bl_ctrl->torque_info.joint_balancing_torque_R = -(
 					+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
-					+ LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
-					+ LQR[3][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
-					+ LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
+					- LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
+					- LQR[3][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
+					- LQR[3][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 				);
 				bl_ctrl->torque_info.joint_moving_torque_R    = -(
 					+ LQR[3][0] * ( bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
@@ -1052,28 +1079,28 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 	{	
 
 		bl_ctrl->torque_info.foot_balancing_torque_L = (
-			+ LQR[0][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L) 
+			- LQR[0][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L) 
 			+ LQR[0][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
-			+ LQR[0][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
+			- LQR[0][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
 			+ LQR[0][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 		) * TORQ_K; 
 		bl_ctrl->torque_info.foot_moving_torque_L = (
-			+ LQR[0][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
-			+ LQR[0][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
- 			+ LQR[0][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
-			+ LQR[0][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
+			- LQR[0][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
+			- LQR[0][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
+ 			- LQR[0][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
+			- LQR[0][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 		)*TORQ_K;
 		bl_ctrl->torque_info.foot_balancing_torque_R = -(
-			+ LQR[1][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
+			- LQR[1][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
 			+ LQR[1][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
-			+ LQR[1][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
+			- LQR[1][8] * (bl_ctrl->chassis_posture_info.pitch_angle_set - bl_ctrl->chassis_posture_info.pitch_angle) 
 			+ LQR[1][9] * (bl_ctrl->chassis_posture_info.pitch_gyro_set - bl_ctrl->chassis_posture_info.pitch_gyro)
 		) * TORQ_K;
 		bl_ctrl->torque_info.foot_moving_torque_R = -(
-			+ LQR[1][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
-			+ LQR[1][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
-			+ LQR[1][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
-			+ LQR[1][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
+			- LQR[1][0] * (bl_ctrl->chassis_posture_info.foot_distance_set - bl_ctrl->chassis_posture_info.foot_distance_K )
+			- LQR[1][1] * (bl_ctrl->chassis_posture_info.foot_speed_set - bl_ctrl->chassis_posture_info.foot_speed_KF)
+			- LQR[1][2]*( bl_ctrl->chassis_posture_info.yaw_angle_sett    - bl_ctrl->chassis_posture_info.yaw_angle_total)
+			- LQR[1][3]*( bl_ctrl->chassis_posture_info.yaw_gyro_set      - bl_ctrl->chassis_posture_info.yaw_gyro  )
 		) *TORQ_K;
 	}
 
@@ -1099,14 +1126,14 @@ else
 void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 {
 	/* ---------J1 J2 对应支持力分解成关节扭矩     J3 J4 对应平衡扭矩分解成关节扭矩------------------------------ */
-	bl_ctrl->mapping_info.invJ1_L = bl_ctrl->J_L[0][0]; // N11
-	bl_ctrl->mapping_info.invJ2_L = bl_ctrl->J_L[1][0]; // N21
-	bl_ctrl->mapping_info.invJ3_L = bl_ctrl->J_L[0][1]; // N12
-	bl_ctrl->mapping_info.invJ4_L = bl_ctrl->J_L[1][1]; // N22
-	bl_ctrl->mapping_info.invJ1_R = bl_ctrl->J_R[0][0]; // N11
-	bl_ctrl->mapping_info.invJ2_R = bl_ctrl->J_R[1][0]; // N21
-	bl_ctrl->mapping_info.invJ3_R = bl_ctrl->J_R[0][1]; // N12
-	bl_ctrl->mapping_info.invJ4_R = bl_ctrl->J_R[1][1]; // N22
+	bl_ctrl->mapping_info.invJ1_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 1); // N11
+	bl_ctrl->mapping_info.invJ2_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 3); // N21
+	bl_ctrl->mapping_info.invJ3_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 2); // N12
+	bl_ctrl->mapping_info.invJ4_L = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_L, bl_ctrl->chassis_posture_info.leg_angle_L, 4); // N22
+	bl_ctrl->mapping_info.invJ1_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 1);
+	bl_ctrl->mapping_info.invJ2_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 3);
+	bl_ctrl->mapping_info.invJ3_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 2);
+	bl_ctrl->mapping_info.invJ4_R = get_jacobian_element(bl_ctrl, bl_ctrl->chassis_posture_info.leg_length_R, bl_ctrl->chassis_posture_info.leg_angle_R, 4);
 
 	bl_ctrl->torque_info.foot_horizontal_torque_L =
 		bl_ctrl->torque_info.foot_balancing_torque_L + bl_ctrl->torque_info.foot_moving_torque_L;
@@ -1471,7 +1498,7 @@ void handle_airborne_state(chassis_move_t *bl_ctrl)
     {
 		bl_ctrl->torque_info.joint_balancing_torque_R = (
 			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R)
-            + LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
+            - LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
         );
         bl_ctrl->torque_info.joint_moving_torque_R = 0.0f;
     }
@@ -1480,7 +1507,7 @@ void handle_airborne_state(chassis_move_t *bl_ctrl)
     {
 		bl_ctrl->torque_info.joint_balancing_torque_L = (
 			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
-            + LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
+            - LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
         );
         bl_ctrl->torque_info.joint_moving_torque_L = 0.0f;
     }
@@ -1548,54 +1575,46 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	{
 		feedback_update->chassis_posture_info.leg_length_L = L0;
 		feedback_update->chassis_posture_info.leg_angle_L = Q0;
-		feedback_update->chassis_posture_info.leg_gyro_L = -S0;
+		feedback_update->chassis_posture_info.leg_gyro_L = S0;
 	}
 	else
 	{
 		feedback_update->chassis_posture_info.leg_length_R = L0;		
 		feedback_update->chassis_posture_info.leg_angle_R = -Q0;
-		feedback_update->chassis_posture_info.leg_gyro_R = S0;
+		feedback_update->chassis_posture_info.leg_gyro_R = -S0;
 
 	}
 }
-/**
- * @brief 计算雅可比矩阵
- * @param phi1 
- * @param phi4 
- * @param J 
- */
-void CalcJacobian(float phi1, float phi4, float J[2][2])
+
+// 计算多项式值
+float evaluate_polynomial(float L0, float Q0, PolynomialCoefficients coeffs)
 {
-    float YD, YB, XD, XB, lBD, A0, B0, C0, XC, YC;
-    float phi2, phi3;
-    float L0, phi0;
-    float j11, j12, j21, j22;
-	phi1 = ((180.0f + phi1) * PI) / 180.0f;
-	phi4 = ((180.0f - phi4) * PI) / 180.0f;	
-    YD = L4 * sin(phi4);
-    YB = L1 * sin(phi1);
-    XD = L5 + L4 * cos(phi4);
-    XB = L1 * cos(phi1);
-    lBD = sqrt((XD - XB) * (XD - XB) + (YD - YB) * (YD - YB));
-    A0 = 2 * L2 * (XD - XB);
-    B0 = 2 * L2 * (YD - YB);
-    C0 = L2 * L2 + lBD * lBD - L3 * L3;
-    phi2 = 2 * atan2((B0 + sqrt(A0 * A0 + B0 * B0 - C0 * C0)), A0 + C0);
-    phi3 = atan2(YB - YD + L2 * sin(phi2), XB - XD + L2 * cos(phi2));
-    XC = L1 * cos(phi1) + L2 * cos(phi2);
-    YC = L1 * sin(phi1) + L2 * sin(phi2);
-    L0 = sqrt((XC - L5 / 2) * (XC - L5 / 2) + YC * YC);
-    phi0 = atan2(YC, XC - L5 / 2);
-
-    j11 = (L1 * sin(phi0 - phi3) * sin(phi1 - phi2)) / sin(phi3 - phi2);
-    j12 = (L4 * sin(phi0 - phi2) * sin(phi3 - phi4)) / sin(phi3 - phi2);
-    j21 = (L1 * cos(phi0 - phi3) * sin(phi1 - phi2)) / (L0 * sin(phi3 - phi2));
-    j22 = (L4 * cos(phi0 - phi2) * sin(phi3 - phi4)) / (L0 * sin(phi3 - phi2));
-
-    J[0][0] = j11;
-    J[0][1] = j12;
-    J[1][0] = j21;
-    J[1][1] = j22;
+	return coeffs.c0 +
+		   coeffs.c1 * L0 +
+		   coeffs.c2 * Q0 +
+		   coeffs.c3 * L0 * L0 +
+		   coeffs.c4 * L0 * Q0 +
+		   coeffs.c5 * Q0 * Q0;
 }
+
+// 计算雅可比矩阵
+float get_jacobian_element(chassis_move_t *VMCJ, float L0, float Q0, uint8_t element_type)
+{
+	switch (element_type)
+	{
+	case 1: // N11
+		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N11);
+	case 2: // N12
+		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N12);
+	case 3: // N21
+		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N21);
+	case 4: // N22
+		return evaluate_polynomial(L0, Q0, VMCJ->InverseJacobianCoefficient.N22);
+	default:
+		return 0.0f; // 或者返回错误值
+	}
+}
+
+
 
 

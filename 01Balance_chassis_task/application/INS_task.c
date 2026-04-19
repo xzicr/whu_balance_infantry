@@ -41,8 +41,8 @@
 #define IMU_temp_PWM(pwm)  imu_pwm_set(pwm)                    //pwm¸ø¶¨
 
 #define BMI088_BOARD_INSTALL_SPIN_MATRIX    \
-    {-1.0f, 0.0f, 0.0f},                     \
-    {0.0f, -1.0f, 0.0f},                     \
+    {1.0f, 0.0f, 0.0f},                     \
+    {0.0f, 1.0f, 0.0f},                     \
     {0.0f, 0.0f, 1.0f}                      \
 
 
