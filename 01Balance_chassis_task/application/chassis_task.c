@@ -669,7 +669,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	{
 		if(fabs(target_value_set->chassis_data_->wz_set) < CHASSIS_RC_WZ_DEADLINE)
 		{
-			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-1.6f,1.6f);
+			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.0f,2.0f);
 		}
 	}
 	else 
@@ -1577,13 +1577,15 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 
 	if (ce)
 	{
-		feedback_update->chassis_posture_info.leg_length_L = L0;
+		feedback_update->chassis_posture_info.last_leg_length_L = feedback_update->chassis_posture_info.leg_length_L;
+		feedback_update->chassis_posture_info.leg_length_L = 0.9*L0+0.1*feedback_update->chassis_posture_info.last_leg_length_L;
 		feedback_update->chassis_posture_info.leg_angle_L = Q0;
 		feedback_update->chassis_posture_info.leg_gyro_L = -S0;
 	}
 	else
 	{
-		feedback_update->chassis_posture_info.leg_length_R = L0;		
+		feedback_update->chassis_posture_info.last_leg_length_R = feedback_update->chassis_posture_info.leg_length_R;
+		feedback_update->chassis_posture_info.leg_length_R = 0.9*L0+0.1*feedback_update->chassis_posture_info.last_leg_length_R;
 		feedback_update->chassis_posture_info.leg_angle_R = -Q0;
 		feedback_update->chassis_posture_info.leg_gyro_R = S0;
 

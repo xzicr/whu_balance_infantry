@@ -3561,7 +3561,7 @@
       </Doc>
       <Doc>
         <Name>..\application\chassis_task.c</Name>
-        <ColumnNumber>65</ColumnNumber>
+        <ColumnNumber>67</ColumnNumber>
         <TopLine>243</TopLine>
         <CurrentLine>265</CurrentLine>
         <Folding>1</Folding>
