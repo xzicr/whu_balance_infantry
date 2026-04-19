@@ -3,7 +3,7 @@
 <title>Static Call Graph - [chassis_task\chassis_task.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image chassis_task\chassis_task.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sun Apr 19 16:14:20 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Sun Apr 19 17:13:52 2026
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1673,8 +1673,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
 </UL>
 
-<P><STRONG><a name="[122]"></a>Chassis_Status_Detect</STRONG> (Thumb, 438 bytes, Stack size 40 bytes, chassis_task.o(i.Chassis_Status_Detect))
-<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = Chassis_Status_Detect &rArr; Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
+<P><STRONG><a name="[122]"></a>Chassis_Status_Detect</STRONG> (Thumb, 430 bytes, Stack size 40 bytes, chassis_task.o(i.Chassis_Status_Detect))
+<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = Chassis_Status_Detect &rArr; Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_sin &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
 </UL>
 <BR>[Calls]<UL><LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
@@ -1816,8 +1816,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[23e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_init
 </UL>
 
-<P><STRONG><a name="[137]"></a>Forward_kinematic_solution</STRONG> (Thumb, 1190 bytes, Stack size 112 bytes, chassis_task.o(i.Forward_kinematic_solution))
-<BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
+<P><STRONG><a name="[137]"></a>Forward_kinematic_solution</STRONG> (Thumb, 1208 bytes, Stack size 88 bytes, chassis_task.o(i.Forward_kinematic_solution))
+<BR><BR>[Stack]<UL><LI>Max Depth = 280<LI>Call Chain = Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
 </UL>
 <BR>[Calls]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
@@ -3113,7 +3113,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[127]"></a>Supportive_Force_Cal</STRONG> (Thumb, 380 bytes, Stack size 24 bytes, chassis_task.o(i.Supportive_Force_Cal))
-<BR><BR>[Stack]<UL><LI>Max Depth = 232<LI>Call Chain = Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
+<BR><BR>[Stack]<UL><LI>Max Depth = 232<LI>Call Chain = Supportive_Force_Cal &rArr; calculate_wheel_vertical_acceleration &rArr; __hardfp_sin &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 <LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
@@ -3343,7 +3343,8 @@ Global Symbols
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
 <LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
 </UL>
-<BR>[Called By]<UL><LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
+<BR>[Called By]<UL><LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculate_wheel_vertical_acceleration
+<LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Supportive_Force_Cal
 <LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Forward_kinematic_solution
 </UL>
 
@@ -3713,10 +3714,11 @@ Global Symbols
 <LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ui_proc_7_frame
 </UL>
 
-<P><STRONG><a name="[1f7]"></a>calculate_wheel_vertical_acceleration</STRONG> (Thumb, 198 bytes, Stack size 16 bytes, chassis_task.o(i.calculate_wheel_vertical_acceleration))
-<BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = calculate_wheel_vertical_acceleration &rArr; __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
+<P><STRONG><a name="[1f7]"></a>calculate_wheel_vertical_acceleration</STRONG> (Thumb, 284 bytes, Stack size 16 bytes, chassis_task.o(i.calculate_wheel_vertical_acceleration))
+<BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = calculate_wheel_vertical_acceleration &rArr; __hardfp_sin &rArr; __ieee754_rem_pio2 &rArr; __aeabi_d2iz
 </UL>
-<BR>[Calls]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
+<BR>[Calls]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
@@ -3743,8 +3745,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[23a]"></a>chassis_feedback_update</STRONG> (Thumb, 1292 bytes, Stack size 40 bytes, chassis_task.o(i.chassis_feedback_update))
-<BR><BR>[Stack]<UL><LI>Max Depth = 344<LI>Call Chain = chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
+<P><STRONG><a name="[23a]"></a>chassis_feedback_update</STRONG> (Thumb, 1372 bytes, Stack size 40 bytes, chassis_task.o(i.chassis_feedback_update))
+<BR><BR>[Stack]<UL><LI>Max Depth = 320<LI>Call Chain = chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
 </UL>
 <BR>[Calls]<UL><LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;theta_format
 <LI><a href="#[23d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ramp_calc
@@ -3770,7 +3772,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[70]"></a>chassis_task</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, chassis_task.o(i.chassis_task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 384<LI>Call Chain = chassis_task &rArr; chassis_init &rArr; chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
+<BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = chassis_task &rArr; chassis_init &rArr; chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxTaskGetStackHighWaterMark
@@ -5355,7 +5357,7 @@ Global Symbols
 Local Symbols
 </H3>
 <P><STRONG><a name="[23e]"></a>chassis_init</STRONG> (Thumb, 724 bytes, Stack size 40 bytes, chassis_task.o(i.chassis_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 384<LI>Call Chain = chassis_init &rArr; chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
+<BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = chassis_init &rArr; chassis_feedback_update &rArr; Forward_kinematic_solution &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf &rArr; __dunder_d &rArr; _fp_trapveneer &rArr; _fp_trap &rArr; __rt_SIGFPE &rArr; __rt_SIGFPE_inner &rArr; __default_signal_display &rArr; _ttywrch
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ramp_init

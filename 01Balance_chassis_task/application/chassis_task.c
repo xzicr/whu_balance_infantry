@@ -262,7 +262,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =17.0f;//theta_format(chassis_move_init->gimbal_yaw_motor.gimbal_motor_measure->angle);
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =-153.0f;
 	// 初始化速度斜坡函数
 	ramp_init(&speed_ramp_vx, 0.001f, 3.0f, -3.0f);
 	ramp_init(&speed_ramp_vy, 0.001f, 3.0f, -3.0f);
@@ -337,10 +337,10 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_3.position = (fdb->joint_motor_3.motor_measure->ecd - fdb->joint_motor_3.position_offset) - LEG_OFFSET;
 	fdb->joint_motor_4.position = (fdb->joint_motor_4.motor_measure->ecd - fdb->joint_motor_4.position_offset) + LEG_OFFSET;
 
-	fdb->joint_motor_1.velocity = fdb->joint_motor_1.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
-	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
-	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
-	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm;//*((2.0f * PI / 60.0f));
+	fdb->joint_motor_1.velocity = fdb->joint_motor_1.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_2.velocity = fdb->joint_motor_2.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_3.velocity = fdb->joint_motor_3.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
+	fdb->joint_motor_4.velocity = fdb->joint_motor_4.motor_measure->speed_rpm*((2.0f * PI / 60.0f));
 
 	//更新力矩反馈
 	fdb->joint_motor_1.torque_get = 0.95f * fdb->joint_motor_1.torque_get + 0.05f * fdb->joint_motor_1.motor_measure->real_torque;
@@ -361,10 +361,10 @@ void chassis_feedback_update(chassis_move_t *fdb)
     Leg_angle_Kalman_Update(fdb);
 	
 	//足端角度解算
-	Forward_kinematic_solution(fdb, fdb->joint_motor_1.position, fdb->joint_motor_1.velocity,
-							   fdb->joint_motor_2.position, fdb->joint_motor_2.velocity, 1);
-	Forward_kinematic_solution(fdb, fdb->joint_motor_4.position, fdb->joint_motor_4.velocity,
-							   fdb->joint_motor_3.position, fdb->joint_motor_3.velocity, 0);
+	Forward_kinematic_solution(fdb, fdb->joint_motor_1.position, fdb->joint_motor_1.velocity*60/2/PI,
+							   fdb->joint_motor_2.position, fdb->joint_motor_2.velocity*60/2/PI, 1);
+	Forward_kinematic_solution(fdb, fdb->joint_motor_4.position, fdb->joint_motor_4.velocity*60/2/PI,
+							   fdb->joint_motor_3.position, fdb->joint_motor_3.velocity*60/2/PI, 0);
 	
 	//陀螺仪数据更新
 	fdb->chassis_posture_info.yaw_gyro = *(fdb->chassis_INS_gyro + INS_GYRO_YAW_ADDRESS_OFFSET);	
@@ -393,13 +393,14 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	//腿部角度 角速度 腿长 腿长速度 更新
 	fdb->chassis_posture_info.leg_angle_L += fdb->chassis_posture_info.pitch_angle;
 	fdb->chassis_posture_info.leg_angle_R += fdb->chassis_posture_info.pitch_angle;
-	
+	fdb->chassis_posture_info.leg_gyro_L += fdb->chassis_posture_info.pitch_gyro;
+	fdb->chassis_posture_info.leg_gyro_R += fdb->chassis_posture_info.pitch_gyro;
 	fdb->mapping_info.J1_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 1);
 	fdb->mapping_info.J2_L = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_L, fdb->chassis_posture_info.leg_angle_L, 2);
 	fdb->mapping_info.J1_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 1);
 	fdb->mapping_info.J2_R = get_jacobian_element(fdb, fdb->chassis_posture_info.leg_length_R, fdb->chassis_posture_info.leg_angle_R, 2);
-	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity*(2*PI/60)  + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity*(2*PI/60) ;
-	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity*(2*PI/60)  + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity*(2*PI/60);
+	fdb->chassis_posture_info.leg_dlength_L_jacobian = fdb->mapping_info.J1_L * fdb->joint_motor_1.velocity + fdb->mapping_info.J2_L * fdb->joint_motor_2.velocity;
+	fdb->chassis_posture_info.leg_dlength_R_jacobian = fdb->mapping_info.J1_R * fdb->joint_motor_3.velocity + fdb->mapping_info.J2_R * fdb->joint_motor_4.velocity;
 	
 	// 计算加速度
 	fp32 temp_a_L = (fdb->chassis_posture_info.leg_dlength_L_jacobian - fdb->chassis_posture_info.last_leg_dlength_L_jacobian) / CHASSIS_CONTROL_TIME;
@@ -1336,8 +1337,6 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 	if (fabs(detect->chassis_posture_info.foot_speed_KF) > stablize_foot_speed_threshold &&
 		fabs(detect->chassis_posture_info.yaw_gyro) > stablize_yaw_speed_threshold)
 		detect->flag_info.stablize_high_flag = 1;
-	detect->flag_info.last_suspend_flag_L = detect->flag_info.suspend_flag_L;
-	detect->flag_info.last_suspend_flag_R = detect->flag_info.suspend_flag_R;
 }
 void Motor_CMD_Send(chassis_move_t *CMD_Send)
 {
@@ -1437,16 +1436,16 @@ void calculate_wheel_vertical_acceleration(chassis_move_t * detect)
 	detect->chassis_posture_info.foot_accel_L=
 	+detect->chassis_posture_info.chassis_accel
 	-detect->chassis_posture_info.leg_ddlength_L*cos(detect->chassis_posture_info.leg_angle_L);
-	// +2*detect->chassis_posture_info.leg_dlength_L_kf*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
-	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
-	// +detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
+	+2*detect->chassis_posture_info.leg_dlength_L_jacobian*detect->chassis_posture_info.leg_gyro_L*sin(detect->chassis_posture_info.leg_angle_L)
+	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_accel_L*sin(detect->chassis_posture_info.leg_angle_L)
+	+detect->chassis_posture_info.leg_length_L*detect->chassis_posture_info.leg_gyro_L*detect->chassis_posture_info.leg_gyro_L*cos(detect->chassis_posture_info.leg_angle_L);
 	
 	detect->chassis_posture_info.foot_accel_R=
 	+detect->chassis_posture_info.chassis_accel
 	-detect->chassis_posture_info.leg_ddlength_R*cos(detect->chassis_posture_info.leg_angle_R);
-	// +2*detect->chassis_posture_info.leg_dlength_R_kf*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
-	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
-	// +detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
+	+2*detect->chassis_posture_info.leg_dlength_R_jacobian*detect->chassis_posture_info.leg_gyro_R*sin(detect->chassis_posture_info.leg_angle_R)
+	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_accel_R*sin(detect->chassis_posture_info.leg_angle_R)
+	+detect->chassis_posture_info.leg_length_R*detect->chassis_posture_info.leg_gyro_R*detect->chassis_posture_info.leg_gyro_R*cos(detect->chassis_posture_info.leg_angle_R);
 	
 }
 //F_N = P + M_w*a + M_w*g 
@@ -1533,6 +1532,7 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	fp32 dL0 = 0, L0 = 0, Q0 = 0, S0 = 0;
 	fp32 xb, xd, yb, yd, Lbd;
 	fp32 A0, B0, C0, Q2, Q3, S2, S3;
+	fp32 temp;
 	fp32 vxb, vxd, vyb, vyd, vxc, vyc;
 	fp32 cos_Q1, cos_Q4, sin_Q1, sin_Q4;
 	fp32 xc, yc;
@@ -1553,7 +1553,10 @@ void Forward_kinematic_solution(chassis_move_t *feedback_update,
 	A0 = 2.0f * L2 * (xd - xb);
 	B0 = 2.0f * L2 * (yd - yb);
 	C0 = L2 * L2 + Lbd - L3 * L3;
-	Q2 = 2.0f * atan2((B0 + sqrt(A0 * A0 + B0 * B0 - C0 * C0)) , (A0 + C0));
+	temp = A0 * A0 + B0 * B0 - C0 * C0;
+	if(temp<0)
+	{temp = 0;}
+	Q2 = 2.0f * atan2((B0 + sqrt(temp)) , (A0 + C0));
 
 	xc = xb + cos(Q2) * L2;
 	yc = yb + sin(Q2) * L2;
