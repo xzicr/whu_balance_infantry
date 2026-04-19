@@ -154,7 +154,8 @@ void shoot_control_set()
 	}
 	else if(shoot_state == SHOOT_START_CONTINUE)
 	{
-		shoot_speed_calc();
+		//shoot_speed_calc();
+		shoot_speed =12;
 		ballet_feq_calc(shoot_speed);
 		single_shoot_cnt = 0;	//单发的这个标志位置0
 
