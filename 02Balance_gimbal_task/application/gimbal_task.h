@@ -42,7 +42,7 @@
 #define PITCH_GYRO_PID_MAX_IOUT 10000.0f
 #define PITCH_ANGLE_PID_KP 0.77f//0.3f       
 #define PITCH_ANGLE_PID_KI 0.0f      
-#define PITCH_ANGLE_PID_KD 25.0f       
+#define PITCH_ANGLE_PID_KD 18.0f       
 #define PITCH_ANGLE_PID_MAX_OUT 12.0f//3.0f  
 #define PITCH_ANGLE_PID_MAX_IOUT 3.0f//1.0f 
 

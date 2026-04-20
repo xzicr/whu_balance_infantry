@@ -798,7 +798,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 
 	// ----------------- Chassis High Mode Update -----------------
 	if (target_value_set->mode.sport_mode == ABNORMAL_MOVING_MODE)
-		target_value_set->mode.chassis_high_mode = SIT_MODE;
+		target_value_set->mode.chassis_high_mode = NORMAL_MODE;
 	else if (target_value_set->mode.chassis_balancing_mode == FOOT_LAUNCHING)
 		target_value_set->mode.chassis_high_mode = SIT_MODE;
 	else if (target_value_set->mode.chassis_balancing_mode == JOINT_LAUNCHING)
