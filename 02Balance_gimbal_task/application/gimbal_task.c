@@ -41,7 +41,7 @@
 #include "usart.h"
 
 #define RC_MODE 1
-#define KEY_MODE 0
+#define KEY_MODE 1
  
 #define rc_deadband_limit(input, output, dealine)    \
   {                                                  \
@@ -239,7 +239,7 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
  */
 void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
-  #ifdef KEY_MODE
+  #if KEY_MODE
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
     chassis_data->vx_set = 8;
@@ -351,6 +351,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
 
 void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
+  
   int16_t yaw_channel = 0;
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
@@ -361,7 +362,9 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   {
     chassis_data->high_set = 0.17f;
   }
+  #if RC_MODE
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
+  #endif
   if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF ) && aimflag == 0 )
   {
     chassis_data->yaw_angle_set -= yaw_channel * YAW_RC_SEN + gimbal_control_set->gimbal_rc_ctrl->mouse.x * YAW_MOUSE_SEN;
@@ -392,6 +395,7 @@ else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && aimflag == 1)
         new_yaw_angle = chassis_data->yaw_angle_set + angle_diff;
         chassis_data->yaw_angle_set = new_yaw_angle;
     }
+    
     
     
 }
@@ -488,8 +492,10 @@ static void gimbal_feedback_update(gimbal_control_t *feedback_update)
 
 static void gimbal_set_control(gimbal_control_t *set_control)
 {
+  #if RC_MODE
   static int16_t pitch_channel = 0;
   rc_deadband_limit(set_control->gimbal_rc_ctrl->rc.ch[PITCH_CHANNEL], pitch_channel, RC_DEADBAND);
+  #endif
   if (set_control->gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_GYRO && aimflag == 1)
   {
     if(set_control->gimbal_pitch_motor.self_aim_pitch_angle==0)
