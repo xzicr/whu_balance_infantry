@@ -147,7 +147,6 @@ void handle_airborne_state(chassis_move_t *bl_ctrl);
 void Chassis_Torque_Combine(chassis_move_t *bl_ctrl);
 void Motor_CMD_Send(chassis_move_t *CMD_Send);
 uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis);
-void Jump_Wheel_Control(chassis_move_t *chassis);
 float get_jacobian_element(chassis_move_t *VMCJ, float L0, float Q0, uint8_t element_type);
 
 
@@ -668,7 +667,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	{
 		if(fabs(target_value_set->chassis_data_->wz_set) < CHASSIS_RC_WZ_DEADLINE)
 		{
-			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.6f,2.6f);
+			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.2f,2.2f);
 		}
 	}
 	else 
@@ -760,12 +759,12 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 				{
 					if (target_value_set->chassis_data_->wz_set < -CHASSIS_RC_WZ_DEADLINE)
 					{
-						target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set *0.004f);
+						target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set *0.006f);
 						target_value_set->chassis_posture_info.yaw_gyro_set = 0.0f;
 					}
 					else if (target_value_set->chassis_data_->wz_set > CHASSIS_RC_WZ_DEADLINE)
 					{
-						target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set*0.004f );
+						target_value_set->chassis_posture_info.yaw_angle_sett += (target_value_set->chassis_data_->wz_set*0.006f );
 						target_value_set->chassis_posture_info.yaw_gyro_set = 0.0f;
 					}
 					else
@@ -1004,11 +1003,11 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		//此时处于空中，想要达到的效果是腿的度跟地面是保持垂直，
 		//不在控制机身角度因为机身保持平衡的力矩其实与腿部保持竖直力矩相冲突，在没有地面支持力的情况下没有意义
 		bl_ctrl->torque_info.joint_balancing_torque_L = (
-			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L_kf)
+			+ LQR[2][4] * (bl_ctrl->chassis_posture_info.leg_angle_L_set - bl_ctrl->chassis_posture_info.leg_angle_L)
 			+ LQR[2][5] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_L) 
 		);		
 		bl_ctrl->torque_info.joint_balancing_torque_R = -(
-			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R_kf) 
+			+ LQR[3][6] * (bl_ctrl->chassis_posture_info.leg_angle_R_set - bl_ctrl->chassis_posture_info.leg_angle_R) 
 			+ LQR[3][7] * (0.0f - bl_ctrl->chassis_posture_info.leg_gyro_R) 
 		);
 
@@ -1105,7 +1104,6 @@ void Chassis_Torque_Calculation(chassis_move_t *bl_ctrl)
 		) *TORQ_K;
 	}
 
-Jump_Wheel_Control(bl_ctrl);
 
 // 统一的离地处理函数
 if (bl_ctrl->flag_info.suspend_flag_R == 1 || bl_ctrl->flag_info.suspend_flag_L == 1)
@@ -1267,7 +1265,6 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	LimitOutput(bl_ctrl->joint_motor_4.torque_out, -400.0f, 400.0f); // bl_ctrl->joint_motor_4.min_torque, bl_ctrl->joint_motor_4.max_torque);
 }
 fp32 ground_stable_timer = 0;  // 添加这行
-fp32 detect_off_ground_timer =0;
 void Chassis_Status_Detect(chassis_move_t *detect)
 {
 	/*--------------------------- Off Ground Detect --------------------------*/
@@ -1300,10 +1297,8 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 			detect->flag_info.suspend_flag_L = detect->flag_info.suspend_flag_R = ON_GROUND;
 		else
 		{
-			 detect_off_ground_timer = xTaskGetTickCount();
 			if( (detect->torque_info.supportive_force_L <= LOWER_SUPPORT_FORCE &&
 				detect->chassis_posture_info.leg_length_L > 0.13f ))
-				// &&((xTaskGetTickCount() - detect_off_ground_timer) > pdMS_TO_TICKS(10)))
 				{
 					detect->flag_info.suspend_flag_L = OFF_GROUND;	
 				}
@@ -1314,13 +1309,17 @@ void Chassis_Status_Detect(chassis_move_t *detect)
 			}
 			if(( detect->torque_info.supportive_force_R <= LOWER_SUPPORT_FORCE &&
 				detect->chassis_posture_info.leg_length_R > 0.13f ))
-				// &&((xTaskGetTickCount() - detect_off_ground_timer) > pdMS_TO_TICKS(10)))
 				{
 					detect->flag_info.suspend_flag_R = OFF_GROUND;			
 				}
 			else if (detect->torque_info.supportive_force_R > LOWER_SUPPORT_FORCE + 5.0f)  
 			// 添加滞回区间，例如+10N的阈值差
 			{
+				detect->flag_info.suspend_flag_R = ON_GROUND;
+			}
+			if(!(detect->flag_info.suspend_flag_L == OFF_GROUND) && (detect->flag_info.suspend_flag_R == OFF_GROUND))
+			{
+				detect->flag_info.suspend_flag_L = ON_GROUND;
 				detect->flag_info.suspend_flag_R = ON_GROUND;
 			}
 		}
@@ -1457,11 +1456,11 @@ void Supportive_Force_Cal(chassis_move_t * detect)
 {
 	//计算腿部支持力
 	detect->torque_info.forque_L=
-	detect->torque_info.joint_vertical_torque_L*cos(detect->chassis_posture_info.leg_angle_L_kf)
-	+detect->torque_info.joint_horizontal_torque_L*sin(detect->chassis_posture_info.leg_angle_L_kf)/detect->chassis_posture_info.leg_length_L;
+	detect->torque_info.joint_vertical_torque_L*cos(detect->chassis_posture_info.leg_angle_L)
+	+detect->torque_info.joint_horizontal_torque_L*sin(detect->chassis_posture_info.leg_angle_L)/detect->chassis_posture_info.leg_length_L;
 	detect->torque_info.forque_R=
-	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R_kf)	
-	+detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R_kf)/detect->chassis_posture_info.leg_length_R;
+	detect->torque_info.joint_vertical_torque_R*cos(detect->chassis_posture_info.leg_angle_R)	
+	+detect->torque_info.joint_horizontal_torque_R*sin(detect->chassis_posture_info.leg_angle_R)/detect->chassis_posture_info.leg_length_R;
 	fp32 temp_L = fp32_constrain(detect->torque_info.forque_L, -100.0f, 100.0f);
 	fp32 temp_R = fp32_constrain(detect->torque_info.forque_R, -100.0f, 100.0f);
 	//计算加速度环节
@@ -1482,16 +1481,6 @@ uint8_t Check_Jump_Preparation_Complete(chassis_move_t *chassis)
     // 综合判断
     prepare_complete = 1;    
     return prepare_complete;
-}
-void Jump_Wheel_Control(chassis_move_t *chassis)
-{
-	if (chassis->mode.jumping_stage == EXTENDING_LEGS)
-    {
-		chassis->torque_info.foot_balancing_torque_L= 0.8*chassis->torque_info.foot_balancing_torque_L;
-        chassis->torque_info.foot_balancing_torque_R =-0.8*chassis->torque_info.foot_balancing_torque_R;  
-        LimitMax(chassis->torque_info.foot_moving_torque_L, MAX_ACCL);
-        LimitMax(chassis->torque_info.foot_moving_torque_R, MAX_ACCL);
-    }
 }
 
 void handle_airborne_state(chassis_move_t *bl_ctrl)

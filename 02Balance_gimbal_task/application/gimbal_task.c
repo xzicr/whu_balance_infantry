@@ -40,6 +40,9 @@
 #include "stm32f4xx_hal.h"
 #include "usart.h"
 
+#define RC_MODE 1
+#define KEY_MODE 0
+ 
 #define rc_deadband_limit(input, output, dealine)    \
   {                                                  \
     if ((input) > (dealine) || (input) < -(dealine)) \
@@ -212,6 +215,7 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
   {
     chassis_data->chassis_mode = CHASSIS_MODE_DEBUG;
   }
+  #ifdef RC_MODE
   int16_t vx_channel, vy_channel;
   fp32 vx_set_channel, vy_set_channel;
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_X_CHANNEL], vx_channel, CHASSIS_RC_DEADLINE);
@@ -222,6 +226,8 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
   chassis_data->vx_set = vx_set_channel;
   chassis_data->vy_set = vy_set_channel;
   chassis_data->wz_set = -CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
+  #endif 
+
 }
 
 /**
@@ -233,13 +239,14 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
  */
 void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
+  #ifdef KEY_MODE
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
-    chassis_data->vx_set = 3;
+    chassis_data->vx_set = 8;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S)
   {
-    chassis_data->vx_set = -3;
+    chassis_data->vx_set = -8;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A)
   {
@@ -252,11 +259,11 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = 4;
+    chassis_data->vx_set = 13;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = -4;
+    chassis_data->vx_set = -13;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
@@ -339,6 +346,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   {
     chassis_data->reset_flag = 0;
   }
+  #endif
 }
 
 void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)

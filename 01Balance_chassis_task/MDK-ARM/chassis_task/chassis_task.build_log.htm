@@ -34,42 +34,40 @@ compiling chassis_task.c...
   extern void shoot_init();
 ..\application\uart_receive.h(32): warning:  #1295-D: Deprecated declaration get_Uart_Chassisdata_point - give arg types
   const chassis_data_t *get_Uart_Chassisdata_point();
-..\application\chassis_task.c(246): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(245): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   	chassis_move_init->foot_motor_L.distance_offset = (chassis_move_init->foot_motor_L.position / 360.0f) * 
 HEEL_PERIMETER;
-..\application\chassis_task.c(247): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(246): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   	chassis_move_init->foot_motor_R.distance_offset = ((360.0f - chassis_move_init->foot_motor_R.position )/ 360.0f) * 
 HEEL_PERIMETER;
-..\application\chassis_task.c(766): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(765): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   					else if (target_value_set->chassis_data_->wz_set > 
 HASSIS_RC_WZ_DEADLINE)
-..\application\chassis_task.c(1082): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1081): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		bl_ctrl->torque_info.foot_balancing_torque_L = (
-..\application\chassis_task.c(1088): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1087): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		bl_ctrl->torque_info.foot_moving_torque_L = (
-..\application\chassis_task.c(1094): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1093): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		bl_ctrl->torque_info.foot_balancing_torque_R = -(
-..\application\chassis_task.c(1100): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1099): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		bl_ctrl->torque_info.foot_moving_torque_R = -(
-..\application\chassis_task.c(1490): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-  		chassis->torque_info.foot_balancing_torque_L= 0.8*chassis->torque_info.foot_balancing_torque_L;
-..\application\chassis_task.c(1584): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1573): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		feedback_update->chassis_posture_info.leg_length_L = 0.9*L0+0.1*feedback_update->chassis_posture_info.last_leg_length_L;
-..\application\chassis_task.c(1584): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1573): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		feedback_update->chassis_posture_info.leg_length_L = 0.9*L0+0.1*feedback_update->chassis_posture_info.last_leg_length_L;
-..\application\chassis_task.c(1591): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1580): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		feedback_update->chassis_posture_info.leg_length_R = 0.9*L0+0.1*feedback_update->chassis_posture_info.last_leg_length_R;
-..\application\chassis_task.c(1591): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\application\chassis_task.c(1580): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		feedback_update->chassis_posture_info.leg_length_R = 0.9*L0+0.1*feedback_update->chassis_posture_info.last_leg_length_R;
-..\application\chassis_task.c(1535): warning:  #177-D: variable "dL0"  was declared but never referenced
+..\application\chassis_task.c(1524): warning:  #177-D: variable "dL0"  was declared but never referenced
   	fp32 dL0 = 0, L0 = 0, Q0 = 0, S0 = 0;
-..\application\chassis_task.c(1537): warning:  #550-D: variable "S3"  was set but never used
+..\application\chassis_task.c(1526): warning:  #550-D: variable "S3"  was set but never used
   	fp32 A0, B0, C0, Q2, Q3, S2, S3;
-..\application\chassis_task.c: 17 warnings, 0 errors
+..\application\chassis_task.c: 16 warnings, 0 errors
 linking...
-Program Size: Code=95380 RO-data=7920 RW-data=2064 ZI-data=54600  
+Program Size: Code=95228 RO-data=7920 RW-data=2060 ZI-data=54604  
 FromELF: creating hex file...
-"chassis_task\chassis_task.axf" - 0 Error(s), 17 Warning(s).
+"chassis_task\chassis_task.axf" - 0 Error(s), 16 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -92,7 +90,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
