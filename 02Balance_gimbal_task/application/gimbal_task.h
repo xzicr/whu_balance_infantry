@@ -35,14 +35,14 @@
 #include "INS_task.h"
 // pitch speed close-loop PID params, max out and max iout
 // pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_PID_KP 3500.0f//5000.0f
+#define PITCH_GYRO_PID_KP 3200.0f//5000.0f
 #define PITCH_GYRO_PID_KI 5.0f//10.0f
 #define PITCH_GYRO_PID_KD 0.0f
 #define PITCH_GYRO_PID_MAX_OUT 30000.0f
 #define PITCH_GYRO_PID_MAX_IOUT 10000.0f
-#define PITCH_ANGLE_PID_KP 0.77f//0.3f       
+#define PITCH_ANGLE_PID_KP 0.67f//0.3f       
 #define PITCH_ANGLE_PID_KI 0.0f      
-#define PITCH_ANGLE_PID_KD 18.0f       
+#define PITCH_ANGLE_PID_KD 15.0f       
 #define PITCH_ANGLE_PID_MAX_OUT 12.0f//3.0f  
 #define PITCH_ANGLE_PID_MAX_IOUT 3.0f//1.0f 
 

@@ -3588,9 +3588,9 @@
       </Doc>
       <Doc>
         <Name>..\application\gimbal_task.h</Name>
-        <ColumnNumber>29</ColumnNumber>
-        <TopLine>34</TopLine>
-        <CurrentLine>45</CurrentLine>
+        <ColumnNumber>28</ColumnNumber>
+        <TopLine>28</TopLine>
+        <CurrentLine>38</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
