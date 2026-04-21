@@ -1183,10 +1183,10 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	LimitMax(bl_ctrl->torque_info.joint_horizontal_torque_temp2_L, MAX_balance);
 	LimitMax(bl_ctrl->torque_info.joint_horizontal_torque_temp1_R, MAX_balance);
 	LimitMax(bl_ctrl->torque_info.joint_horizontal_torque_temp2_R, MAX_balance);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_L, 30);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_L, 30);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_R, 30);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_R, 30);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_L, 100);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_L, 100);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_R, 100);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_R, 100);
 
 	bl_ctrl->joint_motor_1.torque_out = +bl_ctrl->torque_info.joint_horizontal_torque_temp1_L + bl_ctrl->torque_info.joint_vertical_torque_temp1_L;
 	bl_ctrl->joint_motor_2.torque_out = +bl_ctrl->torque_info.joint_horizontal_torque_temp2_L + bl_ctrl->torque_info.joint_vertical_torque_temp2_L;
