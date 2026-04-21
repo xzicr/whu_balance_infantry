@@ -73,19 +73,17 @@ uint32_t gimbal_high_water;
 
 #define WINDOW_SIZE 10
 float yaw_buffer[WINDOW_SIZE];
-int data_index = 0;
 
 
-uint8_t start;
-uint8_t close;
 
 /*--------------云台控制所有相关数据----------------*/
 // 云台数据结构体
 gimbal_control_t gimbal_control;
 
-// 自瞄 转向标志位
+//标志位
 uint8_t aimflag = 0;
-
+uint8_t rotate_flag =0;
+uint8_t rotate_plus_flag =0;
 // PID参数
 static const fp32 Pitch_angle_pid[3] = {PITCH_ANGLE_PID_KP, PITCH_ANGLE_PID_KI, PITCH_ANGLE_PID_KD};
 static const fp32 Pitch_gyro_pid[3] = {PITCH_GYRO_PID_KP, PITCH_GYRO_PID_KI, PITCH_ANGLE_PID_KD};
@@ -229,7 +227,7 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
   #endif 
 
 }
-
+uint32_t timer,cnt;
 /**
  * @brief 键盘控制输入
  * @param[in] gimbal_control_set
@@ -240,6 +238,12 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
 void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
   #if KEY_MODE
+  cnt ++;
+  if(cnt>500)
+  {
+    timer++;
+    cnt = 0;
+  }
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
     chassis_data->vx_set = 8;
@@ -274,6 +278,27 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     chassis_data->wz_set = -16;
   }
   
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_E&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_E))
+  {
+    rotate_flag = !rotate_flag;
+  }
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Q&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_Q))
+  {
+    rotate_plus_flag = !rotate_plus_flag;
+  }  
+  if(rotate_flag)
+  {
+    rotate_plus_flag =0;
+    chassis_data->wz_set = 14;
+    chassis_data->high_set = 0.17;
+  }
+  if(rotate_plus_flag)
+  {
+    rotate_flag = 0;
+    chassis_data->wz_set = 14;
+    chassis_data->high_set += fp32_constrain(0.2*sin(2*PI/2 * timer),-0.2,0.2);
+  }
+
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_G||gimbal_control_set->gimbal_rc_ctrl->rc.s[2] == 1)
   {
     chassis_data->jump_flag = 1;
@@ -395,9 +420,6 @@ else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && aimflag == 1)
         new_yaw_angle = chassis_data->yaw_angle_set + angle_diff;
         chassis_data->yaw_angle_set = new_yaw_angle;
     }
-    
-    
-    
 }
 
 }
