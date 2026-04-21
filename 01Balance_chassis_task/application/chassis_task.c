@@ -667,7 +667,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	{
 		if(fabs(target_value_set->chassis_data_->wz_set) < CHASSIS_RC_WZ_DEADLINE)
 		{
-			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.2f,2.2f);
+			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.8f,2.8f);
 		}
 	}
 	else 
@@ -1183,10 +1183,10 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	LimitMax(bl_ctrl->torque_info.joint_horizontal_torque_temp2_L, MAX_balance);
 	LimitMax(bl_ctrl->torque_info.joint_horizontal_torque_temp1_R, MAX_balance);
 	LimitMax(bl_ctrl->torque_info.joint_horizontal_torque_temp2_R, MAX_balance);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_L, 200);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_L, 200);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_R, 200);
-	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_R, 200);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_L, 1000);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_L, 1000);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp1_R, 1000);
+	LimitMax(bl_ctrl->torque_info.joint_vertical_torque_temp2_R, 1000);
 
 	bl_ctrl->joint_motor_1.torque_out = +bl_ctrl->torque_info.joint_horizontal_torque_temp1_L + bl_ctrl->torque_info.joint_vertical_torque_temp1_L;
 	bl_ctrl->joint_motor_2.torque_out = +bl_ctrl->torque_info.joint_horizontal_torque_temp2_L + bl_ctrl->torque_info.joint_vertical_torque_temp2_L;
