@@ -261,7 +261,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
 	chassis_feedback_update(chassis_move_init);
 	chassis_move_init->flag_info.init_flag = 0;
 
-	chassis_move_init->gimbal_yaw_motor.relative_angle_init =-153.0f;
+	chassis_move_init->gimbal_yaw_motor.relative_angle_init =-28.0f;
 	// 初始化速度斜坡函数
 	ramp_init(&speed_ramp_vx, 0.0008f, 3.0f, -3.0f);
 	ramp_init(&speed_ramp_vy, 0.0008f, 3.0f, -3.0f);
@@ -659,7 +659,7 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_mode_cha
 void Target_Value_Set(chassis_move_t *target_value_set)
 {
 
-
+foot_speed_set
 	//底盘正方向速度控制
 	if (target_value_set->mode.sport_mode != NONE &&
 	target_value_set->flag_info.suspend_flag_L == ON_GROUND &&
@@ -667,7 +667,7 @@ void Target_Value_Set(chassis_move_t *target_value_set)
 	{
 		if(fabs(target_value_set->chassis_data_->wz_set) < CHASSIS_RC_WZ_DEADLINE)
 		{
-			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.8f,2.8f);
+			target_value_set->chassis_posture_info.foot_speed_set = fp32_constrain(normalized_speed* normal_move_scale,-2.4f,2.4f);
 		}
 	}
 	else 

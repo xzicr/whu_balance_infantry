@@ -289,14 +289,14 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   if(rotate_flag)
   {
     rotate_plus_flag =0;
-    chassis_data->wz_set = 14;
+    chassis_data->wz_set = 6;
     chassis_data->high_set = 0.17;
   }
   if(rotate_plus_flag)
   {
     rotate_flag = 0;
-    chassis_data->wz_set = 14;
-    chassis_data->high_set += fp32_constrain(0.2*sin(2*PI/2 * timer),-0.2,0.2);
+    chassis_data->wz_set = 6;
+    chassis_data->high_set = 0.17 + fp32_constrain(0.04*sin(2*PI/30 * timer),-0.04,0.04);
   }
 
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_G||gimbal_control_set->gimbal_rc_ctrl->rc.s[2] == 1)
