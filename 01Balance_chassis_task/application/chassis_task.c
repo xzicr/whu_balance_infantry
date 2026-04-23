@@ -1115,10 +1115,25 @@ void Chassis_Torque_Combine(chassis_move_t *bl_ctrl)
 	bl_ctrl->foot_motor_R.torque_out = bl_ctrl->torque_info.foot_horizontal_torque_R;
 	if(bl_ctrl->chassis_data_->chassis_mode == CHASSIS_MODE_DEBUG)
 	{
-		if(speed_ramp_vx.out)
+		if(speed_ramp_vx.out>0)
 		{
-			bl_ctrl->foot_motor_L.torque_out = ;
-			bl_ctrl->foot_motor_R.torque_out = 0;
+			bl_ctrl->foot_motor_L.torque_out = 400;
+			bl_ctrl->foot_motor_R.torque_out = -400;
+		}
+		else 
+		{
+			bl_ctrl->foot_motor_L.torque_out = -400;
+			bl_ctrl->foot_motor_R.torque_out = 400;			
+		}
+		if(speed_ramp_vy.out>0)
+		{
+			bl_ctrl->foot_motor_L.torque_out = 400;
+			bl_ctrl->foot_motor_R.torque_out = 400;
+		}
+		else
+		{
+			bl_ctrl->foot_motor_L.torque_out = -400;
+			bl_ctrl->foot_motor_R.torque_out = -400;
 		}
 	}
 	LimitMax(bl_ctrl->foot_motor_L.torque_out, 16383);

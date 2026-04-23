@@ -292,7 +292,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_CTRL))
   {
     key_mode_flag++;
-    if(key_mode_flag > 2)
+    if(key_mode_flag > 1)
     {
       key_mode_flag = 0;
     }
@@ -361,12 +361,17 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   {
     chassis_data->ui_init_flag = 0;
   }
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_R&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_R))
+  {
+    key_mode_flag = 2;
+  }
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_R)
   {
-    chassis_data->reset_flag = 1;
+    fp32 temp = xTaskGetTickCount();
+    if(xTaskGetTickCount()-temp > pdMS_TO_TICKS(1000))
+    {chassis_data->reset_flag = 1;}
   }
   else
-  
   {
     chassis_data->reset_flag = 0;
   }
