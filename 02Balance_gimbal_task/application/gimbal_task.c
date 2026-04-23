@@ -83,7 +83,7 @@ gimbal_control_t gimbal_control;
 //标志位
 uint8_t aimflag = 0;
 uint8_t rotate_flag =0;
-uint8_t rotate_plus_flag =0;
+uint8_t key_mode_flag = 0;
 // PID参数
 static const fp32 Pitch_angle_pid[3] = {PITCH_ANGLE_PID_KP, PITCH_ANGLE_PID_KI, PITCH_ANGLE_PID_KD};
 static const fp32 Pitch_gyro_pid[3] = {PITCH_GYRO_PID_KP, PITCH_GYRO_PID_KI, PITCH_ANGLE_PID_KD};
@@ -201,15 +201,15 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
 void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
   // 模式设置
-  if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 0)
+  if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 0||key_mode_flag == 0)
   {
     chassis_data->chassis_mode = CHASSIS_MODE_OFF;
   }
-  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 1)
+  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 1||key_mode_flag == 1)
   {
     chassis_data->chassis_mode = CHASSIS_MODE_ON;
   }
-  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 2)
+  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 2||key_mode_flag == 2)
   {
     chassis_data->chassis_mode = CHASSIS_MODE_DEBUG;
   }
@@ -227,7 +227,7 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
   #endif 
 
 }
-uint32_t timer,cnt;
+uint32_t timer;
 /**
  * @brief 键盘控制输入
  * @param[in] gimbal_control_set
@@ -238,12 +238,9 @@ uint32_t timer,cnt;
 void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
   #if KEY_MODE
-  cnt ++;
-  if(cnt>500)
-  {
-    timer++;
-    cnt = 0;
-  }
+  timer++;
+  if(timer<0xFFFFFFFF)
+  {timer =0;}
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
     chassis_data->vx_set = 8;
@@ -271,32 +268,34 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->wz_set = 16;
+    chassis_data->wz_set = 13;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->wz_set = -16;
+    chassis_data->wz_set = -13;
   }
   
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_E&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_E))
   {
     rotate_flag = !rotate_flag;
   }
-  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Q&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_Q))
-  {
-    rotate_plus_flag = !rotate_plus_flag;
-  }  
+  if((gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D)||(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A)||
+  (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)||(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S))  
+  {rotate_flag=0;}
   if(rotate_flag)
   {
-    rotate_plus_flag =0;
-    chassis_data->wz_set = 6;
-    chassis_data->high_set = 0.17;
-  }
-  if(rotate_plus_flag)
-  {
     rotate_flag = 0;
-    chassis_data->wz_set = 6;
-    chassis_data->high_set = 0.17 + fp32_constrain(0.04*sin(2*PI/30 * timer),-0.04,0.04);
+    chassis_data->wz_set = 10;
+    chassis_data->high_set = 0.17 + fp32_constrain(0.04*sin(2*PI/2 * timer*0.002),-0.04,0.04);
+  }
+    //增加键盘启停
+  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_CTRL))
+  {
+    key_mode_flag++;
+    if(key_mode_flag > 2)
+    {
+      key_mode_flag = 0;
+    }
   }
 
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_G||gimbal_control_set->gimbal_rc_ctrl->rc.s[2] == 1)
@@ -310,7 +309,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_C)
   {
-    chassis_data->high_set = 0.1f;
+    chassis_data->high_set = 0.17f;
   }
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_X)
@@ -463,11 +462,11 @@ static void gimbal_set_mode(gimbal_control_t *set_mode)
       init_time = 0;
     }
   }
-  if (set_mode->gimbal_rc_ctrl->rc.s[0] == 0 || toe_is_error(DBUS_TOE))
+  if (set_mode->gimbal_rc_ctrl->rc.s[0] == 0 || toe_is_error(DBUS_TOE) || key_mode_flag == 0)
   {
     set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_OFF;
   }
-  else if (set_mode->gimbal_rc_ctrl->rc.s[0] == 1 || set_mode->gimbal_rc_ctrl->rc.s[1] == 2)
+  else if (set_mode->gimbal_rc_ctrl->rc.s[0] == 1 || set_mode->gimbal_rc_ctrl->rc.s[1] == 2 || key_mode_flag !=0)
   {
     set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
   }

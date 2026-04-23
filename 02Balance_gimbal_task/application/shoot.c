@@ -79,7 +79,7 @@ void shoot_speed_filter()
 void shoot_set_mode()
 {
 	if((shoot_control.press_fric==1&&shoot_control.last_press_fric==0)
-	||((shoot_control.keyboard & KEY_PRESSED_OFFSET_F) && (shoot_control.last_keyboard& KEY_PRESSED_OFFSET_F)==0))	//右上角自定义按键
+	||((shoot_control.keyboard & KEY_PRESSED_OFFSET_B) && !(shoot_control.last_keyboard& KEY_PRESSED_OFFSET_B)))	//右上角自定义按键
 	{
 		fric_flag = !fric_flag;		//1 -> 开启摩擦轮  0 -> 关闭摩擦轮
 		continue_flag = 0;
