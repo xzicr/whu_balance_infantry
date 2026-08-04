@@ -183,9 +183,6 @@ void MX_FREERTOS_Init(void)
   osThreadDef(OLED, oled_task, osPriorityNormal, 0, 256);
   oled_handle = osThreadCreate(osThread(OLED), NULL);
 
-  // osThreadDef(SETPOWER,send_setpower_task,osPriorityNormal,0,128);
-  // setpower_handle = osThreadCreate(osThread(SETPOWER), NULL);
-
   osThreadDef(UART_RECEIVE, uart_start_task, osPriorityNormal, 0, 128);
   setpower_handle = osThreadCreate(osThread(UART_RECEIVE), NULL);
 

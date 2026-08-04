@@ -4,24 +4,35 @@
 #include "Chassis_power_control.h"
 #include "referee.h"
 float Plimit=1;
+float Wlimit=1;
 static float Power_Buffer;
 
 extern power_heat_data_t power_heat_data;
 
+static float power_buffer_limit(float buffer)
+{
+    if (buffer >= 60.0f) return 1.00f;
+    if (buffer >= 50.0f) return 0.95f + (buffer - 50.0f) * (1.00f - 0.95f) / 10.0f;
+    if (buffer >= 40.0f) return 0.90f + (buffer - 40.0f) * (0.95f - 0.90f) / 10.0f;
+    if (buffer >= 35.0f) return 0.75f + (buffer - 35.0f) * (0.90f - 0.75f) / 5.0f;
+    if (buffer >= 30.0f) return 0.50f + (buffer - 30.0f) * (0.75f - 0.50f) / 5.0f;
+    if (buffer >= 20.0f) return 0.25f + (buffer - 20.0f) * (0.50f - 0.25f) / 10.0f;
+    if (buffer >= 10.0f) return 0.125f + (buffer - 10.0f) * (0.25f - 0.125f) / 10.0f;
+    if (buffer >= 0.0f) return 0.05f + buffer * (0.125f - 0.05f) / 10.0f;
+    return 0.05f;
+}
 
 void chassis_power_limit(chassis_move_t *chassis_move_control)
 {
 
-	/*缓冲能量占比环-总体约束*/
-	Power_Buffer=power_heat_data.buffer_energy;
+Power_Buffer = power_heat_data.buffer_energy;
 
-	if(Power_Buffer<60&&Power_Buffer>=50)		Plimit=0.95;
-	else if(Power_Buffer<50&&Power_Buffer>=40)	Plimit=0.9;
-	else if(Power_Buffer<40&&Power_Buffer>=35)	Plimit=0.75;
-	else if(Power_Buffer<35&&Power_Buffer>=30)	Plimit=0.5;
-	else if(Power_Buffer<30&&Power_Buffer>=20)	Plimit=0.25;
-	else if(Power_Buffer<20&&Power_Buffer>=10)	Plimit=0.125;
-	else if(Power_Buffer<10&&Power_Buffer>=0)	Plimit=0.05;
-	else if(Power_Buffer==60)					Plimit=1;
-	chassis_move_control->chassis_posture_info.foot_speed_set =  Plimit*chassis_move_control->chassis_posture_info.foot_speed_set;
+float target_limit = power_buffer_limit(Power_Buffer);
+
+Plimit = 0.9f * Plimit + 0.1f * target_limit;
+Wlimit = 0.9f * Wlimit + 0.1f * target_limit;
+
+
+chassis_move_control->chassis_posture_info.foot_speed_set *= Plimit;
+chassis_move_control->chassis_posture_info.yaw_gyro_set *= Wlimit;
 }

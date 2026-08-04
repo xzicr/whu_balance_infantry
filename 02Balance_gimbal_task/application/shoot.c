@@ -10,6 +10,7 @@ static InputData *Self_aim_data;
 
 extern uint8_t aimflag;
 
+
 int32_t time_cnt;
 int8_t continue_flag;
 uint8_t friction_speed_set_state = 0;
@@ -124,7 +125,7 @@ void shoot_set_mode()
 				// continue_flag=0;
 				if( shoot_control.press_shoot==1||(shoot_control.press_l&&shoot_control.last_press_l))	//°â»ú°´ÏÂ
 				{
-					shoot_control.shoot_mode=SHOOT_CONTINUE;
+					shoot_control.shoot_mode=SHOOT_SINGLE;
 				}
 			}
 			else if(Self_aim_data->mode != 2)
@@ -148,13 +149,23 @@ void friction_control_set()
 		{
 			shoot_control.friction_left_speed_set-=50;  
 			shoot_control.friction_right_speed_set+=50;   
-			if(shoot_control.friction_left_speed_set <= -6500 && shoot_control.friction_right_speed_set >= 6500)                           
+			if(shoot_control.friction_left_speed_set <= -5900 && shoot_control.friction_right_speed_set >= 5900)                           
 			{friction_speed_set_state = 1;}
 		}
 		else if(friction_speed_set_state == 1)
 		{
-			shoot_control.friction_left_speed_set=-6500;  
-			shoot_control.friction_right_speed_set=6500;                              
+			if((shoot_control.keyboard & KEY_PRESSED_OFFSET_Q) && !(shoot_control.last_keyboard& KEY_PRESSED_OFFSET_Q))
+			{
+				shoot_control.friction_right_speed_set -= 100;
+				shoot_control.friction_left_speed_set += 100;
+			} 
+			if((shoot_control.keyboard & KEY_PRESSED_OFFSET_E) && !(shoot_control.last_keyboard& KEY_PRESSED_OFFSET_E))
+			{
+				shoot_control.friction_right_speed_set += 100;
+				shoot_control.friction_left_speed_set -= 100;
+			}   
+			fp32_constrain(shoot_control.friction_right_speed_set,-6500,6500);
+			fp32_constrain(shoot_control.friction_left_speed_set,-6500,6500);
 		}
 	}
 	else if (fric_flag == 0)

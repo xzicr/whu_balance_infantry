@@ -63,7 +63,7 @@
 //摇杆死区
 #define CHASSIS_RC_DEADLINE 10
 
-#define CHASSIS_RC_WZ_DEADLINE 0.5
+#define CHASSIS_RC_WZ_DEADLINE 0.5f
 
 
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_VX 0.25f
@@ -131,22 +131,22 @@
 
 //底盘旋转跟随PID
 #define CHASSIS_FOLLOW_GIMBAL_PID_KP 0.2f
-#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.0005f//0.5
+#define CHASSIS_FOLLOW_GIMBAL_PID_KI 0.0006f//0.5
 #define CHASSIS_FOLLOW_GIMBAL_PID_KD 20.0f
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT 10.0f//2.8
-#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 5.0f
+#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 10.0f
 #define MOTOR_ECD_TO_RAD 0.000766990394f 
 /* -----------------------------平步新增宏定义---------------------------- */
 
 //腿长设定PID
-#define LEG_SET_PID_KP 750
+#define LEG_SET_PID_KP 420
 #define LEG_SET_PID_KI 2.0f
-#define LEG_SET_PID_KD 4800//400.0f //350.0f
-#define LEG_SET_PID_OUT 200.0f
-#define LEG_SET_PID_IOUT 120.0f
+#define LEG_SET_PID_KD 4500.0f //350.0f
+#define LEG_SET_PID_OUT 100.0f
+#define LEG_SET_PID_IOUT 12.0f
 
 
-// ------------- Limit info ------------- 
+// -------------  Limit info ------------- 
 #define MAX_ACCL 13000.0f
 #define MAX_ACCL_JOINT 20.0f
 #define MAX_FOOT_OUTPUT 2048
@@ -158,7 +158,7 @@
 #define L4 0.15f
 #define L5 0.15f
   
-#define WHEEL_PERIMETER  0.446106                         //0.56547
+#define WHEEL_PERIMETER  0.446106f                        //0.56547
 #define WHEEL_RADIUS 0.071f
 #define LEG_OFFSET       30.0f// 水平位置到上限位的夹角
 #define LOWER_SUPPORT_FORCE_FOR_JUMP 5.0f
@@ -167,31 +167,24 @@
 #define EXIT_PITCH_ANGLE 0.2f
 #define DANGER_PITCH_ANGLE 0.5f
 
-#define FEED_f 70.0f
+#define FEED_f 50.0f
 
 
 
-#define MOTOR_POS_UPPER_BOUND 30.0f
-#define MOTOR_POS_LOWER_BOUND 65.0f
+#define MOTOR_POS_UPPER_BOUND 29.0f
+#define MOTOR_POS_LOWER_BOUND 64.0f
 #define LIMITED_TORQUE 5.0f
 #define UNLIMITED_TORQUE 200.0f
 
 // ------------- Transfer info ------------- 
 #define HALF_POSITION_RANGE    178.0f
-#define TORQ_K            77.1604
+#define TORQ_K            77.1604f
 // ------------- Math info ------------- 
 #define PI2					  6.28318530717959f
 #define PI					  3.14159265358979f
 #define PI_2				  1.57079632679489f
 #define PI_4				  0.78539816339744f
-//  typedef enum
-//  {
-//    CHASSIS_VECTOR_RAW,                 //control-current will be sent to CAN bus derectly.
-//    CHASSIS_VECTOR_NO_FOLLOW_YAW,       //chassis will have rotation speed control. 底盘有旋转速度控制
-//    CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW,   //chassis will follow yaw gimbal motor relative angle.底盘会跟随云台相对角度
-//    CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW,  //chassis will have yaw angle(chassis_yaw) close-looped control.底盘有底盘角度控制闭环
 
-//  } rc_control_mode_e;
 
  typedef enum
 {
@@ -216,7 +209,6 @@ typedef enum
     NORMAL_MOVING_MODE,
     ABNORMAL_MOVING_MODE,
     JUMPING_MODE,
-    CAP_MODE,
     FLY_MODE,
     TK_MODE,
 } sport_mode_e;
@@ -293,15 +285,16 @@ typedef struct
     fp32 foot_roll_angle;
     fp32 leg_angle_L, last_leg_angle_L, leg_angle_L_set,leg_angle_L_kf;
     fp32 leg_angle_R, last_leg_angle_R, leg_angle_R_set,leg_angle_R_kf;
-    fp32 leg_gyro_L, leg_gyro_R,leg_gyro_L_jacobian, leg_gyro_R_jacobian,last_leg_gyro_L_jacobian, last_leg_gyro_R_jacobian;
+    fp32 leg_gyro_L, leg_gyro_R, last_leg_gyro_L, last_leg_gyro_R;
+    fp32 leg_gyro_L_jacobian, leg_gyro_R_jacobian,last_leg_gyro_L_jacobian, last_leg_gyro_R_jacobian;
     fp32 leg_accel_L, leg_accel_R;
 
     /* ----------debug param-------- */
     fp32 xc,yc,xb,yb;
     fp32 Q2;
 
-    uint16_t position_lock_flag;
-    uint16_t position_lock_state;
+    uint16_t position_lock_flag,position_lock_state;
+    uint16_t yaw_lock_flag;
     fp32 foot_distance, foot_distance_K, foot_distance_set,target_distance_set;
     fp32 foot_speed, foot_speed_KF, foot_speed_set;
 
@@ -483,6 +476,8 @@ typedef struct
     gimbal_motor_t gimbal_yaw_motor;
     joint_motor_t joint_motor_1, joint_motor_2, joint_motor_3, joint_motor_4;
     foot_motor_t foot_motor_L, foot_motor_R;
+    fp32 distance;
+    super_power_t super_power;
 
 } chassis_move_t;
 

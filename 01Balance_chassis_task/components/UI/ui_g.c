@@ -13,9 +13,9 @@ ui_interface_round_t *ui_g_DynamicGroup_FricRound = (ui_interface_round_t*)&(ui_
 ui_interface_round_t *ui_g_DynamicGroup_AutoRound = (ui_interface_round_t*)&(ui_g_DynamicGroup_0.data[1]);
 ui_interface_arc_t *ui_g_DynamicGroup_DirectionArc = (ui_interface_arc_t*)&(ui_g_DynamicGroup_0.data[2]);
 ui_interface_number_t *ui_g_DynamicGroup_HightNum = (ui_interface_number_t*)&(ui_g_DynamicGroup_0.data[3]);
-ui_interface_round_t *ui_g_DynamicGroup_RotateRound = (ui_interface_round_t*)&(ui_g_DynamicGroup_0.data[4]);
-ui_interface_line_t *ui_g_DynamicGroup_JumpLine = (ui_interface_line_t*)&(ui_g_DynamicGroup_0.data[5]);
-ui_interface_line_t *ui_g_DynamicGroup_HightLine = (ui_interface_line_t*)&(ui_g_DynamicGroup_0.data[6]);
+ui_interface_line_t *ui_g_DynamicGroup_JumpLine = (ui_interface_line_t*)&(ui_g_DynamicGroup_0.data[4]);
+ui_interface_number_t *ui_g_DynamicGroup_FricNum = (ui_interface_number_t*)&(ui_g_DynamicGroup_0.data[5]);
+ui_interface_round_t *ui_g_DynamicGroup_ResvRound = (ui_interface_round_t*)&(ui_g_DynamicGroup_0.data[6]);
 
 void _ui_init_g_DynamicGroup_0() {
     for (int i = 0; i < 7; i++) {
@@ -68,15 +68,6 @@ void _ui_init_g_DynamicGroup_0() {
     ui_g_DynamicGroup_HightNum->font_size = 22;
     ui_g_DynamicGroup_HightNum->number = 0;
 
-    ui_g_DynamicGroup_RotateRound->figure_type = 2;
-    ui_g_DynamicGroup_RotateRound->operate_type = 1;
-    ui_g_DynamicGroup_RotateRound->layer = 0;
-    ui_g_DynamicGroup_RotateRound->color = 8;
-    ui_g_DynamicGroup_RotateRound->start_x = 1102;
-    ui_g_DynamicGroup_RotateRound->start_y = 783;
-    ui_g_DynamicGroup_RotateRound->width = 15;
-    ui_g_DynamicGroup_RotateRound->r = 18;
-
     ui_g_DynamicGroup_JumpLine->figure_type = 0;
     ui_g_DynamicGroup_JumpLine->operate_type = 1;
     ui_g_DynamicGroup_JumpLine->layer = 0;
@@ -87,15 +78,24 @@ void _ui_init_g_DynamicGroup_0() {
     ui_g_DynamicGroup_JumpLine->end_x = 1220;
     ui_g_DynamicGroup_JumpLine->end_y = 130;
 
-    ui_g_DynamicGroup_HightLine->figure_type = 0;
-    ui_g_DynamicGroup_HightLine->operate_type = 1;
-    ui_g_DynamicGroup_HightLine->layer = 0;
-    ui_g_DynamicGroup_HightLine->color = 5;
-    ui_g_DynamicGroup_HightLine->start_x = 252;
-    ui_g_DynamicGroup_HightLine->start_y = 350;
-    ui_g_DynamicGroup_HightLine->width = 20;
-    ui_g_DynamicGroup_HightLine->end_x = 252;
-    ui_g_DynamicGroup_HightLine->end_y = 634;
+    ui_g_DynamicGroup_FricNum->figure_type = 6;
+    ui_g_DynamicGroup_FricNum->operate_type = 1;
+    ui_g_DynamicGroup_FricNum->layer = 0;
+    ui_g_DynamicGroup_FricNum->color = 3;
+    ui_g_DynamicGroup_FricNum->start_x = 373;
+    ui_g_DynamicGroup_FricNum->start_y = 718;
+    ui_g_DynamicGroup_FricNum->width = 2;
+    ui_g_DynamicGroup_FricNum->font_size = 22;
+    ui_g_DynamicGroup_FricNum->number = 0;
+
+    ui_g_DynamicGroup_ResvRound->figure_type = 2;
+    ui_g_DynamicGroup_ResvRound->operate_type = 1;
+    ui_g_DynamicGroup_ResvRound->layer = 0;
+    ui_g_DynamicGroup_ResvRound->color = 8;
+    ui_g_DynamicGroup_ResvRound->start_x = 1106;
+    ui_g_DynamicGroup_ResvRound->start_y = 783;
+    ui_g_DynamicGroup_ResvRound->width = 15;
+    ui_g_DynamicGroup_ResvRound->r = 18;
 
 
     ui_proc_7_frame(&ui_g_DynamicGroup_0);
@@ -167,12 +167,12 @@ void _ui_init_g_StaticGraphicGroup_0() {
     ui_g_StaticGraphicGroup_HeatRect->figure_type = 1;
     ui_g_StaticGraphicGroup_HeatRect->operate_type = 1;
     ui_g_StaticGraphicGroup_HeatRect->layer = 0;
-    ui_g_StaticGraphicGroup_HeatRect->color = 5;
-    ui_g_StaticGraphicGroup_HeatRect->start_x = 185;
-    ui_g_StaticGraphicGroup_HeatRect->start_y = 674;
+    ui_g_StaticGraphicGroup_HeatRect->color = 2;
+    ui_g_StaticGraphicGroup_HeatRect->start_x = 194;
+    ui_g_StaticGraphicGroup_HeatRect->start_y = 672;
     ui_g_StaticGraphicGroup_HeatRect->width = 3;
-    ui_g_StaticGraphicGroup_HeatRect->end_x = 348;
-    ui_g_StaticGraphicGroup_HeatRect->end_y = 784;
+    ui_g_StaticGraphicGroup_HeatRect->end_x = 542;
+    ui_g_StaticGraphicGroup_HeatRect->end_y = 782;
 
     ui_g_StaticGraphicGroup_CrosshairLine_1->figure_type = 0;
     ui_g_StaticGraphicGroup_CrosshairLine_1->operate_type = 1;
@@ -192,7 +192,7 @@ void _ui_init_g_StaticGraphicGroup_0() {
     ui_g_StaticGraphicGroup_GuideLine_1->start_y = 60;
     ui_g_StaticGraphicGroup_GuideLine_1->width = 3;
     ui_g_StaticGraphicGroup_GuideLine_1->end_x = 659;
-    ui_g_StaticGraphicGroup_GuideLine_1->end_y = 240;
+    ui_g_StaticGraphicGroup_GuideLine_1->end_y = 239;
 
     ui_g_StaticGraphicGroup_CrosshairLine_2->figure_type = 0;
     ui_g_StaticGraphicGroup_CrosshairLine_2->operate_type = 1;
@@ -222,7 +222,7 @@ void _ui_init_g_StaticGraphicGroup_0() {
     ui_g_StaticGraphicGroup_GuideLine_2->start_y = 60;
     ui_g_StaticGraphicGroup_GuideLine_2->width = 3;
     ui_g_StaticGraphicGroup_GuideLine_2->end_x = 1260;
-    ui_g_StaticGraphicGroup_GuideLine_2->end_y = 240;
+    ui_g_StaticGraphicGroup_GuideLine_2->end_y = 239;
 
 
     ui_proc_7_frame(&ui_g_StaticGraphicGroup_0);
@@ -338,7 +338,7 @@ void _ui_remove_g_StaticTextGroup_1() {
     SEND_MESSAGE((uint8_t *) &ui_g_StaticTextGroup_1, sizeof(ui_g_StaticTextGroup_1));
 }
 ui_string_frame_t ui_g_StaticTextGroup_2;
-ui_interface_string_t* ui_g_StaticTextGroup_RotateText = &(ui_g_StaticTextGroup_2.option);
+ui_interface_string_t* ui_g_StaticTextGroup_FricSpeedText = &(ui_g_StaticTextGroup_2.option);
 
 void _ui_init_g_StaticTextGroup_2() {
     ui_g_StaticTextGroup_2.option.figure_name[0] = 0;
@@ -346,16 +346,16 @@ void _ui_init_g_StaticTextGroup_2() {
     ui_g_StaticTextGroup_2.option.figure_name[2] = 2;
     ui_g_StaticTextGroup_2.option.operate_type = 1;
 
-    ui_g_StaticTextGroup_RotateText->figure_type = 7;
-    ui_g_StaticTextGroup_RotateText->operate_type = 1;
-    ui_g_StaticTextGroup_RotateText->layer = 0;
-    ui_g_StaticTextGroup_RotateText->color = 0;
-    ui_g_StaticTextGroup_RotateText->start_x = 1096;
-    ui_g_StaticTextGroup_RotateText->start_y = 862;
-    ui_g_StaticTextGroup_RotateText->width = 2;
-    ui_g_StaticTextGroup_RotateText->font_size = 20;
-    ui_g_StaticTextGroup_RotateText->str_length = 1;
-    strcpy(ui_g_StaticTextGroup_RotateText->string, "R");
+    ui_g_StaticTextGroup_FricSpeedText->figure_type = 7;
+    ui_g_StaticTextGroup_FricSpeedText->operate_type = 1;
+    ui_g_StaticTextGroup_FricSpeedText->layer = 0;
+    ui_g_StaticTextGroup_FricSpeedText->color = 3;
+    ui_g_StaticTextGroup_FricSpeedText->start_x = 368;
+    ui_g_StaticTextGroup_FricSpeedText->start_y = 772;
+    ui_g_StaticTextGroup_FricSpeedText->width = 2;
+    ui_g_StaticTextGroup_FricSpeedText->font_size = 20;
+    ui_g_StaticTextGroup_FricSpeedText->str_length = 4;
+    strcpy(ui_g_StaticTextGroup_FricSpeedText->string, "FRIC");
 
 
     ui_proc_string_frame(&ui_g_StaticTextGroup_2);
@@ -376,7 +376,7 @@ void _ui_remove_g_StaticTextGroup_2() {
     SEND_MESSAGE((uint8_t *) &ui_g_StaticTextGroup_2, sizeof(ui_g_StaticTextGroup_2));
 }
 ui_string_frame_t ui_g_StaticTextGroup_3;
-ui_interface_string_t* ui_g_StaticTextGroup_PowerText = &(ui_g_StaticTextGroup_3.option);
+ui_interface_string_t* ui_g_StaticTextGroup_DirectText = &(ui_g_StaticTextGroup_3.option);
 
 void _ui_init_g_StaticTextGroup_3() {
     ui_g_StaticTextGroup_3.option.figure_name[0] = 0;
@@ -384,16 +384,16 @@ void _ui_init_g_StaticTextGroup_3() {
     ui_g_StaticTextGroup_3.option.figure_name[2] = 3;
     ui_g_StaticTextGroup_3.option.operate_type = 1;
 
-    ui_g_StaticTextGroup_PowerText->figure_type = 7;
-    ui_g_StaticTextGroup_PowerText->operate_type = 1;
-    ui_g_StaticTextGroup_PowerText->layer = 0;
-    ui_g_StaticTextGroup_PowerText->color = 2;
-    ui_g_StaticTextGroup_PowerText->start_x = 1439;
-    ui_g_StaticTextGroup_PowerText->start_y = 811;
-    ui_g_StaticTextGroup_PowerText->width = 2;
-    ui_g_StaticTextGroup_PowerText->font_size = 20;
-    ui_g_StaticTextGroup_PowerText->str_length = 9;
-    strcpy(ui_g_StaticTextGroup_PowerText->string, "direction");
+    ui_g_StaticTextGroup_DirectText->figure_type = 7;
+    ui_g_StaticTextGroup_DirectText->operate_type = 1;
+    ui_g_StaticTextGroup_DirectText->layer = 0;
+    ui_g_StaticTextGroup_DirectText->color = 2;
+    ui_g_StaticTextGroup_DirectText->start_x = 1439;
+    ui_g_StaticTextGroup_DirectText->start_y = 811;
+    ui_g_StaticTextGroup_DirectText->width = 2;
+    ui_g_StaticTextGroup_DirectText->font_size = 20;
+    ui_g_StaticTextGroup_DirectText->str_length = 9;
+    strcpy(ui_g_StaticTextGroup_DirectText->string, "direction");
 
 
     ui_proc_string_frame(&ui_g_StaticTextGroup_3);
@@ -430,8 +430,8 @@ void _ui_init_g_StaticTextGroup_4() {
     ui_g_StaticTextGroup_HightText->start_y = 772;
     ui_g_StaticTextGroup_HightText->width = 2;
     ui_g_StaticTextGroup_HightText->font_size = 20;
-    ui_g_StaticTextGroup_HightText->str_length = 5;
-    strcpy(ui_g_StaticTextGroup_HightText->string, "Hight");
+    ui_g_StaticTextGroup_HightText->str_length = 4;
+    strcpy(ui_g_StaticTextGroup_HightText->string, "High");
 
 
     ui_proc_string_frame(&ui_g_StaticTextGroup_4);

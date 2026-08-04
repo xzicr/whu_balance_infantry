@@ -35,12 +35,12 @@
 #include "INS_task.h"
 // pitch speed close-loop PID params, max out and max iout
 // pitch 速度环 PID参数以及 PID最大输出，积分输出
-#define PITCH_GYRO_PID_KP 3200.0f//5000.0f
-#define PITCH_GYRO_PID_KI 5.0f//10.0f
+#define PITCH_GYRO_PID_KP 3800.0f//5000.0f
+#define PITCH_GYRO_PID_KI 12.0f//10.0f
 #define PITCH_GYRO_PID_KD 0.0f
 #define PITCH_GYRO_PID_MAX_OUT 30000.0f
 #define PITCH_GYRO_PID_MAX_IOUT 10000.0f
-#define PITCH_ANGLE_PID_KP 0.67f//0.3f       
+#define PITCH_ANGLE_PID_KP 2.20f//0.3f       
 #define PITCH_ANGLE_PID_KI 0.0f      
 #define PITCH_ANGLE_PID_KD 15.0f       
 #define PITCH_ANGLE_PID_MAX_OUT 12.0f//3.0f  
@@ -240,8 +240,8 @@ typedef struct
   float pitch_angle;//pitch轴实时角度
 	chassis_mode_e chassis_mode;//底盘模式
 	shoot_mode_e shoot_mode;//射击模式
-  uint8_t spin_flag;//小陀螺标志位
-  uint8_t tk_flag,jump_flag,cap_flag,sit_flag,high_flag,fric_flag,auto_flag,ui_init_flag,reset_flag;
+  uint8_t jump_flag,sit_flag,high_flag,fric_flag,auto_flag,ui_init_flag,reset_flag;
+  float fric_speed_set;
 }chassis_data_t;
 
 /**

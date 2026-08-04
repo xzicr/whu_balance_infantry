@@ -100,7 +100,7 @@ void test_task(void const * argument)
 //	
 //		
 ////			sendfloatdata(data,2);
-//			osDelay(1);
+			osDelay(1);
     }
 
 }

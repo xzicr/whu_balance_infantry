@@ -59,6 +59,10 @@ typedef struct
 	uint8_t shooter_output;
     uint16_t block_time;
     uint16_t reverse_time;
+	uint16_t shoot_heat_limit;
+	uint16_t shoot_heat_value;
+	uint16_t shoot_cooling_rate;
+	uint16_t last_shoot_heat_value;	
 }shoot_control_t;
 extern shoot_control_t *shoot();
 extern void shoot_init();

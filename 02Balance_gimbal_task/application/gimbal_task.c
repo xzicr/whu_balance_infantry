@@ -39,6 +39,7 @@
 #include "Self_aim.h"
 #include "stm32f4xx_hal.h"
 #include "usart.h"
+#include "UART_task.h"
 
 #define RC_MODE 1
 #define KEY_MODE 1
@@ -75,15 +76,13 @@ uint32_t gimbal_high_water;
 float yaw_buffer[WINDOW_SIZE];
 
 
-
 /*--------------云台控制所有相关数据----------------*/
 // 云台数据结构体
 gimbal_control_t gimbal_control;
 
 //标志位
 uint8_t aimflag = 0;
-uint8_t rotate_flag =0;
-uint8_t key_mode_flag = 0;
+uint8_t key_mode_flag = 1;
 // PID参数
 static const fp32 Pitch_angle_pid[3] = {PITCH_ANGLE_PID_KP, PITCH_ANGLE_PID_KI, PITCH_ANGLE_PID_KD};
 static const fp32 Pitch_gyro_pid[3] = {PITCH_GYRO_PID_KP, PITCH_GYRO_PID_KI, PITCH_ANGLE_PID_KD};
@@ -176,7 +175,7 @@ static void gimbal_init(gimbal_control_t *init)
 
 void leg_control_init(chassis_data_t *leg_contorl)
 {
-  leg_contorl->high_set = 0.15f;
+  leg_contorl->high_set = 0.19f;
 }
 void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
@@ -201,19 +200,26 @@ void chassis_rc_to_control_vector(gimbal_control_t *gimbal_control_set, chassis_
 void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
 {
   // 模式设置
-  if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 0||key_mode_flag == 0)
+  #ifdef RC_MODE
+  if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 0)
   {
     chassis_data->chassis_mode = CHASSIS_MODE_OFF;
   }
-  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 1||key_mode_flag == 1)
+  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 1)
   {
-    chassis_data->chassis_mode = CHASSIS_MODE_ON;
+    if(key_mode_flag == 1)
+    {
+      chassis_data->chassis_mode = CHASSIS_MODE_ON;
+    }
+    else
+    {
+      chassis_data->chassis_mode = CHASSIS_MODE_OFF;
+    }
   }
-  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 2||key_mode_flag == 2)
+  else if (gimbal_control_set->gimbal_rc_ctrl->rc.s[0] == 2)
   {
     chassis_data->chassis_mode = CHASSIS_MODE_DEBUG;
   }
-  #ifdef RC_MODE
   int16_t vx_channel, vy_channel;
   fp32 vx_set_channel, vy_set_channel;
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_X_CHANNEL], vx_channel, CHASSIS_RC_DEADLINE);
@@ -221,8 +227,8 @@ void rc_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_da
   vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
   vy_set_channel = vy_channel * -CHASSIS_VY_RC_SEN;
   
-  chassis_data->vx_set = vx_set_channel;
-  chassis_data->vy_set = vy_set_channel;
+  chassis_data->vx_set = fp32_constrain(vx_set_channel,-2.0,2.0);
+  chassis_data->vy_set = fp32_constrain(vy_set_channel,-2.0,2.0);
   chassis_data->wz_set = -CHASSIS_WZ_RC_SEN * gimbal_control_set->gimbal_rc_ctrl->rc.ch[CHASSIS_WZ_CHANNEL];
   #endif 
 
@@ -243,11 +249,11 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   {timer =0;}
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)
   {
-    chassis_data->vx_set = 8;
+    chassis_data->vx_set = 1.82;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S)
   {
-    chassis_data->vx_set = -8;
+    chassis_data->vx_set = -1.82;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A)
   {
@@ -260,11 +266,11 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = 13;
+    chassis_data->vx_set = 2.2;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
-    chassis_data->vx_set = -13;
+    chassis_data->vx_set = -2.2;
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A && gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_SHIFT)
   {
@@ -274,20 +280,6 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   {
     chassis_data->wz_set = -13;
   }
-  
-  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_E&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_E))
-  {
-    rotate_flag = !rotate_flag;
-  }
-  if((gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_D)||(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_A)||
-  (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_W)||(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_S))  
-  {rotate_flag=0;}
-  if(rotate_flag)
-  {
-    rotate_flag = 0;
-    chassis_data->wz_set = 10;
-    chassis_data->high_set = 0.17 + fp32_constrain(0.04*sin(2*PI/2 * timer*0.002),-0.04,0.04);
-  }
     //增加键盘启停
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_CTRL&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_CTRL))
   {
@@ -296,8 +288,8 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
     {
       key_mode_flag = 0;
     }
-  }
 
+  }
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_G||gimbal_control_set->gimbal_rc_ctrl->rc.s[2] == 1)
   {
     chassis_data->jump_flag = 1;
@@ -309,18 +301,18 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_C)
   {
-    chassis_data->high_set = 0.17f;
+    chassis_data->high_set = 0.15f;
   }
 
   if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_X)
   {
     chassis_data->high_set += 0.0002f;
-    fp32_constrain(chassis_data->high_set, 0.1, 0.34);
+    fp32_constrain(chassis_data->high_set, 0.12, 0.34);
   }
   else if (gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_Z)
   {
     chassis_data->high_set -= 0.0002f;
-    fp32_constrain(chassis_data->high_set, 0.1, 0.34);
+    fp32_constrain(chassis_data->high_set, 0.12, 0.34);
   }
   if ((gimbal_control_set->aim_press==1&& gimbal_control_set->aim_last_press==0) || 
   (gimbal_control_set->press_r == 1&&gimbal_control_set->last_press_r == 0)||
@@ -352,6 +344,7 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
       break;
     }
   }
+  chassis_data->fric_speed_set = shoot_control.friction_right_speed_set;
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_V)
   {
     chassis_data->ui_init_flag = 1;
@@ -363,17 +356,11 @@ void key_control(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_d
   }
   if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_R&&!(gimbal_control_set->lastkeyboard & KEY_PRESSED_OFFSET_R))
   {
-    key_mode_flag = 2;
+    chassis_data->reset_flag =!chassis_data->reset_flag ;
   }
-  if(gimbal_control_set->keyboard & KEY_PRESSED_OFFSET_R)
+  if(chassis_data->chassis_mode != CHASSIS_MODE_OFF)
   {
-    fp32 temp = xTaskGetTickCount();
-    if(xTaskGetTickCount()-temp > pdMS_TO_TICKS(1000))
-    {chassis_data->reset_flag = 1;}
-  }
-  else
-  {
-    chassis_data->reset_flag = 0;
+    chassis_data->reset_flag =0 ;
   }
   #endif
 }
@@ -385,11 +372,11 @@ void yaw_set(gimbal_control_t *gimbal_control_set, chassis_data_t *chassis_data)
   if (chassis_data->chassis_mode == CHASSIS_MODE_OFF)
   {
     chassis_data->yaw_angle_set = chassis_data->yaw_angle;
-    chassis_data->high_set = 0.17f;
+    chassis_data->high_set = 0.19f;
   }
   if(chassis_data->chassis_mode == CHASSIS_MODE_DEBUG)
   {
-    chassis_data->high_set = 0.17f;
+    chassis_data->high_set = 0.19f;
   }
   #if RC_MODE
   rc_deadband_limit(gimbal_control_set->gimbal_rc_ctrl->rc.ch[YAW_CHANNEL], yaw_channel, RC_DEADBAND);
@@ -419,7 +406,6 @@ else if ((chassis_data->chassis_mode != CHASSIS_MODE_OFF) && aimflag == 1)
         while (angle_diff < -180.0f) {
             angle_diff += 360.0f;
         }
-        
         // 累加补偿到 yaw_angle_set
         new_yaw_angle = chassis_data->yaw_angle_set + angle_diff;
         chassis_data->yaw_angle_set = new_yaw_angle;
@@ -467,13 +453,20 @@ static void gimbal_set_mode(gimbal_control_t *set_mode)
       init_time = 0;
     }
   }
-  if (set_mode->gimbal_rc_ctrl->rc.s[0] == 0 || toe_is_error(DBUS_TOE) || key_mode_flag == 0)
+  if ((set_mode->gimbal_rc_ctrl->rc.s[0] == 0 || toe_is_error(DBUS_TOE)))
   {
     set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_OFF;
   }
-  else if (set_mode->gimbal_rc_ctrl->rc.s[0] == 1 || set_mode->gimbal_rc_ctrl->rc.s[1] == 2 || key_mode_flag !=0)
+  else if ((set_mode->gimbal_rc_ctrl->rc.s[0] == 1 || set_mode->gimbal_rc_ctrl->rc.s[1] == 2) )
   {
-    set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
+    if(key_mode_flag == 1)
+    {
+      set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_GYRO;
+    }
+    else
+    {
+      set_mode->gimbal_pitch_motor.gimbal_motor_mode = GIMBAL_MOTOR_OFF;
+    }
   }
 
   // 判断进入init状态机
@@ -536,9 +529,9 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     {
       set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 8.5)
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 15)
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 8.5;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 15;
     }
     else
     {
@@ -552,9 +545,9 @@ static void gimbal_set_control(gimbal_control_t *set_control)
     {
       set_control->gimbal_pitch_motor.absolute_angle_set = -26;
     }
-    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 8.5)  
+    else if (set_control->gimbal_pitch_motor.absolute_angle_set > 15)  
     {
-      set_control->gimbal_pitch_motor.absolute_angle_set = 8.5;
+      set_control->gimbal_pitch_motor.absolute_angle_set = 15;
     }
     else
     {
