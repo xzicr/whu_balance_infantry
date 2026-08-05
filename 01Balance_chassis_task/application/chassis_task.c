@@ -347,7 +347,7 @@ void chassis_feedback_update(chassis_move_t *fdb)
 	fdb->joint_motor_2.torque_get = fdb->joint_motor_2.motor_measure->real_torque;
 	fdb->joint_motor_3.torque_get = fdb->joint_motor_3.motor_measure->real_torque;
 	fdb->joint_motor_4.torque_get = fdb->joint_motor_4.motor_measure->real_torque;
-	fdb->foot_motor_L.speed = fdb->foot_motor_L.motor_measure->speed *  PI / 180.0f * WHEEL_RADIUS; // rpm -> m/s
+	fdb->foot_motor_L.speed = fdb->foot_motor_L.motor_measure->speed *  PI / 180.0f * WHEEL_RADIUS; // dps -> m/s
 	fdb->foot_motor_R.speed = -fdb->foot_motor_R.motor_measure->speed  * PI / 180.0f * WHEEL_RADIUS;
 	fdb->chassis_posture_info.foot_speed = (fdb->foot_motor_L.speed + fdb->foot_motor_R.speed) / 2.0f;
 
